@@ -1,3 +1,14 @@
+---
+layout: article
+title: 数据结构算法
+key: 100019
+tags: 算法
+category: blog
+date: 2023-02-04 00:00:00 +08:00
+mermaid: true
+---
+
+
 # memcpy
  * 完成内存的拷贝
    * 如果内存有重叠（对小端），则从高位到低位复制
