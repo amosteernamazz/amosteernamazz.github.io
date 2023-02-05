@@ -38,7 +38,7 @@ mermaid: true
     return (void * )dst;
   }
   ```
-
+<!--more-->
 # 排序算法
  排序算法比较
  ![](https://cdn.jsdelivr.net/gh/luogou/cloudimg/data/20210828133536.png)
