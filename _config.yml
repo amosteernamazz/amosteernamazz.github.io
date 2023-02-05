@@ -16,11 +16,11 @@
 
 ## => Site Settings
 ##############################
-url: https://tianqi.name
+## url: https://tianqi.name
 baseurl: /
 title: Qi's Site
 description: >
-    Tian Qi's Site | 田琦的小站
+    amosteernamazz's Site | 王珂璠的小站
 
 
 ## => Language and Timezone
@@ -32,13 +32,13 @@ timezone: Asia/Shanghai
 ## => Author and Social
 ##############################
 author:
-  name: Tian Qi
-  email: kitian616@outlook.com
-  twitter: kitian616
-  github:  kitian616
-  googleplus: 101827554735084402671
-  weibo: 234695683
-  douban: kitian616
+  name: amosteernamazz
+  email: amosteernamazz@163.com
+  ## twitter: kitian616
+  github:  amosteernamazz
+  ## googleplus: 101827554735084402671
+  weibo: amosteernamazz
+  ## douban: kitian616
 
 
 ## => GitHub Repository (if the site is hosted by GitHub)
