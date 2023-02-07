@@ -1,14 +1,3 @@
----
-layout: article
-title: 数据结构算法
-key: 100019
-tags: 算法
-category: blog
-date: 2023-02-04 00:00:00 +08:00
-mermaid: true
----
-
-
 # memcpy
  * 完成内存的拷贝
    * 如果内存有重叠（对小端），则从高位到低位复制
@@ -38,7 +27,7 @@ mermaid: true
     return (void * )dst;
   }
   ```
-<!--more-->
+
 # 排序算法
  排序算法比较
  ![](https://cdn.jsdelivr.net/gh/luogou/cloudimg/data/20210828133536.png)
@@ -326,7 +315,7 @@ mermaid: true
 ![](https://cdn.jsdelivr.net/gh/luogou/cloudimg/data/20210829135544.gif)
 
   ```c++
-  count_sort(int[] a, int length){
+  void count_sort(int[] a, int length){
     int max = a[0];
     int i = 0;
 
@@ -627,15 +616,171 @@ mermaid: true
 # 非递归遍历二叉树
 
 ## 先序遍历
-
+  ```c++
+  void pre_traverse(BinaryTree* T){}
+    if(T == nullptr){
+      return;
+    }
+    printf(T->data);
+    pre_traverse(T->left);
+    pre_traverse(T->right);
+  ```
 ## 中序遍历
+  ```c++
+  void mid_traverse(BinaryTree* T){}
+    if(T == nullptr){
+      return;
+    }
+    pre_traverse(T->left);
+    printf(T->data);
+    pre_traverse(T->right);
+  ```
+
 
 ## 后序遍历
+  ```c++
+  void mid_traverse(BinaryTree* T){}
+    if(T == nullptr){
+      return;
+    }
+    pre_traverse(T->left);
+    pre_traverse(T->right);
+    printf(T->data);
+  ```
 
+## 层序遍历
+
+```c++
+void layer_traverse(TreeNode* Tree){
+  queue<TreeNode*> s;
+  if(Tree == nullptr){
+    return;
+  }
+  s.push(Tree);
+  while(!s.empty()){
+    TreeNode* cur = s.front();
+    cout << cur->val;
+    if(cur->left != nullptr){
+      s.push(cur->left);
+    }
+    if(cur->right != nullptr){
+      s.push(cur->right);
+    }
+    s.pop();
+  }
+}
+```
 
 # KMP算法
 
+ [KMP算法](https://blog.csdn.net/ooblack/article/details/109329361)
+ 传统的字符串匹配是通过暴力算法得到，为了减少匹配次数，对待匹配子串建立next数组通过next数组确定跳转位置
+
+ next数组是pattern串的属性，`next[i]`表示字符串前i+1位前缀和后缀相同的位数
+  * 如`abcabd`的`next[0] =0`、`next[1]`为前两位ab，前后缀无相同项，`next[3]`表示abca，其中前缀a和后缀a相同，`next[3] = 1`，最终`next = [0,0,0,1,2,0]`
+
+  ```c++
+    void get_next(string a, int* next){
+      next[0] = 0;
+      for(int i = 1; i < a.size(); i++){
+        while(j > 0 && a[i] != a[j]){
+          j = next[j-1];
+        }
+        if(a[i] == a[j]){
+          j++;
+        }
+        next[i] = j;
+
+      }
+    }
+    int kmp(string cur, string pattern){
+      int length = pattern.size();
+      int* next = int[length];
+      get_next(pattern, next);
+      for(int i = 0, j = 0; i < cur.size(); i++){
+          while(j >0 && a[i] != a[j]){
+            j = next[j-1];
+          }
+
+        if(s[i] == s[j]){
+          j++;
+        }
+        if(j == pattern.size()) return i - j + 1;
+        if(i = cur.size()) return -1;
+      }
+    }
+  ```
+
+
 # 最小生成树——Prim & Kruskal
+ 一些宏
+  ```c++
+  const int MAXN = 1000, INF = 0x3f3f3f3f; // 定义一个INF表示无穷大
+  int g[MAXN][MAXN], dist[MAXN],n,m,res;
+  // 使用g[][]数组存储图，dist[]存储到集合S的距离，res保存结果
+  bool book[MAXN];
+  // 存储某个点是否保存到集合S
+  ```
+
+ 调用函数
+  ```c++
+  int main()
+  {
+      cin>>n>>m;  //读入图点数 n 和边数 m
+
+      for(int i = 1; i<= n; i++)
+      {
+          for(int j = 1; j <= n; j++)
+          {
+              g[i][j] = INF;  //初始化任意两个点之间的距离为正无穷（表示这两个点之间没有边）
+          }
+          dist[i] = INF;  //初始化所有点到集合S的距离都是正无穷
+      }
+      
+      for(int i = 1; i <= m; i++)
+      {
+          int a, b, w;
+          cin >> a >> b >> w;  //读入a，b两个点之间的边
+          g[a][b] = g[b][a] = w;  //由于是无向边，我们对g[a][b]和g[b][a]都要赋值
+      }
+
+      prim();  //调用prim函数
+      if(res==INF)  //如果res的值是正无穷，表示不能该图不能转化成一棵树，输出orz
+          cout<<"orz";
+      else
+          cout<<res;//否则就输出结果res
+      return 0;
+  }
+  ```
+ prim实现
+  ```c++
+  void prim(){
+    dist[1] = 0;
+    book[1] = true;
+    for(int i = 2; i <= n; i++){
+      dist[i] = min(dist[i], g[1][i]);
+    }
+    for(int i = 2; i <= n ;i++){
+      int temp = INF;
+      int t = -1;
+      for(int j = 2; j <= n; j++){
+        if(!book[j] && dist[j] < temp){
+          temp = dist[j];
+          t = j;
+        }
+      }
+      if(t == -1){
+        res = INF;
+        return;
+      }
+      book[t] = true;
+      res += dist[t];
+      for(int j = 2; j <= n; j++){
+        dist[j] = min(dist[j], g[t][j]);
+      }
+    }
+  }
+  ```
 
 # AVL树
 
