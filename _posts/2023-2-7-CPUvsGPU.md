@@ -16,7 +16,8 @@ mermaid: true
 
 GPU是heterogeneous chip. 有负责不同功能的计算模块
 
-<img src="Note.assets/Screen Shot 2022-02-10 at 11.38.25 AM.png" alt="Screen Shot 2022-02-10 at 11.38.25 AM" style="zoom:50%;" />
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/blob/master/assets/user/Screen%20Shot%202022-02-10%20at%2011.38.25%20AM.png)
+
 
 
 
@@ -32,7 +33,8 @@ GPU design for high throughput, don't care about throughput so much
 
 CPU design for low latency
 
-<img src="Note.assets/Screen Shot 2022-05-21 at 11.15.12 AM.png" alt="Screen Shot 2022-05-21 at 11.15.12 AM" style="zoom:50%;" />
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/blob/master/assets/user/Screen%20Shot%202022-05-21%20at%2011.15.12%20AM.png)
+
 
 
 
@@ -53,6 +55,7 @@ CPU中包含out of order execution, branch predictor, memory prefetch等机制�
 <!--more-->
 
 GPU去除这些部分。
+
 ![](https://github.com/amosteernamazz/amosteernamazz.github.io/blob/master/assets/user/Screen%20Shot%202022-02-10%20at%2011.45.50%20AM.png)
 
 
