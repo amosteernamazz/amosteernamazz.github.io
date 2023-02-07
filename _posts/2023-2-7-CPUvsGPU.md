@@ -1,3 +1,14 @@
+---
+layout: article
+title: CPU VS GPU
+key: 100023
+tags: GPU架构
+category: blog
+date: 2023-02-07 00:00:00 +08:00
+mermaid: true
+---
+
+
 ## CPU vs GPU
 
 
@@ -39,9 +50,11 @@ GPU : manycore / many-thread system : throughput oriented
 
 CPU中包含out of order execution, branch predictor, memory prefetch等机制让CPU运行serialize code fast，但是这些部分占用很大的memory和chip。
 
-GPU去除这些部分。
+<!--more-->
 
-<img src="Note.assets/Screen Shot 2022-02-10 at 11.45.50 AM.png" alt="Screen Shot 2022-02-10 at 11.45.50 AM" style="zoom:50%;" />
+GPU去除这些部分。
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/blob/master/assets/user/Screen%20Shot%202022-02-10%20at%2011.45.50%20AM.png)
+
 
 
 
