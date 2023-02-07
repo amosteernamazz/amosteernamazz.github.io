@@ -1055,14 +1055,103 @@ class AVLTree{
     else if(key < tree->key){
       tree->left = insert(tree->left, key);
       // 判断是否失去平衡
+      if(key < tree->left->key){
+        // 比左节点小，成为左节点的左节点
+        leftLeftRotation(tree);
+      }else{
+        // 比左节点大，成为左节点的右节点，需要LR
+        leftRightRotation(tree);
+      }
+
     }
     else{
       tree->right = insert(tree->right, key);
+      if(key > tree->right->key){
+        // 比右节点大，成为右节点的右节点
+        rightRightRotation(tree);
+      }else{
+        // 比右节点小，成为右节点的左节点，需要RL
+        rightLeftRotation(tree);
+      }
     }
   }
 
   ```
 
+
+### 删除的实现
+ 删除节点在叶子节点
+  ![](https://img-blog.csdnimg.cn/20200418172744475.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxMzg4NTM1,size_16,color_FFFFFF,t_70)
+  ![](https://img-blog.csdnimg.cn/20200418173233362.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxMzg4NTM1,size_16,color_FFFFFF,t_70)
+  ![](https://img-blog.csdnimg.cn/20200418173550484.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxMzg4NTM1,size_16,color_FFFFFF,t_70)
+  ![](https://img-blog.csdnimg.cn/20200418173849705.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxMzg4NTM1,size_16,color_FFFFFF,t_70)
+
+ 删除只有一个左节点或右节点
+  ![](https://img-blog.csdnimg.cn/20200418174425322.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxMzg4NTM1,size_16,color_FFFFFF,t_70)
+  ![](https://img-blog.csdnimg.cn/2020041817570775.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxMzg4NTM1,size_16,color_FFFFFF,t_70)
+
+ 删除有左右节点
+  ![](https://img-blog.csdnimg.cn/20200418180925175.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxMzg4NTM1,size_16,color_FFFFFF,t_70)
+  ![](https://img-blog.csdnimg.cn/20200418181649249.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxMzg4NTM1,size_16,color_FFFFFF,t_70)
+  ![](https://img-blog.csdnimg.cn/20200418182253185.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIxMzg4NTM1,size_16,color_FFFFFF,t_70)
+
+  ```c++
+  AVLTreeNode<T>* remove(AVLTreeNode<T>* &tree, AVLTreeNode<T> *z){
+    if(tree == nullptr || z == nullptr){
+      return nullptr;
+    }
+    if(z->key < tree->key){
+      AVLTreeNode<T>* r = tree->right;
+      tree->left = remove(tree->left, z);
+      // 需要进行RL旋转
+      if(r->left > r->right){
+        tree = rightLeftRotation(tree);
+      }else {
+        tree = rightRightRotation(tree);
+      }
+    }
+    else if(z->key > tree->key){
+      AVLTreeNode<T>* l = tree->left;
+      tree->right = remove(tree->right, z);
+      // 需要进行RL旋转
+      if(r->right > r->left){
+        tree = keftRightRotation(tree);
+      }else {
+        tree = leftLeftRotation(tree);
+      }
+    }
+    else{
+      // 需要删除的节点
+      if(tree->left !=null) && (tree->right != null){
+        if(height(tree->left) > height(tree->right)){
+          AVLTreeNode<T>* temp = maximum(tree->left);
+          tree->key = temp->key;
+          remove(tree->left, temp);
+        }
+        else{
+          AVLTreeNode<T>* temp = minimum(tree->right);
+          tree->key = temp->key;
+          remove(tree->right, temp);
+        }
+      }
+      else{
+        AVLTreeNode<T>* temp = tree;
+        tree = (tree->left !=null) ? tree->left:tree->right;
+        delete temp;
+      }
+    }
+    return tree;
+  }
+
+  template<class T>
+  void AVLTree<T>::remove(T key)
+  {
+      AVLTreeNode<T> *z;
+      if((z=search(root,key))!=NULL)
+          root = remove(root,z);
+  }
+
+  ```
 
 # 字典树
 
