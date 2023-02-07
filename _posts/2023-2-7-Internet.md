@@ -490,7 +490,7 @@ UDP
     目的
     * 如何知道拥塞，怎么避免拥塞
     解决
-    <img src="https://cdn.jsdelivr.net/gh/luogou/cloudimg/data/202203022325749.png" alt="image-20220302232524645" style="float: left;" />
+    <img src="https://cdn.jsdelivr.net/gh/luogou/cloudimg/data/202203022325749.png" alt="image-20220302232524645"/>
 
     * 定义了一个发送方维护的一个状态变量拥塞窗口，发送窗口=min(接收窗口，拥塞窗口)
       * 拥塞窗口：定义了网络拥塞（只要发送方没有在规定时间内收到ACK确认报文，也就是发生了超时重传，就认为网络出现了拥塞）
