@@ -16,9 +16,7 @@ mermaid: true
 
 GPU是heterogeneous chip. 有负责不同功能的计算模块
 
-![](https://github.com/amosteernamazz/amosteernamazz.github.io/blob/master/assets/user/Screen%20Shot%202022-02-10%20at%2011.38.25%20AM.png)
-
-
+![](https://gitee.com/amosteernamazz/amosteernamazziamges/raw/master/images/Screen%20Shot%202022-02-10%20at%2011.38.25%20AM.png)
 
 
 SMs: streaming multiprocessors
