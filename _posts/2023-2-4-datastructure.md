@@ -724,7 +724,7 @@ void layer_traverse(TreeNode* Tree){
   ```
 
 
-# 最小生成树——Prim & Kruskal
+# 最小生成树——Prim
  一些宏
   ```c++
   const int MAXN = 1000, INF = 0x3f3f3f3f; // 定义一个INF表示无穷大
@@ -734,7 +734,7 @@ void layer_traverse(TreeNode* Tree){
   // 存储某个点是否保存到集合S
   ```
 
- 调用函数
+ main
   ```c++
   int main()
   {
@@ -764,6 +764,8 @@ void layer_traverse(TreeNode* Tree){
       return 0;
   }
   ```
+
+
  prim实现
   ```c++
   void prim(){
@@ -774,27 +776,293 @@ void layer_traverse(TreeNode* Tree){
     }
     for(int i = 2; i <= n ;i++){
       int temp = INF;
-      int t = -1;
+      int index = -1;
       for(int j = 2; j <= n; j++){
         if(!book[j] && dist[j] < temp){
           temp = dist[j];
-          t = j;
+          index = j;
         }
       }
-      if(t == -1){
+      if(index == -1){
         res = INF;
         return;
       }
-      book[t] = true;
-      res += dist[t];
+      book[index] = true;
+      res += dist[index];
       for(int j = 2; j <= n; j++){
-        dist[j] = min(dist[j], g[t][j]);
+        dist[j] = min(dist[j], g[index][j]);
       }
     }
   }
   ```
+# 最小生成树 Kruskal
+
+ 类型定义
+  ```c++
+#define MAXEDGE 100
+#define MAXVERTEX 100
+
+  typedef struct Edge{
+    int begin;
+    int end;
+    int weight;
+  } Edge;
+
+  typedef struct Graph{
+    char vertex[MAXVERTEX];
+    Edge edges[MAXEDGE];
+    int numvertex, numedges;
+  } MGraph;
+
+  ```
+
+ main
+
+  ```c++
+  int main(){
+    MGraph G;
+    CreateGraph(&G);
+    Kruskal(&G);
+    
+    return 0;
+  }
+
+  ```
+ CreateGraph
+  ```c++
+  void CreateGraph(MGraph* G){
+    scanf("%d%d",&G->numvertex, &G->numedges);
+    for(int i = 0; i < G->numvertex; i++){
+      scanf("%c",&G->vertex[i]);
+    }
+    for(int k = 0; k < G->numedges; k++){
+      Edge edge;
+      scanf("%d%d%d",&edge->begin,&edge->end, &edge->weight);
+      G->edges[k] = e;
+    }
+  }
+  ```
+
+ Kruskal算法
+  * 重要的是其中的find函数用于判断是否有环，parent实际内容指向下一个节点
+
+  ```c++
+  void Kruskal(MGraph* G){
+    int parent[MAXVERTEX];
+    for(int i = 0; i <G->numvertex; i++){
+      parent[i] = 0;
+    }
+    for(int i = 0 ;i < G->numedges; i++){
+      int m = find(parent, G, G->edges[i].begin);
+      int n = find(parent, G, G->edges[i].end);
+      if(m != n){
+        parent[m] = n;
+        printf("%d%d%d",G->edges[i].begin,G->edges[i].end,G->edges[i].weight);
+      }
+    }
+  }
+
+  int find(int* parent, int edgepo){
+    while(parent[edgepo] >0){
+      edgepo = parent[edgepo];
+    }
+    return edgepo;
+  }
+  ```
+
 
 # AVL树
+
+## 树的定义
+### 节点定义
+  ```c++
+  template<class T>
+  class AVLTreeNode{
+    public:
+      T key;
+      int height;
+      AVLTreeNode *left;
+      AVLTreeNode *right;
+      AVLTreeNode(T value, AVLTreeNode *l, AVLTreeNode *r): key(value), left(l), right(r){}
+  }
+  ```
+
+### 树的类
+```c++
+template<class T>
+class AVLTree{
+  private:
+    AVLTreeNode<T>* root;
+  public:
+
+    AVLTree();
+    ~AVLTree();
+
+    int height();
+    int max(int a, int b);
+
+    void preOrder();
+    void inOrder();
+    void postOrder();
+
+    AVLTreeNode<T>* search(T key);
+    AVLTreeNode<T>* iterativeSearch(T key);
+    T minimum();
+    T maximum();
+    void insert(T key);
+    void remove(T key);
+    void destroy();
+    void print();
+  private:
+    // 内部接口 
+    // 获取树的高度
+    int height(AVLTreeNode<T> *tree);
+        
+    // 前序遍历
+    void preOrder(AVLTreeNode<T> *tree) const;
+        // 中序遍历
+    void inOrder(AVLTreeNode<T> *tree) const;
+        // 后序遍历
+    void postOrder(AVLTreeNode<T> *tree) const;
+        
+    // （递归实现）查找AVL树中键值为key的结点
+    AVLTreeNode<T>* search(AVLTreeNode<T> *x, T key) const;
+    // （非递归实现）查找AVL树中键值为key的结点
+    AVLTreeNode<T>* iterativeSearch(AVLTreeNode<T> *x, T key) const;
+
+    // 返回最小结点 
+    AVLTreeNode<T>* minimum(AVLTreeNode<T> *tree);
+    // 返回最大结点 
+    AVLTreeNode<T>* maximum(AVLTreeNode<T> *tree);
+        
+    // 将结点插入到AVL树中
+    AVLTreeNode<T>* insert(AVLTreeNode<T>* &tree, T key);
+    // 删除结点，并返回被删除的结点 
+    AVLTreeNode<T>* remove(AVLTreeNode<T>* &tree, AVLTreeNode<T> *z);
+        
+    // 销毁AVL树
+    void destroy(AVLTreeNode<T>* &tree);
+        
+    // 打印AVL树
+    void print(AVLTreeNode<T> *tree,T key,int direction);
+        
+    // LL：左左对应的情况(左单旋转)
+    AVLTreeNode<T>* leftLeftRotation(AVLTreeNode<T> *k2);
+    // RR：右右对应的情况(右单旋转)
+    AVLTreeNode<T>* rightRightRotation(AVLTreeNode<T> *k1);
+    // LR：左右对应的情况(左双旋转)
+    AVLTreeNode<T>* leftRightRotation(AVLTreeNode<T> *k3);
+    // RL：右左对应的情况(右双旋转)
+    AVLTreeNode<T>* rightLeftRotation(AVLTreeNode<T> *k1);    
+};
+
+```
+### 树高度的实现
+
+  ```c++
+  template<class T>
+  int AVLTree<T>::height(AVLTreeNode<T> *tree){
+    // 不为null，返回树最大长度
+    if(tree != nullptr){
+      return tree->height;
+    }
+    // 为空树，则返回0
+    return 0;
+  }
+
+  template<class T>
+  int AVLTree<T>::height(){
+    return height(root);
+  }
+  ```
+
+### 旋转的实现
+
+#### LL的单旋转
+
+ 当插入或删除节点后，**左子树仍然还有左节点**，并导致AVL不平衡
+
+![](http://images.cnitblog.com/i/497634/201403/281626153129361.jpg)
+
+
+  ```c++
+  template<class T>
+  AVLTreeNode<T>* leftLeftRotation(AVLTreeNode<T> *k2){
+    AVLTreeNode<T> * k1;
+    k1 = k2->left;
+    k2->left = k1->right;
+    k1->right = k2;
+    k2->height = max(height(k2->left), height(k2->right)) + 1;
+    k1->height = max(height(k1->left), height(k1->right)) + 1;
+  }
+  ```
+
+#### RR的单旋转
+
+  当插入或删除节点后，**右子树仍然还有右节点**，并导致AVL不平衡
+
+![](http://images.cnitblog.com/i/497634/201403/281626410316969.jpg)
+
+
+  ```c++
+  template<class T>
+  AVLTreeNode<T>* rightRightRotation(AVLTreeNode<T> *k1){
+    AVLTreeNode<T>* k2;
+    k2 = k1->right;
+    k1->right = k2->left;
+    k2->left = k1;
+
+    k1->height = max(height(k1->left), height(k1->right)) + 1;
+    k2->height = max(height(k2->left), height(k2->right)) + 1;
+  }
+  ```
+#### LR的双旋转
+
+ 当插入或删除节点后，**左子树仍然还有右节点**，并导致AVL不平衡
+![](http://images.cnitblog.com/i/497634/201403/281627088127150.jpg)
+
+  ```c++
+  template<class T>
+  AVLTreeNode<T>* leftRightRotation(AVLTreeNode<T> *k3){
+    k3->left = rightRightRotation(k3->left);
+    return leftLeftRotation(k3);
+  }
+
+  ```
+
+####  RL的双旋转
+ 当插入或删除节点后，**右子树仍然还有左节点**，并导致AVL不平衡
+![](http://images.cnitblog.com/i/497634/201403/281628118447060.jpg)
+
+
+  ```c++
+  template<class T>
+  AVLTreeNode<T>* rightLeftRotation(AVLTreeNode<T> *k3){
+    k3->right = leftLeftRotation(k3->right);
+    return rightRightRotation(k3);
+  }
+  ```
+
+
+### 插入的实现
+
+  ```c++
+  template<class T>
+  AVLTreeNode<T>* insert(AVLTreeNode<T>* &tree, T key){
+    if(tree == nullptr){
+      tree = new AVLTreeNode<T>(key, NULL, NULL); 
+    }
+    else if(key < tree->key){
+      tree->left = insert(tree->left, key);
+      // 判断是否失去平衡
+    }
+    else{
+      tree->right = insert(tree->right, key);
+    }
+  }
+
+  ```
+
 
 # 字典树
 
