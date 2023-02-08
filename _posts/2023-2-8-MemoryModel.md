@@ -577,7 +577,7 @@ mermaid: true
 
   ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/72a748346cc7408a8c4d7f12155df1d3~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
   
-  <div align = left>
+
 
    * 蓝色的部分是core array到buffer的时间。红色的部分是buffer到pin的时间
 
