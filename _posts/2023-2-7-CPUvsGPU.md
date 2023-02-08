@@ -16,7 +16,9 @@ mermaid: true
 
 GPU是heterogeneous chip. 有负责不同功能的计算模块
 
-![](https://gitee.com/amosteernamazz/amosteernamazziamges/raw/master/images/Screen%20Shot%202022-02-10%20at%2011.38.25%20AM.png)
+![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/059c4df7de5e4b00bb76f43bf7e5a2b1~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+
 
 
 SMs: streaming multiprocessors
@@ -31,7 +33,7 @@ GPU design for high throughput, don't care about throughput so much
 
 CPU design for low latency
 
-![](https://github.com/amosteernamazz/amosteernamazz.github.io/blob/master/assets/user/Screen%20Shot%202022-05-21%20at%2011.15.12%20AM.png)
+![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/70174e01e80f466bbc1de536aa69ac9a~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 
 
@@ -54,7 +56,7 @@ CPU中包含out of order execution, branch predictor, memory prefetch等机制�
 
 GPU去除这些部分。
 
-![](https://github.com/amosteernamazz/amosteernamazz.github.io/blob/master/assets/user/Screen%20Shot%202022-02-10%20at%2011.45.50%20AM.png)
+![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7bb6231977b642f5a066ce9898d22574~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 
 
@@ -83,9 +85,9 @@ SIMT 与 SIMD 有一些不一样。SIMT可以平行thread，而SIMD只可以平�
 
 在GPU中，使用mask来解决branching
 
-<img src="Note.assets/Screen Shot 2022-02-10 at 11.50.08 AM.png" alt="Screen Shot 2022-02-10 at 11.50.08 AM" style="zoom:50%;" />
 
 
+![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/031601e629bb43ed94c46b6e9ec095e0~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 * idea 5：hide latency instead of reduce latency
 
@@ -95,8 +97,8 @@ CPU通过fancy cache + prefetch logic来avoid stall
 
 GPU通过lots of thread来hide latency。这依赖于fast switch to other threads, 也就需要keep lots of threads alive.
 
-<img src="Note.assets/Screen Shot 2022-02-10 at 11.51.41 AM.png" alt="Screen Shot 2022-02-10 at 11.51.41 AM" style="zoom:50%;" />
 
+![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1e1ba3f0082c45fa8289da551025c400~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 
 * GPU Register 特点
