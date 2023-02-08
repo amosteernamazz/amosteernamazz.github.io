@@ -823,13 +823,7 @@ mermaid: true
    * GPU的warp一旦分配到资源，就会占用资源直到block整个运行结束。CPU存在context switch把register保存到memory中的overhead。
 
   ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b588ca7bc66844a5822e472c4831fda9~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-   <br>
-   <div align = center>
-   <img src="Note.assets/Screen Shot 2021-11-07 at 12.53.14 PM.png" alt="Screen Shot 2021-11-07 at 12.53.14 PM"  />
-   <br>
-   GPU warp执行时序图
-   <div align = left>
-   <br>
+
 
  #### Understand Scheduling with Example
 
