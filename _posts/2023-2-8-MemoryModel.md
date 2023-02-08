@@ -16,10 +16,7 @@ mermaid: true
 
 
 # Memory Model
-  <br>
-  <br> 
-  <br> 
-  <br>
+
 
 
 ## Memory Hierarchy
@@ -28,7 +25,7 @@ mermaid: true
 
 
  <font color=red>指针</font>是被用来<font color=red>指向global memory</font> 的数据
- <br>
+
 
  **latency** 
 
@@ -40,13 +37,13 @@ mermaid: true
   | global memory              | 500                                     |
   | constant memory with cache | 1(same as register)-5(same as L1 cache) |
   | L1 cache                   | 5                                       |
- <br>
+
 
  **device memory 可以分为两类**
 
   * <font color=red>linear</font> memory
   * <font color=red>CUDA arrays</font> -> 常用于texture
-  <br>
+
 
 <!--more-->
 
@@ -57,8 +54,6 @@ mermaid: true
     * getter:memory到thread有多个输入，只有一个输出（图像模糊算法）
     * scatter:thread到memory有一个输入，多个输出（每个thread将结果scatter到各个memory，将附近值+1）
 
- <br>
- <br>
 
 
 
@@ -73,19 +68,13 @@ mermaid: true
 
 
 ## Global Memory
- <br>
+
 
 ### Bandwidth
 
 
- <br>
-
-
-
- <br>
-
  #### 带宽的计时器
-  <br>
+
 
   ##### CPU计时
    相比起GPU 计时来说，<font color=red>比较粗糙</font>
@@ -106,7 +95,7 @@ mermaid: true
    // compute time
    ```
 
-  <br>
+
 
   ##### GPU 计时 
 
@@ -140,15 +129,14 @@ mermaid: true
    // bandwidth = bytes data / 1e6 / millisecond
    // 			     = bytes data / 1e9 / second
    ```
-   <br>
+
 
 
  #### 带宽计算
-  <br>
-  <br>
+
 
   ##### 理论带宽
-   <br>
+
 
    **HBM2 example**
 
@@ -163,14 +151,14 @@ mermaid: true
    CUDA_CHECK( cudaGetDeviceProperties( &dev_prop, dev_id ) );
    printf("global memory bandwidth %f GB/s\n", 2.0 * dev_prop.memoryClockRate * ( dev_prop.memoryBusWidth / 8 ) / 1e6 );
    ```
-   <br>
+
 
    **GDDR中的ECC导致带宽下降**
    * 在GDDR中加入ECC(Error Correction Codes)会导致ECC overhead，会导致理论带宽下降，HBM2因为有专门给ECC的部分，所以<font color = red>理论带宽没有下降</font>
 
 
 
-   <br>
+
 
 
   ##### 有效带宽
@@ -180,17 +168,13 @@ mermaid: true
    $
 
    $10^9 = 1024 * 1024 * 1024$ 是将$bytes$转化为$GB/s$
-   <br>
 
-   <br>
 
 
 
  #### Visual profiler 内核性能分析工具
 
-   <br>
 
-   <br>
 
    **<font color=red>requested throughput</font> 和 <font color = red>global throughput** </font>
 
@@ -201,16 +185,11 @@ mermaid: true
 
   
 
- <br>
- <br>
- <br>
-
- <br>
 
 ### Device Memory DRAM
 
  本部分主要讲述global memory的硬件实现<font color = red>DRAM</font>
- <br>
+
 
  #### Bit Line & Select Line
 
@@ -241,16 +220,16 @@ mermaid: true
    * 数据传输分为两个部分。<font color = red>core array -> column latches / buffer </font>和<font color = red>column latches / buffer-> mux pin interface</font>
    
    * *core array*是由多多个bit line组成
-   <br>
+
 
   **传输耗时**
   * core array -> column latches / buffer 耗时<font color = red>久</font>
 
   * buffer -> mux pin interface 的耗时相<font color = red>对较小</font>
-  <br>
+  
 
   **传输中的名词**
-  <br>
+  
 
   **burst** 
   当访问一个内存位置的时候，<font color = red>多个bit line的数据都会从core array传输到column latches</font>，然后再使用mux来选择传送给bus哪些数据
@@ -264,9 +243,9 @@ mermaid: true
 
 
 
-  <br>
-  <br>
-  <br>
+  
+  
+  
 
  #### Multiple Banks
 
@@ -287,14 +266,14 @@ mermaid: true
      * <font color = red>为减少burst的可能性，将数据分布在不同的bank</font>，可以节约总时间
      * ***<font color = purple>每个bank可以存储的诗句有限，否则访问一个bank的latency会很大。</font>***
 
-  <br>
-  <br>
-  <br>
+  
+  
+  
 
  #### Multiple Channels
 
  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dcea6f6180db45128b25cc4cbc94eafc~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-  <br>
+  
   <div align = center>
 
   * <font color = red>一般的GPU processor要求带宽达到128GB/s，HBM2要求带宽为898GB/s，在使用multiple bank后仍未满足要求</font>，因此使用multiple channel的方法。
@@ -312,19 +291,19 @@ mermaid: true
    * 允许在<font color = red>core array -> buffer 的时间进行转化成多个channels获取数据</font>，减少总的时间。
   **如何实现数据交织**
   将数据平均分布<font color = red>在channels对应的banks</font>中
-  <br><br>
+  
 
- <br>
- <br>
- <br>
+ 
+ 
+ 
 
 ### global memory 内存合并和内存对齐
 
- <br>
- <br>
+ 
+ 
 
  #### global memory 内存合并
-  <br>
+  
 
   **global memory 内存合并原因**
    * 在GPU中对于<font color = red>内存数据的请求是以wrap 为单位</font>，而不是以thread 为单位。**<font color = purple >- - - - -></font>** *warp 内thread 请求的内存地址会合并为一个<font color = red>warp memory request</font>，然后这个request 由<font color = red>一个或多个memory transaction</font> 组成*。
@@ -346,7 +325,7 @@ mermaid: true
      * 使用warp操作内存，<font color = red>不同thread 对cache的结果会产生不同影响</font>。thread0读取数据产生的cache会对thread1读取数据产生的cache产生影响。
      * <font color = red>为充分发挥带宽，应当在warp的每个iteration中保证花费全部cache line</font>。因为有很多warp同时在sm上运行，等下一个iteration的时候 cache line/DRAM buffer已经被清空了。
   
-  <br>
+  
 
   **GPU常用优化方法**
 
@@ -356,8 +335,8 @@ mermaid: true
      * ***<font color = purple>modify execution configuration 从而确保每个SM都有足够的active warp。</font>***
 
 
- <br>
- <br>
+ 
+ 
 
  #### 内存对齐
 
@@ -392,7 +371,7 @@ mermaid: true
    cudaMalloc3D();
    cudaMemcpy3D();
    ```
-   <br>
+   
 
 
   **结构体大小对内存对齐的影响**
@@ -417,7 +396,7 @@ mermaid: true
 
   注意： GPU L1 cache is designed for spatial but not temporal locality. Frequent access to a cached L1 memory location does not increase the probability that the data will stay in cache. L1 cache是用于spatial（连续读取array）而不是temporal（读取同一个位置的），因为cache line很容易被其余的thread evict。
 
-  <br>
+  
 
   **内存读性能：global memory load efficency**
 
@@ -465,7 +444,7 @@ mermaid: true
      * 如果每个thread请求8 bytes，这样保证了每个传送的128 bytes数据都被充分利用(16 threads * 8 bytes each)
      * 如果每个thread请求16 bytes，four 128-bytes memory request,这样保证了传送的128 bytes数据被充分利用
    * <font color = red>request拆分到cache line层面</font>上，解决indenpent 问题
-     <br>
+     
      * 当warp的内存请求位于同一个连续对齐的cache line内。 
      ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/371d913f971f445cbac083a44e78767e~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
@@ -613,9 +592,9 @@ mermaid: true
   蓝色的部分是core array到buffer的时间。红色的部分是buffer到pin的时间
 
 
- <br>
- <br>
- <br>
+ 
+ 
+ 
 
 ### Minimize host to device transfer
 
@@ -629,12 +608,12 @@ mermaid: true
 
   * 尽量将<font color = red>传输次数减少</font>，如果GPU计算并不方便，也使用，减少数据传输次数。
 
- <br>
- <br>
- <br>
- <br>
- <br>
- <br>
+ 
+ 
+ 
+ 
+ 
+ 
 
 
 
@@ -748,13 +727,13 @@ mermaid: true
    ```
    * 设置可选项
 
-   <br>
+   
    <div align = center>
    <img src="Note.assets/Screen Shot 2022-07-30 at 11.28.41 AM.png" alt="Screen Shot 2022-07-30 at 11.28.41 AM" style="zoom:50%;" />
-   <br>
+   
    shared memory可选项
    <div align = left>
-   <br>
+   
 
    如果当前kernel的setting与前一个kernel的不一样，可能会导致implicit sync with device
 
@@ -795,21 +774,21 @@ mermaid: true
    * <font color= red>serial access</font>: 带有bank conflict触发serialized access
    * <font color= red>broadcast access</font>: 现有单个读当前的bank的word，之后进行broadcast到所有warp内的threads中
 
-  <br>
+  
   <div align = center>
   <img src="Note.assets/Screen Shot 2022-06-27 at 10.42.50 PM.png" alt="Screen Shot 2022-06-27 at 10.42.50 PM" style="zoom:50%;" />
-  <br>
+  
    strided shared memory accesses
    <div align = left>
-   <br>
+   
 
-  <br>
+  
   <div align = center>
   <img src="Note.assets/Screen Shot 2022-06-27 at 10.43.04 PM.png" alt="Screen Shot 2022-06-27 at 10.43.04 PM" style="zoom:50%;" />
-  <br>
+  
    irregular shared memory accesses
    <div align = left>
-   <br>
+   
 
 
 
@@ -834,13 +813,13 @@ mermaid: true
    $
 
    * 下图word index 为 bytes address 对应的word index，然后从word index 对应到bank index
-   <br>
+   
    <div align = center>
    <img src="Note.assets/smem-array-idx-2-bank-idx.png" style="zoom:50%;" />
-   <br>
+   
    32 bits时，word(32 bits)跟bank的对应关系
    <div align = left>
-   <br>
+   
 
 
   ##### 64 bits
@@ -864,15 +843,15 @@ mermaid: true
      * <font color = red>bank conflict的本质：是bank width小，所以无法传送过多的数据</font>
      * <font color = red>当thread 查询/写入word时，发生boradcast或write undifined</font>
 
-     <br>
+     
      <div align = center>
      <img src="Note.assets/Screen Shot 2022-07-30 at 10.47.06 AM.png" alt="Screen Shot 2022-07-30 at 10.47.06 AM" style="zoom:50%;" />
-     <br>
+     
      64 bits时，word(32 bits)跟bank的对应关系
      <div align = left>
-     <br>
+     
   
-   <br>
+   
 
 
   **bank width对性能的影响**
@@ -946,13 +925,13 @@ mermaid: true
 ### Data Layout
 
  #### Square Shared Memory
-  <br>
+  
   <div align = center>
   <img src="Note.assets/Screen Shot 2022-08-01 at 11.56.00 PM.png" alt="Screen Shot 2022-08-01 at 11.56.00 PM" style="zoom:50%;" />
-  <br>
+  
   Square Shared Memory
   <div align = left>
-  <br>
+  
 
 
 
@@ -1002,13 +981,13 @@ mermaid: true
 
   **举例**
    * 配置
-    <br>
+    
     <div align = center>
     <img src="Note.assets/Screen Shot 2022-08-02 at 12.06.57 PM.png" alt="Screen Shot 2022-08-02 at 12.06.57 PM" style="zoom:50%;" />
-    <br>
+    
     nvprof图
     <div align = left>
-    <br>
+    
 
    * 计算
     word：32 bits，bank 64bits，对列主序来说16*32/64 = 8 bank -> a column are arranged into eight banks.
@@ -1084,13 +1063,13 @@ mermaid: true
   * 避免使用中间寄存器，<font color = red>减少寄存器压力</font>，减少指令流水压力，提高内核占用率
   * 相对于sync，async<font color = red>延迟更少</font>
 
-  <br>
+  
   <div align = center>
   <img src="Note.assets/Screen Shot 2022-06-28 at 11.19.35 PM.png" alt="Screen Shot 2022-06-28 at 11.19.35 PM" style="zoom:50%;" />
-  <br>
+  
   async和sync比较图
   <div align = left>
-  <br>
+  
 
 
 
@@ -1105,13 +1084,13 @@ mermaid: true
 
  **优化参考图**
 
-  <br>
+  
   <div align = center>
   <img src="Note.assets/Screen Shot 2022-06-28 at 11.53.30 AM.png" alt="Screen Shot 2022-06-28 at 11.53.30 AM" style="zoom:50%;" />
-  <br>
+  
   sync和async优化参考图
   <div align = left>
-  <br>
+  
   
   * 对于<font color = red>sync拷贝，num data是multiply of 4 最快</font>
 
@@ -1364,12 +1343,12 @@ mermaid: true
 
 ## L1 & L2 Cache
 
-<br>
-<br>
+
+
 
 
 ### Cache VS Shared Memory
-  <br>
+  
 
  **相同点**
 
@@ -1381,10 +1360,10 @@ mermaid: true
   * shared memory 可控 
   * cache 是由CUDA控制
 
-   <br>
+   
 
 ### L2 cache persisting
- <br>
+ 
 
  **L2 cache persisting使用条件与场合**
 
@@ -1392,7 +1371,7 @@ mermaid: true
 
   定义: <font color=red>经常被global memory访问</font>的数据需要被设为persisting
 
-  <br>
+  
 
  **设定L2 persistance**
 
@@ -1406,7 +1385,7 @@ mermaid: true
 
 
 
-   <br>
+   
 
  **设定num_bytes和hitRatio**
 
@@ -1428,18 +1407,18 @@ mermaid: true
 
   需要确保<font color=red>num_bytes * hitRatio < L2 persistance</font>(当num_bytes * hitRatio <font color=red>*<*</font> L2 persistance，剩余部分会使用streaming访问，如果<font color= red>超过</font>了L2 persistance的大小，CUDA依旧会尝试把数据放到L2 persistance的部分，导致thrashing）
 
-  <br>
+  
 
  **例子**
   A100有40M L2 memory，`cudaStreamSetAttribute()`设置用于data <font color=red>persistance的数据大小为30M</font>
-  <br>
+  
   <div align = center>
   <img src="Note.assets/figure_1.png" alt="Screen Shot 2022-02-10 at 11.38.25 AM" align = "center" style="zoom:50%;" />
-  <br>
+  
   GPU内存分布图
   <div align = left>
 
-  <br>
+  
   使用<font color=red>10-60M</font>需要persistance的数据进行实验，<font color=red>hitRatio大小设为1</font>
 
   ```cpp
@@ -1460,18 +1439,18 @@ mermaid: true
   stream_attribute.accessPolicyWindow.hitRatio  = 1.0;                      //Hint for cache hit ratio. Fixed value 1.0
   ```
 
-  <br>
+  
   <div align = center>
   <img src="Note.assets/figure_2.png" alt="Screen Shot 2022-02-10 at 11.38.25 AM" align = "center" style="zoom:50%;" />
-  <br>
+  
   出现 thrashing的性能图
     
   <div align = left>
 
-  <br>
+  
   得到结果，在没有超过L2 persisting size时，性能提高（在nums_types = 20时，性能提高<font color=red>50%</font>），超过L2 persisting size，则会对性能下降约<font color=red>10%</font>
   </font>。
-  <br>
+  
   改变hitRatio与type_nums时，有：
 
   ```
@@ -1481,15 +1460,15 @@ mermaid: true
   ```
   其中配置num_bytes = 20M, hitRatio大小设置根据输入数据的规模判断，<font color=red>当规模大，设置ratio小，当规模小，设置ratio大</font>。
   此时hitRatio*num_bytes < L2 persisting cache 对应性能如下：
-  <br>
+  
   <div align = center>
   <img src="Note.assets/figure_3.png" alt="Screen Shot 2022-02-10 at 11.38.25 AM" align = "center" style="zoom:50%;" />
-  <br>
+  
   改进persisting性能图
     
   <div align = left>
 
-  <br>
+  
 
  **hitProp配置**
 
@@ -1498,7 +1477,7 @@ mermaid: true
   * <font color = red>cudaAccessPropertyNormal</font>: 使用这个可以清空前一个kernel使用的L2 cache
 
 
-  <br>
+  
 
  **重置L2 persisting**
 
@@ -1509,13 +1488,13 @@ mermaid: true
   * automatic reset: 不推荐
 
 
-  <br>
+  
 
  **对并发线程同时使用L2 persisting**
 
   如果多个kernel同时运行的话，需要让<font color = red>所有用到persisting的数据求sum让其小于L2 set aside</font>
 
-  <br>
+  
 
 
 
@@ -1526,10 +1505,10 @@ mermaid: true
 
 ## Local memory
 
-<br><br>
+
 
 ### Basic
- <br>
+ 
 
  **local memory物理特性**
 
@@ -1580,8 +1559,8 @@ mermaid: true
   * cc 5.x and 6.x, local memory accesses are always cached in <font color = red>L2</font>
 
 
-<br>
-<br>
+
+
 
 
 
@@ -1659,13 +1638,13 @@ mermaid: true
   * atomicOr    或
   * atomicXor   位或
 
-  <br>
+  
   <div align = center>
   <img src="Note.assets/Screen Shot 2022-07-28 at 10.25.43 PM.png" alt="Screen Shot 2022-07-28 at 10.25.43 PM" style="zoom:50%;" />
-  <br>
+  
   CUDA内置atomic操作
   <div align = left>
-  <br>
+  
 
 ### CAS(compare and swap)
 
@@ -1762,13 +1741,13 @@ mermaid: true
    * last level cache -> few tens cycle
 
    * shared memocy -> few cycle
-   <br>
+   
    <div align = center>
    <img src="Note.assets/Screen Shot 2022-06-18 at 4.49.28 PM.png" alt="Screen Shot 2022-06-18 at 4.49.28 PM" style="zoom:50%;" />
-   <br>
+   
    原子类操作延迟时间图
    <div align = left>
-   <br>
+   
 
 
   **延迟改进**
@@ -1885,14 +1864,14 @@ mermaid: true
 
  **atomic大小参考**
   atomic次数与bandwidth是log的反向相关。
-  <br>
+  
   <div align = center>
   <img src="Note.assets/image2.png" alt="Figure 1. Performance of filtering with global atomics on Kepler K80 GPU (CUDA 8.0.61)." style="zoom:60%;" />
-  <br>
+  
   bandwidth与atomic比例的关系
   <div align = left>
 
-  <br>
+  
 
 
 
@@ -1959,13 +1938,13 @@ mermaid: true
 
  **支持版本**
   cc 2.0以上版本支持Unified Virtual Address。其host memory和device memory共享一块虚拟内存空间。
-  <br>
+  
   <div align = center>
   <img src="Note.assets/Screen Shot 2022-07-30 at 10.05.28 PM.png" alt="Screen Shot 2022-07-30 at 10.05.28 PM" style="zoom:50%;" />
-  <br>
+  
   UVA对比图
   <div align = left>
-  <br>
+  
 
  **使用**
   当有UVA时，就不用获得device的指针或管理两个指向相同地址的指针。
@@ -2153,24 +2132,24 @@ mermaid: true
    * 每个link包含多个lanes
    * 每个lane为1-bit width（由4 wires组成，构成16GB/s）
 
-  <br>
+  
   <div align = center>
   <img src="Note.assets/Screen Shot 2022-07-14 at 5.44.07 PM.png" alt="Screen Shot 2022-07-14 at 5.44.07 PM" style="zoom:50%;" />
-  <br>
+  
   lanes对比图
   <div align = left>
-  <br>
+  
 
 
 
   北桥南桥都是用PCIe来链接
-  <br>
+  
   <div align = center>
   <img src="Note.assets/Screen Shot 2022-07-14 at 5.45.09 PM.png" alt="Screen Shot 2022-07-14 at 5.45.09 PM" style="zoom:50%;" />
-  <br>
+  
   南北桥使用PCIe来连接
   <div align = left>
-  <br>
+  
 
 ### DMA
 
