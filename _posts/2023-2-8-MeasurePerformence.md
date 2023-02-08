@@ -1,3 +1,13 @@
+---
+layout: article
+title: GPU 性能指标
+key: 100023
+tags: GPU性能优化
+category: blog
+date: 2023-02-08 00:00:00 +08:00
+mermaid: true
+---
+
 
 
 # Measure Performence
@@ -31,7 +41,7 @@
  * 衡量当计算资源增加时，我们的硬件和软件利用计算资源的能力。表现为当processors增加的时候，speed up的值是多少，好的表现为近似线性关系
 
 
-
+<!--more-->
 
  * 下图的这个例子里，就不是scalable code
 
