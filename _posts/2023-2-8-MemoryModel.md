@@ -57,27 +57,18 @@ mermaid: true
 
 
 
-
-
-
-
-
-
-
-
-
-
 ## Global Memory
 
 
 ### Bandwidth
 
+带宽有理论带宽和实际带宽，该部分是实际带宽，包括CPU方法和GPU方法
 
- #### 带宽的计时器
+#### 带宽的计时器
+实际带宽的计算主要通过定时器实现，包括CPU方法和GPU方法
+##### CPU计时
 
-
-  ##### CPU计时
-   相比起GPU 计时来说，<font color=red>比较粗糙</font>
+相比起GPU 计时来说，<font color=red>比较粗糙</font>
 
    ```cpp
    // sync all kernel on device before timer
@@ -97,10 +88,10 @@ mermaid: true
 
 
 
-  ##### GPU 计时 
+##### GPU 计时 
 
 
-   使用  <font color=red>GPU时间</font>，因此与操作系统无关
+使用  <font color=red>GPU时间</font>，因此与操作系统无关
 
    ```cpp
    cudaEvent_t start, stop;
@@ -273,8 +264,7 @@ mermaid: true
  #### Multiple Channels
 
  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dcea6f6180db45128b25cc4cbc94eafc~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-  
-  <div align = center>
+
 
   * <font color = red>一般的GPU processor要求带宽达到128GB/s，HBM2要求带宽为898GB/s，在使用multiple bank后仍未满足要求</font>，因此使用multiple channel的方法。
   * 假设使用DDR DRAM clock为1GHz，每秒能传送8 bytes/ 1 words，得到的传输速率为16GB/s，因此需要多个channel
@@ -350,7 +340,7 @@ mermaid: true
 
    padded info叫做 `pitch` 
 
-![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8b663c3f737346bf99cba00a6a6961b5~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+   ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8b663c3f737346bf99cba00a6a6961b5~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 
   **CUDA API**
