@@ -654,7 +654,7 @@ mermaid: true
 
 
 
- #### API
+#### API
 
   **dynamic use**
 
@@ -718,7 +718,7 @@ mermaid: true
 
 
 
- #### Shared memory & transaction
+#### Shared memory & transaction
 
   * shared memory 与global memory 类似，<font color= red>以warp 为单位</font>进行读写。warp 内的多个thread 首先会合并为一个或多个transaction，然后访问shared memory。增加数据的利用率，减少总访问次数。
     * <font color= red>最好的情况</font>只会引发一次transaction。<font color= red>最坏的情况</font>引发32次transaction。
@@ -730,7 +730,7 @@ mermaid: true
 
 
 
- #### Memory bank & bank conflict
+#### Memory bank & bank conflict
 
   **特点**
    * shared memory<font color= red>底层被切分为多个banks 来使用</font>。可以同时访问使用多个banks，shared memory<font color= red>带宽为bank的n倍</font>。
@@ -748,7 +748,7 @@ mermaid: true
 
   ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6a65d5ed7ea04da08fdca199e423c622~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
- #### Access Mode 32/64-bit
+#### Access Mode 32/64-bit
 
   **定义**
    * <font color = red>shared memory bank width</font>: defines shared memory 地址和shared memory bank 之间的映射关系。
@@ -758,8 +758,7 @@ mermaid: true
 
    * <font color = red>64-bits</font> for cc 3.x
 
-
-  ##### 32 bits
+##### 32 bits
 
    * <font color = red>一共32 banks，每个bank 32 bits</font>。
    $
@@ -771,7 +770,7 @@ mermaid: true
    
 
 
-  ##### 64 bits
+##### 64 bits
 
 
    * 一共32 banks，每个bank 64 bit，word大小由32/64 bits。
@@ -819,7 +818,7 @@ mermaid: true
 
 
 
- #### Stride access
+#### Stride access
 
   **stride access**
    * 对于<font color = red>global memory是waste bandwith</font>，同时<font color = red>解决了对齐问题</font>。
@@ -840,7 +839,7 @@ mermaid: true
    * <font color = red>对于32 bits mode，奇数的stride是conflict free的，偶数的stride是有conflict</font>
 
 
- #### Avoid bank conflict
+#### Avoid bank conflict
 
 
 
@@ -864,7 +863,7 @@ mermaid: true
 
 ### Data Layout
 
- #### Square Shared Memory
+#### Square Shared Memory
   ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a1286c80c94042c4b15d0f11668061ca~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
   
 
@@ -964,13 +963,13 @@ mermaid: true
 
 
 
- #### 是什么
+#### 是什么
 
   Use of a transposed thread order to allow memory loads to coalesce when loading global to shared.  如果直接访问global memory是不coarlesed的，通过使用transpose thread的方法，coarlesed load global memory到shared memory上。在使用shared memory的时候因为是SRAM所以不存在coarlesed的问题
 
 
 
- #### Example GEMM data access
+#### Example GEMM data access
 
   当使用tilnig+每个thread读取一个M N到shared memory的时候，读取M也是burst的。这是因为比起上面的simple code使用iteration读取，这里使用多个thread读取，一次burst的数据会被临近的thread使用(M00 M01分别被2个thread读取，每个thread只读取一个M elem)，而不是下一个iteration被清空。
 
@@ -1018,7 +1017,7 @@ mermaid: true
 
 
 
- #### 例子
+#### 例子
 
   ```cpp
   template <typename T>
@@ -1063,7 +1062,7 @@ mermaid: true
 
 
 
- #### API
+#### API
 
   **__pipeline_memcpy_async()**
 
@@ -1134,7 +1133,7 @@ mermaid: true
 
 
 
- #### Broadcast
+#### Broadcast
 
   * 在constant内部有<font color = red>专门用于broadcast的接口</font> 
 
@@ -1142,7 +1141,7 @@ mermaid: true
 
 
 
- #### Serialization
+#### Serialization
 
   * 出现在warp内的threads访问不同constant memory location的时候。
   * warp内对于constant cache<font color = red>不同地址的访问是serialized</font>的。且<font color = red>消耗为线性的，与需要的不同地址数成正比</font>。
@@ -1152,7 +1151,7 @@ mermaid: true
 
 
 
- #### API
+#### API
 
   ```cpp
   // copy host to constant memory on host
@@ -1213,7 +1212,7 @@ mermaid: true
 
 
 
- #### API
+#### API
 
 
 
@@ -1437,7 +1436,7 @@ mermaid: true
 
 
 
- #### local memory 特点
+#### local memory 特点
 
   <font color = red>高延迟</font>
   <font color = red>低带宽</font>
@@ -1446,7 +1445,7 @@ mermaid: true
 
 
 
- #### automatic coarlesed layout
+#### automatic coarlesed layout
 
   * local memory通过连续的32位组织起来，通过threadid获取。
   * 当获取<font color = red>地址相同时，warp thread获取可以进行合并</font>。 
@@ -1454,7 +1453,7 @@ mermaid: true
 
 
 
- #### cache behaviour 
+#### cache behaviour 
 
   * cc 3.x, local memory accesses are always cached in <font color = red>L1 and L2</font>
 
@@ -1624,7 +1623,7 @@ mermaid: true
 
 
 
- #### 延迟
+#### 延迟
 
   **延迟影响**
    * 在原子类操作中，需要<font color = red>先读取gloabl memory</font>，把数据<font color = red>传送给SM</font>（这个时候其余的线程和SM不能读写这块内存)，最后把数据<font color = red>传送给global memory</font>
@@ -1647,7 +1646,7 @@ mermaid: true
 
 
 
- #### 带宽
+#### 带宽
 
   * GPU的低延迟通过线程并行进行 -> 需要DRAM数据访问并发 -> 当使用原子类，访问被序列化，导致带宽降低
 
@@ -1655,7 +1654,7 @@ mermaid: true
 
 
 
- #### 例子
+#### 例子
 
   **配置**
    如果DRAM 配置为8 channels、1GHz、double data rate、word大小为8 bytes。DRAM的延迟为200 cycles。
@@ -1866,7 +1865,7 @@ mermaid: true
 
 ## Weakly-Ordered Memory Model
 
- ### 原因
+### 原因
   * 当同一个地址的值被多个thread修改就导致了inter-thread conflict，所以我们需要同步操作。常用的同步方法包括barriers 和memory fences。
     * barriers：block内所有thread会等待其他thread到达barrier point
     * Memory fence，所有thread会阻塞到所有修改Memory的操作对其他thread可见。
@@ -1877,7 +1876,7 @@ mermaid: true
 
     * 为了显式的强制程序以一个确切的顺序运行，就需要用到fence和barrier。他们也是唯一能保证kernel对Memory有正确的行为的操作。
 
- ### Explicit Barriers
+### Explicit Barriers
 
   * 任何到达barrier的线程都会等待block内所有线程都到达此处。
   * 使用时候最终要的理解是那些可以到达__syncthreads()的线程需要其他可以到达该点的线程，而不是等待块内所有其他线程。
@@ -1910,7 +1909,7 @@ mermaid: true
    }
    ```
 
- ### Memory Fence
+### Memory Fence
 
   **意义**
    fence之前写完了，fence之后其它thread就都知道这块Memory写后的值了
@@ -1956,7 +1955,7 @@ mermaid: true
 
    * 通过使用memory fence，确保在fence后面读取memory的数据确实是fence之前写入的数据
 
- ### Volatile
+### Volatile
 
 
 
