@@ -152,7 +152,7 @@ mermaid: true
 
 
 
-  ##### 有效带宽
+##### 有效带宽
 
    $
    ((B_r + B_w) / 10^9 ) / time
@@ -163,11 +163,11 @@ mermaid: true
 
 
 
- #### Visual profiler 内核性能分析工具
+#### Visual profiler 内核性能分析工具
 
 
 
-   **<font color=red>requested throughput</font> 和 <font color = red>global throughput** </font>
+ **<font color=red>requested throughput</font> 和 <font color = red>global throughput</font>** 
 
    * 系统的global throughput 相当于物理理论带宽（考虑到cache line 要一起传送的带宽）
    * 系统的requested memory 相当于实际带宽（并未考虑 cache line）
@@ -182,7 +182,7 @@ mermaid: true
  本部分主要讲述global memory的硬件实现<font color = red>DRAM</font>
 
 
- #### Bit Line & Select Line
+#### Bit Line & Select Line
 
 
 ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b437a3d682914a929f5d1397eabb2081~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
@@ -203,7 +203,7 @@ mermaid: true
 ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ce8a3806169e4a26a84da1a02770dd6b~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 
- #### DRAM 的数据传输(Core Array & Burst)
+#### DRAM 的数据传输(Core Array & Burst)
  ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4ce77fdf7d1c48bc8e6d571ba0e77004~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 
@@ -226,7 +226,7 @@ mermaid: true
   当访问一个内存位置的时候，<font color = red>多个bit line的数据都会从core array传输到column latches</font>，然后再使用mux来选择传送给bus哪些数据
 
   **burst size/ line size** 
-   * <font color = red>读取一次memory address，会有多少个数据从core array被放到buffer中</font>。
+   * <font color = red>读取一次memory address，会有多少个数据从core array被放到buffer中</font>
 
      * 常见1024 bits / 128 bytes (from Fermi)。
 
@@ -238,7 +238,7 @@ mermaid: true
   
   
 
- #### Multiple Banks
+#### Multiple Banks
 
 ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/19828fb956904e38aa6c75a78a1a12f4~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
@@ -261,7 +261,7 @@ mermaid: true
   
   
 
- #### Multiple Channels
+#### Multiple Channels
 
  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dcea6f6180db45128b25cc4cbc94eafc~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
@@ -271,7 +271,7 @@ mermaid: true
   
 
 
- #### 数据分布方法Interleaved（交织） 
+#### 数据分布方法Interleaved（交织） 
 
 ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/95a1c7b5eb2a4a239aa533dd5557e5b0~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
@@ -292,15 +292,15 @@ mermaid: true
  
  
 
- #### global memory 内存合并
-  
+#### global memory 内存合并
+
 
   **global memory 内存合并原因**
    * 在GPU中对于<font color = red>内存数据的请求是以wrap 为单位</font>，而不是以thread 为单位。**<font color = purple >- - - - -></font>** *warp 内thread 请求的内存地址会合并为一个<font color = red>warp memory request</font>，然后这个request 由<font color = red>一个或多个memory transaction</font> 组成*。
    * 具体使用几个transaction 取决于request 的个数和transaction 的大小。
 
   **global memory 数据流向**
-   global memory request<font color = red>一定会经过L2</font>，是否经过<font color = red>L1 </font>取决于<font color = red>cc 和code</font>，是否经过read only texture cache取决于<font color = red>cc 和code </font>。
+   * global memory request<font color = red>一定会经过L2</font>，是否经过<font color = red>L1 </font>取决于<font color = red>cc 和code</font>，是否经过read only texture cache取决于<font color = red>cc 和code </font>。
 
   ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/58d61cd9fdca4555a1eab0b9664fbf4c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
@@ -328,9 +328,9 @@ mermaid: true
  
  
 
- #### 内存对齐
+#### 内存对齐
 
-  L1 cache line = 128 bytes, L2 cache line 32 bytes，warp的<font color = red>内存请求起始位置位于cache line的偶数倍</font>，为了保证对global memory 的读写不会被拆为多个操作，应保证存储对齐。
+ L1 cache line = 128 bytes, L2 cache line 32 bytes，warp的<font color = red>内存请求起始位置位于cache line的偶数倍</font>，为了保证对global memory 的读写不会被拆为多个操作，应保证存储对齐。
 
 
 
@@ -382,7 +382,7 @@ mermaid: true
 
 
 
- #### Global Memory 读
+#### Global Memory 读
 
   注意： GPU L1 cache is designed for spatial but not temporal locality. Frequent access to a cached L1 memory location does not increase the probability that the data will stay in cache. L1 cache是用于spatial（连续读取array）而不是temporal（读取同一个位置的），因为cache line很容易被其余的thread evict。
 
@@ -403,7 +403,7 @@ mermaid: true
 
 
 
-  ##### Read-only texture cache
+##### Read-only texture cache
 
    * 使用条件：<font color = red>CC 3.5+ </font>可以使用read only texture cache
 
@@ -411,7 +411,7 @@ mermaid: true
 
 
 
-  ##### CC 2.x Fermi 
+##### CC 2.x Fermi 
 
    * 2.x default 使用 L1 + L2 cache
 
@@ -493,7 +493,7 @@ mermaid: true
 
 
 
-  ##### CC 3.x Kepler cache line大小
+##### CC 3.x Kepler cache line大小
 
    * 3.x default 使用 L2 cache，不使用L1 cache
 
@@ -508,14 +508,14 @@ mermaid: true
    为什么L2 cache 需要以1、2、4倍数传输：为了避免DMA fetch ***<font color= purple>DMA FETCH: The DMA supports an AXI bus width of 128/64 bits. In the case where the source descriptor payload ends at a non-128/64 bit aligned boundary, the DMA channel fetches the last beat as the full-128/64 bit wide bus. This is considered an over fetch.</font>***
    当使用L2 cache only的时候，memory transaction是32 bytes. Each memory transaction may be conducted by one, two, or four 32 bytes segments。可以减少over-fetch
 
-   **L1/L2读取顺序**
-   当使用L1 + L2时候，memory transaction是128 bytes。
+  **L1/L2读取顺序**
+   * 当使用L1 + L2时候，memory transaction是128 bytes。
    Memory request 首先会去L1，如果L1 miss会去L2，如果L2 miss会去DRAM。
 
 
 
 
-  ##### CC 5.x Maxwell
+##### CC 5.x Maxwell
 
    * 5.x default使用L2 cache，32 bytes transaction
 
@@ -524,11 +524,11 @@ mermaid: true
    * 5.x 可以config使用L1 cache（default不使用）
 
 
-  ##### CC 6.x Pascal
+##### CC 6.x Pascal
 
 
 
- #### Global Memory 写
+#### Global Memory 写
 
   **与读的区别**
    * <font color = red>读可以用L1，写只能用L2，写只能用32 bytes</font>
@@ -560,7 +560,7 @@ mermaid: true
 
 
 
- #### From hardware
+#### From hardware
 
   第一次访问，<font color = red>全部4个数据都放到buffer</font>里
 
@@ -573,13 +573,13 @@ mermaid: true
 
 
   **burst 原因** 
-  在从core array -> buffer 的过程需要的时间长，在每一次从core array 到buffer 的过程中，传输burst数据，在每一次读取中，应让数据充分使用。因为<font color = red>两次core array -> buffer 时间远远大于两次 buffer -> bus的时间</font>。
+   * 在从core array -> buffer 的过程需要的时间长，在每一次从core array 到buffer 的过程中，传输burst数据，在每一次读取中，应让数据充分使用。因为<font color = red>两次core array -> buffer 时间远远大于两次 buffer -> bus的时间</font>。
 
   ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/72a748346cc7408a8c4d7f12155df1d3~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
   
   <div align = left>
 
-  蓝色的部分是core array到buffer的时间。红色的部分是buffer到pin的时间
+   * 蓝色的部分是core array到buffer的时间。红色的部分是buffer到pin的时间
 
 
  
@@ -590,29 +590,13 @@ mermaid: true
 
 
 
- #### Batch Small Transfer
+#### Batch Small Transfer
 
   * 为避免多个small memory copy，使用one large memory copy，将<font color = red>多个small memory打包成为一个large memory，然后进行copy</font>
 
- #### Fully utilize transfer
+#### Fully utilize transfer
 
   * 尽量将<font color = red>传输次数减少</font>，如果GPU计算并不方便，也使用，减少数据传输次数。
-
- 
- 
- 
- 
- 
- 
-
-
-
-
-
-
-
-
-
 
 
 
