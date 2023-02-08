@@ -2,7 +2,7 @@
 layout: article
 title: CPU VS GPU
 key: 100023
-tags: GPU架构, GPU
+tags: GPU架构 GPU
 category: blog
 date: 2023-02-07 00:00:00 +08:00
 mermaid: true
