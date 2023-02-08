@@ -265,7 +265,6 @@ shared memory bank same as 5.x
 
 shared memory configuration same as 7.x
 
-<img src="Note.assets/ampereArch.png" alt="Screen Shot 2022-07-31 at 12.17.39 PM" style="zoom:120%;"/>
 
 ## 9.x Hopper & Lovelace
 
@@ -274,4 +273,4 @@ shared memory configuration same as 7.x
 ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6c2c7fc7bdab4a4db55fca9945abeeeb~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dde723064b9d4bee9c56f39c0a10e0f1~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-<img src="Note.assets/hopperArch.png" alt="Screen Shot 2022-07-31 at 12.17.39 PM" style="zoom:120%;"/>
+
