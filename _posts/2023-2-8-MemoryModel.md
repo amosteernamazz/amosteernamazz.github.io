@@ -24,14 +24,8 @@ mermaid: true
 
 ## Memory Hierarchy
 
- 
- <br>
- <div align = center>
- <img src="Note.assets/Screen Shot 2022-06-21 at 9.48.33 PM.png" alt="Screen Shot 2022-06-21 at 9.48.33 PM" style="zoom:50%;" />
- <br>
- GPU内存模型图
- <div align = left>
- <br>
+ ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fd42780ecc814652ae3db95508b152b4~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
 
  <font color=red>指针</font>是被用来<font color=red>指向global memory</font> 的数据
  <br>
