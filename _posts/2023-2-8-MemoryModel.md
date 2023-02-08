@@ -701,12 +701,7 @@ mermaid: true
    ```
    * 设置可选项
 
-   
-   <div align = center>
-   <img src="Note.assets/Screen Shot 2022-07-30 at 11.28.41 AM.png" alt="Screen Shot 2022-07-30 at 11.28.41 AM" style="zoom:50%;" />
-   
-   shared memory可选项
-   <div align = left>
+   ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/486202600e694ca6a85219aac41c7d2d~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
    
 
    如果当前kernel的setting与前一个kernel的不一样，可能会导致implicit sync with device
@@ -748,25 +743,10 @@ mermaid: true
    * <font color= red>serial access</font>: 带有bank conflict触发serialized access
    * <font color= red>broadcast access</font>: 现有单个读当前的bank的word，之后进行broadcast到所有warp内的threads中
 
+  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/01c76f7625444f9c9a1e0de137a817cf~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
   
-  <div align = center>
-  <img src="Note.assets/Screen Shot 2022-06-27 at 10.42.50 PM.png" alt="Screen Shot 2022-06-27 at 10.42.50 PM" style="zoom:50%;" />
-  
-   strided shared memory accesses
-   <div align = left>
-   
 
-  
-  <div align = center>
-  <img src="Note.assets/Screen Shot 2022-06-27 at 10.43.04 PM.png" alt="Screen Shot 2022-06-27 at 10.43.04 PM" style="zoom:50%;" />
-  
-   irregular shared memory accesses
-   <div align = left>
-   
-
-
-
-
+  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6a65d5ed7ea04da08fdca199e423c622~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
  #### Access Mode 32/64-bit
 
@@ -787,12 +767,7 @@ mermaid: true
    $
 
    * 下图word index 为 bytes address 对应的word index，然后从word index 对应到bank index
-   
-   <div align = center>
-   <img src="Note.assets/smem-array-idx-2-bank-idx.png" style="zoom:50%;" />
-   
-   32 bits时，word(32 bits)跟bank的对应关系
-   <div align = left>
+   ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a7f94c5958194dcb8a04d3c0aa586cf6~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
    
 
 
@@ -817,16 +792,7 @@ mermaid: true
      * <font color = red>bank conflict的本质：是bank width小，所以无法传送过多的数据</font>
      * <font color = red>当thread 查询/写入word时，发生boradcast或write undifined</font>
 
-     
-     <div align = center>
-     <img src="Note.assets/Screen Shot 2022-07-30 at 10.47.06 AM.png" alt="Screen Shot 2022-07-30 at 10.47.06 AM" style="zoom:50%;" />
-     
-     64 bits时，word(32 bits)跟bank的对应关系
-     <div align = left>
-     
-  
-   
-
+     ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e6691a2448d3426294bc38bab12dc065~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
   **bank width对性能的影响**
    bank width提高会带来<font color = red>更大的带宽</font>，但是会有<font color = red>更多的bank conflict</font>
@@ -899,12 +865,7 @@ mermaid: true
 ### Data Layout
 
  #### Square Shared Memory
-  
-  <div align = center>
-  <img src="Note.assets/Screen Shot 2022-08-01 at 11.56.00 PM.png" alt="Screen Shot 2022-08-01 at 11.56.00 PM" style="zoom:50%;" />
-  
-  Square Shared Memory
-  <div align = left>
+  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a1286c80c94042c4b15d0f11668061ca~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
   
 
 
@@ -929,7 +890,7 @@ mermaid: true
 
 
 
- #### Rectangle Shared Memory
+#### Rectangle Shared Memory
 
   ```cpp
   #define BDIMX 32 // 32 col
@@ -955,13 +916,8 @@ mermaid: true
 
   **举例**
    * 配置
-    
-    <div align = center>
-    <img src="Note.assets/Screen Shot 2022-08-02 at 12.06.57 PM.png" alt="Screen Shot 2022-08-02 at 12.06.57 PM" style="zoom:50%;" />
-    
-    nvprof图
-    <div align = left>
-    
+
+![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/20c6c29ec99549a9ab915e24a9cb7838~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
    * 计算
     word：32 bits，bank 64bits，对列主序来说16*32/64 = 8 bank -> a column are arranged into eight banks.
@@ -1022,7 +978,8 @@ mermaid: true
 
   同时shared memory使用的是SRAM，不像DRAM有burst的问题，所以读取M的shared memory的时候尽管不是连续读取也没有问题。shared memories are implemented as intrinsically high-speed on-chip memory that does not require coalescing to achieve high data access rate.
 
-  <img src="Note.assets/Screen Shot 2022-05-31 at 12.10.56 AM.png" alt="Screen Shot 2022-05-31 at 12.10.56 AM" style="zoom:70%;" />
+![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/06cb7b840d1248fa841390bccbcc68a5~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
 
 ### Async global memory to shared memory
 
@@ -1037,13 +994,7 @@ mermaid: true
   * 避免使用中间寄存器，<font color = red>减少寄存器压力</font>，减少指令流水压力，提高内核占用率
   * 相对于sync，async<font color = red>延迟更少</font>
 
-  
-  <div align = center>
-  <img src="Note.assets/Screen Shot 2022-06-28 at 11.19.35 PM.png" alt="Screen Shot 2022-06-28 at 11.19.35 PM" style="zoom:50%;" />
-  
-  async和sync比较图
-  <div align = left>
-  
+  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/794e0e9a908e4601bd85dfd247927e0e~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 
 
@@ -1058,13 +1009,8 @@ mermaid: true
 
  **优化参考图**
 
-  
-  <div align = center>
-  <img src="Note.assets/Screen Shot 2022-06-28 at 11.53.30 AM.png" alt="Screen Shot 2022-06-28 at 11.53.30 AM" style="zoom:50%;" />
-  
-  sync和async优化参考图
-  <div align = left>
-  
+  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1c86fb3e886a4c7f83f8c56defd256c1~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
   
   * 对于<font color = red>sync拷贝，num data是multiply of 4 最快</font>
 
@@ -1385,12 +1331,7 @@ mermaid: true
 
  **例子**
   A100有40M L2 memory，`cudaStreamSetAttribute()`设置用于data <font color=red>persistance的数据大小为30M</font>
-  
-  <div align = center>
-  <img src="Note.assets/figure_1.png" alt="Screen Shot 2022-02-10 at 11.38.25 AM" align = "center" style="zoom:50%;" />
-  
-  GPU内存分布图
-  <div align = left>
+  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d94878c071dc4634b2a98fbf38fb6556~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
   
   使用<font color=red>10-60M</font>需要persistance的数据进行实验，<font color=red>hitRatio大小设为1</font>
@@ -1413,13 +1354,7 @@ mermaid: true
   stream_attribute.accessPolicyWindow.hitRatio  = 1.0;                      //Hint for cache hit ratio. Fixed value 1.0
   ```
 
-  
-  <div align = center>
-  <img src="Note.assets/figure_2.png" alt="Screen Shot 2022-02-10 at 11.38.25 AM" align = "center" style="zoom:50%;" />
-  
-  出现 thrashing的性能图
-    
-  <div align = left>
+  ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/263598932faa4060931bca09b77d5686~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
   
   得到结果，在没有超过L2 persisting size时，性能提高（在nums_types = 20时，性能提高<font color=red>50%</font>），超过L2 persisting size，则会对性能下降约<font color=red>10%</font>
@@ -1427,22 +1362,15 @@ mermaid: true
   
   改变hitRatio与type_nums时，有：
 
-  ```
+  ```c++
   stream_attribute.accessPolicyWindow.base_ptr  = reinterpret_cast<void*>(data_persistent);
   stream_attribute.accessPolicyWindow.num_bytes = 20*1024*1024;                                  //20 MB
   stream_attribute.accessPolicyWindow.hitRatio  = (20*1024*1024)/((float)freqSize*sizeof(int));  //Such that up to 20MB of data is resident.
   ```
   其中配置num_bytes = 20M, hitRatio大小设置根据输入数据的规模判断，<font color=red>当规模大，设置ratio小，当规模小，设置ratio大</font>。
   此时hitRatio*num_bytes < L2 persisting cache 对应性能如下：
-  
-  <div align = center>
-  <img src="Note.assets/figure_3.png" alt="Screen Shot 2022-02-10 at 11.38.25 AM" align = "center" style="zoom:50%;" />
-  
-  改进persisting性能图
-    
-  <div align = left>
+  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6de68b3e0ec44185936ed21949d6cf93~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
-  
 
  **hitProp配置**
 
@@ -1574,10 +1502,10 @@ mermaid: true
   ```
 
 
- ### Bank Conflict
+### Bank Conflict
 
 
- ### Register Reuse
+### Register Reuse
 
 
 
@@ -1612,13 +1540,8 @@ mermaid: true
   * atomicOr    或
   * atomicXor   位或
 
-  
-  <div align = center>
-  <img src="Note.assets/Screen Shot 2022-07-28 at 10.25.43 PM.png" alt="Screen Shot 2022-07-28 at 10.25.43 PM" style="zoom:50%;" />
-  
-  CUDA内置atomic操作
-  <div align = left>
-  
+  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6fc29b6198c2401ca1ee5f52e0da0844~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
 
 ### CAS(compare and swap)
 
@@ -1715,13 +1638,8 @@ mermaid: true
    * last level cache -> few tens cycle
 
    * shared memocy -> few cycle
-   
-   <div align = center>
-   <img src="Note.assets/Screen Shot 2022-06-18 at 4.49.28 PM.png" alt="Screen Shot 2022-06-18 at 4.49.28 PM" style="zoom:50%;" />
-   
-   原子类操作延迟时间图
-   <div align = left>
-   
+   ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1787c40233c04f18afff3088c9fcce33~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
 
 
   **延迟改进**
@@ -1838,24 +1756,7 @@ mermaid: true
 
  **atomic大小参考**
   atomic次数与bandwidth是log的反向相关。
-  
-  <div align = center>
-  <img src="Note.assets/image2.png" alt="Figure 1. Performance of filtering with global atomics on Kepler K80 GPU (CUDA 8.0.61)." style="zoom:60%;" />
-  
-  bandwidth与atomic比例的关系
-  <div align = left>
-
-  
-
-
-
-
-
-
-
-
-
-
+  ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5fda906fba8b4669a8b8157e12b7f7a3~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 
 
@@ -1912,13 +1813,7 @@ mermaid: true
 
  **支持版本**
   cc 2.0以上版本支持Unified Virtual Address。其host memory和device memory共享一块虚拟内存空间。
-  
-  <div align = center>
-  <img src="Note.assets/Screen Shot 2022-07-30 at 10.05.28 PM.png" alt="Screen Shot 2022-07-30 at 10.05.28 PM" style="zoom:50%;" />
-  
-  UVA对比图
-  <div align = left>
-  
+  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7ce06e8718c746a996f50f9ed913b346~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
  **使用**
   当有UVA时，就不用获得device的指针或管理两个指向相同地址的指针。
@@ -1934,17 +1829,6 @@ mermaid: true
   // invoke the kernel with zero-copy memory 
   sumArraysZeroCopy<<<grid, block>>>(h_A, h_B, d_C, nElem);
   ```
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2106,24 +1990,13 @@ mermaid: true
    * 每个link包含多个lanes
    * 每个lane为1-bit width（由4 wires组成，构成16GB/s）
 
-  
-  <div align = center>
-  <img src="Note.assets/Screen Shot 2022-07-14 at 5.44.07 PM.png" alt="Screen Shot 2022-07-14 at 5.44.07 PM" style="zoom:50%;" />
-  
-  lanes对比图
-  <div align = left>
-  
+  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4cc5cdbb33ae47df88286ca5592999d8~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 
 
   北桥南桥都是用PCIe来链接
-  
-  <div align = center>
-  <img src="Note.assets/Screen Shot 2022-07-14 at 5.45.09 PM.png" alt="Screen Shot 2022-07-14 at 5.45.09 PM" style="zoom:50%;" />
-  
-  南北桥使用PCIe来连接
-  <div align = left>
-  
+  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/814948f2bc874196a28b8aa6d20cfad0~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
 
 ### DMA
 
