@@ -282,19 +282,20 @@ mermaid: true
   * 重建大根堆（前n-1个元素）
   * 重复执行步骤二和步骤三，直到整个序列有序
  图
-  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155121364-1143663369.png)
 
-  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155122347-353144474.png)
+![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155121364-1143663369.png)
 
-  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155123881-1600164453.png)
+![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155122347-353144474.png)
 
-  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155124922-114571381.png)
+![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155123881-1600164453.png)
 
-  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155125504-881684214.png)
+![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155124922-114571381.png)
 
-  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155126551-236420319.png)
+![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155125504-881684214.png)
 
-  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155127513-1825791452.png)
+![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155126551-236420319.png)
+
+![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155127513-1825791452.png)
 
 
   ```c++
@@ -1482,7 +1483,7 @@ void BTree::insert(int k){
 void BTreeNode::insertNonFull(int k){
   int i = n-1;
   if(leaf == true){
-    
+
   }
 }
 ```
