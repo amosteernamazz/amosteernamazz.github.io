@@ -11,14 +11,16 @@ My Name is amosteernamazz (You can also call me Thomas A), I am a student seekin
 - CUDA
 - C++
 - GPU
+- computer architectures
 - microelectronics
 - Adobe Photoshop, Sketch
+
 
 <!--more-->
 
 ## About Me | 关于我
 
-你们好，我叫amosteernamazz，这是我的博客。
+你们好，我叫amosteernamazz，this is my blog.
 
 我崇尚 开源文化 :octocat:，爱折腾，折腾硬件，折腾系统，折腾软件，折腾语言……生命不息，折腾不止。:muscle:
 
