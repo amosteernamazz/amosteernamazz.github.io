@@ -273,8 +273,62 @@ mermaid: true
 
 ## 堆排序：O(nlogn)
 
+ 步骤
+  * 无序序列建立完全二叉树
+
+
+  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155121364-1143663369.png)
+  * 从最后一个叶子节点开始，从左到右，从下到上调整，将完全二叉树调整为大根堆
+    * 找到第1个非叶子节点6，由于6的右子节点9比6大，所以交换6和9。交换后，符合大根堆的结构
+
+  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155122347-353144474.png)
+    * 找到第2个非叶子节点4，由于的4左子节点9比4大，所以交换4和9。交换后不符合大根堆的结构，继续从右到左，从下到上调整。
+
+  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155123881-1600164453.png)
+
+  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155124922-114571381.png)
+  * 交换堆元素（交换堆首和堆尾元素--获得最大元素）
+
+
+  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155125504-881684214.png)
+  * 重建大根堆（前n-1个元素）
+  
+  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155126551-236420319.png)
+
+  * 重复执行步骤二和步骤三，直到整个序列有序
+
+  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155127513-1825791452.png)
+
   ```c++
 
+  void heap_sort(vector<int>& arr, int length){
+    for(int i = length/2 -1; i>=0 ; i++){
+      adjust(arr, length, i);
+    }
+    for(int i = size -1; i>=0 ; i--){
+      swap(arr[0], arr[i]);
+      adjust(arr, i, 0);
+    }
+  }
+
+  void adjust(vector<int>& arr, int length, int index){
+    int left = 2*index + 1;
+    int right = 2*index +2;
+    int maxindex = index;
+    if(left < length && arr[left] > arr[maxindex])  maxindex = left;
+    if(right< length && arr[right] > arr[maxindex]) maxindex = right;
+
+    if(maxindex != index){
+      swap(arr[maxindex], arr[index]);
+      adjust(arr, length, maxindex);
+    }
+  }
+  
+  void swap (int value1, int value2){
+    int temp = value1;
+    value1 = value2;
+    value2 = temp;
+  }
   ```
 
 
