@@ -281,20 +281,20 @@ mermaid: true
   * 交换堆元素（交换堆首和堆尾元素--获得最大元素）
   * 重建大根堆（前n-1个元素）
   * 重复执行步骤二和步骤三，直到整个序列有序
+ 图
+  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155121364-1143663369.png)
 
-![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155121364-1143663369.png)
+  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155122347-353144474.png)
 
-![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155122347-353144474.png)
+  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155123881-1600164453.png)
 
-![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155123881-1600164453.png)
+  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155124922-114571381.png)
 
-![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155124922-114571381.png)
+  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155125504-881684214.png)
 
-![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155125504-881684214.png)
+  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155126551-236420319.png)
 
-![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155126551-236420319.png)
-
-![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155127513-1825791452.png)
+  ![](https://images2018.cnblogs.com/blog/1307402/201804/1307402-20180407155127513-1825791452.png)
 
 
   ```c++
@@ -621,10 +621,6 @@ mermaid: true
     }
   } 
   ```
-
-## 红黑树
-
-## B Tree 和 B+ Tree
 
 ## 分块查找
 
@@ -1361,13 +1357,138 @@ private:
 ### 红黑树插入
 
 ```c++
-bool RBTree::Insert(const Type& value){
-  
-}
+
+
 ```
 
 
 # B-Tree
+
+![](https://pic1.zhimg.com/80/v2-7631ffaed2553f9529f813f6c344fe7c_1440w.webp)
+
+ 特点
+  * 所有的叶子都在同一层
+  * B树由一个最小度t定义，t的值依赖于磁盘块的大小
+  * 所有的树节点除了根节点最少需要有t-1个关键字，根节点至少有一个关键字
+  * 所有的节点包括根节点都至多包含2t-1个关键字
+  * 节点的孩子数等于其关键字数+1
+  * 所有节点内的数字增序排列。在关键字K1和K2之间的所有子树上的节点关键字值都在K1和K2之间
+  * B树的生长和收缩都是从根开始的，这点不同于其他的搜索树，其他的搜素树都是从底部开始生长和收缩的
+  * 像其他平衡的二叉搜索树一样，搜索插入和删除的时间复杂度是O(logn)
+
+
+## 结点定义
+```c++
+class BTreeNode{
+  int* keys;      // 关键字数组
+  int t;          // 最小度
+  BTreeNode** C;  // 对应孩子节点的数组指针
+  int n;          // 节点当前关键字数量
+  bool leaf;      // 是否是叶子节点
+
+public:
+  BTreeNode(int _t, bool _leaf);  // 构造函数
+  void insertNonFull(int k);
+  void traverse();  //遍历所有以该节点为根的子树的关键字
+  void splitChild(int i, BTreeNode* y);
+  BTreeNode* search(int k); //查询一个关键词在以该节点为根的子树
+
+friend class BTree; //使其可以访问私有成员
+};
+```
+
+
+## BTree定义
+```c++
+class BTree{
+  BTreeNode* root;
+  int t;
+
+public:
+  BTree(int _t){
+    root = NULL; t = _t;
+  }
+  void traverse(){
+    if(root != NULL) root->traverse();
+  }
+  BTreeNode* search(int k)
+    {  return (root == NULL)? NULL : root->search(k); }
+
+  void insert(int k);
+};
+```
+
+## BTree方法
+
+### 构造方法
+
+```c++
+void BTreeNode::BTreeNode(int _t, bool _leaf){
+  t = _t;
+  leaf = _leaf;
+  
+  keys = new int [2*t -1];
+  C = new BTreeNode[2*t];
+
+  n = 0;
+}
+```
+
+### 遍历与查找方法
+```c++
+void BTreeNode::traverse(){
+  int i;
+  for(i = 0; i < n; i++){
+    if(leaf == false)
+      C[i] = ->traverse();
+    cout << " " << keys[i];
+  }
+  if(leaf == false)
+    C[i]->traverse();
+}
+
+BTreeNode* BTreeNode::search(int k){
+  int i = 0;
+  while(i < n && k >keys[i]){
+    i++;
+  }
+  if(key[i] == k){
+    return this;
+  }
+  if(leaf == true){
+    return NULL;
+  }
+  return C[i]->search(k);
+}
+```
+### 插入
+
+```c++
+void BTree::insert(int k){
+  if(root == NULL){
+    root = new BTreeNode(t, true);
+    root->keys[0] = k;
+    root->n = 1;
+  }
+  else {
+    if(root->n == 2*t -1){
+
+    }
+    else
+    root->insertNonFull(k);
+  }
+}
+
+void BTreeNode::insertNonFull(int k){
+  int i = n-1;
+  if(leaf == true){
+    
+  }
+}
+```
+
+
+
 
 # B+Tree
 
