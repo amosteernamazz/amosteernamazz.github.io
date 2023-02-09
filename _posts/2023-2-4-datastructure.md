@@ -1155,9 +1155,165 @@ class AVLTree{
 
 # 字典树
 
-# 2-3查找树
+
+
+ * 根节点不包含字符，除根节点外每一个节点都只包含一个字符。
+ * 从根节点到某一节点，路径上经过的字符连接起来，为该节点对应的字符串。
+ * 每个节点的所有子节点包含的字符都不相同。
+
+
+针对单词为：b，abc，abd，bcd，abcd，efg，hii得到的字典树
+![](https://img-blog.csdnimg.cn/20190408163008821.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L01PVV9JVA==,size_16,color_FFFFFF,t_70)
+
+
+## 字典树宏
+
+```c++
+const int Num = 26;
+```
+
+## 字典树节点定义
+
+```c++
+struct TrieNode{
+  bool is_word;
+  TrieNode* next[Num];
+  TrieNode() : is_word(flase){
+    memset(next, NULL, sizeof(next));
+  }
+};
+```
+
+## 字典树定义
+
+```c++
+class Trie{
+public: 
+  Trie(){root = new TrieNode();}
+  void insert(string word);
+  bool search(string word);
+  void deleteTrie(TrieNode* root);
+
+private:
+  TrieNode* root;
+}
+```
+## 字典树方法
+
+### 字典树插入方法
+
+```c++
+void Trie::insert(string word){
+  TrieNode* location = root;
+  for(int i = 0; i <word.size(); i++){
+    if(location->next[word[i]- 'a'] == nullptr){
+      TrieNode* temp = new TrieNode();
+      location->next[word[i]- 'a'] = temp;
+    }
+    location = location->next[word[i] - 'a'];
+  }
+  location->is_word = true;
+}
+```
+
+### 字典树寻找方法
+
+```c++
+bool Trie::search(string word){
+  TrieNode* location = root;
+  for(int i = 0 ; i < word.size() && location; i++){
+    location = location->next[word[i] - 'a'];
+  }
+  return (location!= NULL && location->is_word);
+}
+```
+
+### 字典树删除方法
+
+```c++
+  void Trie::deleteTrie(TrieNode* root){
+    for(int i = 0 ; i < Num; i++){
+      if(root->next[i] != NULL){
+        deleteTrie(root->next);
+      }
+    }
+    delete root;
+  }
+```
+
+# 234树
+
 
 # 红黑树
+
+## 红黑树宏
+```c++
+enum Colour{
+  RED,
+  BLACK
+} Color;
+```
+
+## 节点定义
+
+
+```c++
+template<typename Type>
+struct RBTNode{
+  Color color;
+  Type key;
+  RBTNode* left;
+  RBTNode* right;
+  RBTNode* parent;
+};
+```
+## 红黑树定义
+
+```c++
+template<typename Type>
+class RBTree{
+
+public:
+  RBTree(){
+    Nil = BuyNode();
+    root = Nil;
+    Nil->color = BLACK;
+  }
+
+  ~RBTree(){
+    destroy(root);
+    delete Nil;
+    Nil = NULL;
+  }
+  void InOrder(){InOrder(root);}
+  bool Insert(const Type& value);
+  void Remove(Type key);
+  void InOrderPrint(InOrderPrint(root);)
+
+protected:
+  RBTNode<Type>* BuyNode(const Type& x = Type());
+  void InOrder(RBTNode<Type>* root);
+  void LeftRotate(RBTNode<Type>* z);
+  void RightRotate(RBTNode<Type>* z);
+  void Insert_fixup(RBTNode<Type>* s);
+  RBTNode<Type>* search(RBTNode<Type>* root, Type key) const;
+
+private:
+  RBTNode<Type>* root;
+  RBTNode<Type>* Nil;
+}
+```
+
+## 红黑树实现
+
+### 红黑树插入
+
+```c++
+bool RBTree::Insert(const Type& value){
+  
+}
+```
+
 
 # B-Tree
 
