@@ -102,7 +102,23 @@ mermaid: true
 
 ## **C++关键字**
 
+### NULL和nullptr
 
+ **NULL**
+  C++中，NULL实际上是0.因为C++中不能把void*类型的指针隐式转换成其他类型的指针，所以为了结果空指针的表示问题，C++引入了0来表示空指针
+  ```c++
+  #ifdef __cplusplus
+  #define NULL 0
+  #else
+  #define NULL ((void*)0)
+  #endif
+  ```
+  * 问题
+    * 在函数重载的时候会出现问题，不确定参数是 void* 还是 int
+
+
+ **nullptr**
+  * 为解决NULL的二义性，使用nullptr替代空指针，对应参数为 void* 版本
 
 ### include<> 和 include ""
 
@@ -842,6 +858,11 @@ static和const不可同时修饰成员函数
  * 同时free(p)表示释放p对应的空间，但p这个pointer仍然存在，只是不能操作
  * free后的内存会使用双链表保存，供下次使用，避免频繁系统调用，同时有合并功能，避免内存碎片
 
+ **使用**
+  * `char* p = (char*) malloc(10);`
+  * `free(p);`
+  * `p = NULL;`
+
 ### 栈上分配内存
  **alloca**
   * 不需要手动释放，超出作用域自动释放
@@ -854,45 +875,206 @@ static和const不可同时修饰成员函数
 ### 内存泄漏
  **原因**
   * malloc/new和delete/free没有匹配
-  * new[] 和 delete[]也没有匹配
+  * new[] 和 delete[]没有匹配
   * 没有将父类的析构函数定义为虚函数
 
 
  **监测手段**
-  * 把new和delete全部都封装到构造函数和析构函数中，保证任何资源的释放都在析构函数中进行
+  * 把new封装在构造函数中，将delete封装到析构函数中
   * 智能指针
   * valgrind ，这个可以打印出发生内存泄露的部分代码
   * linux使用swap命令观察还有多少可以用的交换空间，两分钟内执行三四次，肉眼看看交换区是不是变小了
-  * 使用/usr/bin/stat工具如netstat、vmstat等。如果发现波段有内存被分配且没有释放，有可能进程出现了内存泄漏。
+  * 使用/usr/bin/stat工具如netstat、vmstat等。如果发现有内存被分配且没有释放，有可能进程出现了内存泄漏。
 
 ### 智能指针
+ * 是RAII类模型，用来动态分配内存
+   * 将指针用类封装，然后实例化为对象，当对象过期，让析构函数删除指向的内存
+
  **shared_ptr**
   * 多个指针可以指向一个相同的对象，当最后一个shared_ptr离开作用域的时候才会释放掉内存。
 
 
-  **实现原理**
+ **实现原理**
    * 在shared_ptr内部有一个共享引用计数器来自动管理，计数器实际上就是指向该资源指针的个数
    * 每当复制一个 shared_ptr引用计数会 + 1
+     * `shared_ptr<A> sp2(sp1);`
+     * `shared_ptr <A> sp3; sp3 = sp2;`
    * 当一个 shared_ptr 离开作用域时，引用计数会 - 1
+     * `sp3.reset(new A(3));`
    * 当引用计数为 0 的时候，则delete 内存。
    * 这样相比auto来说就好很多，当计数器为0的时候指针才会彻底释放掉这个资源。
+   * 注意**不能**将两个shared_ptr托管同一个指针
+     * `shared_ptr <A> sp1(p), sp2(p); //error!!!`
 
 
-  **隐患分析**
-   * 本身计数操作是否安全
-     * 安全
-   * 读指向的时候是否安全
-     * 安全
-   * 修改指针指向是否安全
-     * 不安全
-       * 多个线程操作同一个shared ptr的时候可能会导致对象提前析构
-       * 解决方法，加锁
-   * 数据安全性
-     * 数据不安全
+ **线程安全**
+  * 同一个shared_ptr，多个线程读是安全的
+  * 同一个shared_ptr，多个线程写是不安全的
+    * 线程在指向修改到计数器变化两个过程中并非原子操作，中间可能被打断
+    * 方法：加锁
+  * 不同的shared_ptr，多个线程写是安全的
+  * shared_ptr管理数据的安全性不明
+
+ **线程不安全例子**
+
+  ```c++
+  shared_ptr<foo> o1;
+  shared_ptr<foo> p2(new foo);
+  shared_ptr<foo> p3(new foo);
+  p1 = p2;
+  p2 = p3; // 可能出现p1悬空指针
+  ```
+  ![](https://img-blog.csdnimg.cn/20200525124202197.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MDQ3NA==,size_16,color_FFFFFF,t_70)
+
+  ![](https://img-blog.csdnimg.cn/20200525124656242.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MDQ3NA==,size_16,color_FFFFFF,t_70)
+
+  ![](https://img-blog.csdnimg.cn/2020052513010518.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MDQ3NA==,size_16,color_FFFFFF,t_70)
+
+  ![](https://img-blog.csdnimg.cn/20200525130206633.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MDQ3NA==,size_16,color_FFFFFF,t_70)
 
 
-  **方法**
-   * reset
-     * reset()会释放并摧毁原生指针
-     * reset(param)会管理这个新指针
-   * make_shared()
+ **方法**
+  * reset
+    * reset()会释放并摧毁原生指针
+    * reset(param)会管理这个新指针
+  * make_shared()
+
+
+
+## 模板元编程
+
+  * 函数名相同，参数类型不同要重新写函数。模板出现就是提高了程序的复用性，提高效率
+  * 当刚上手的时候肯定是根据具体的数据类型来组织代码。随着越来越熟，用一种广泛的表达去取代具体数据类型，在c++中就叫做模板编程。
+
+
+ **类型**
+  * 函数模板
+  * 类模板
+
+ **格式**
+ `template <template T>`或`template <class T>`
+
+ **底层实现**
+  * 编译器将函数模板通过具体类型产生不同的函数
+    * 对模板代码声明处进行编译
+    * 在调用地方对替换后代码编译
+
+
+ **模板和继承**
+  * 使用目的
+    * 模板用于生成一组类或函数，这些类和函数的实现是一样的
+    * 继承是事物之间的联系，从父类到子类是从普遍到特殊，从共性到特性
+  * 多态的不同
+    * 模板是编译时多态
+    * 继承是运行时多态
+  * 复制内容
+    * 模板是对代码的复制，编译完成后，会生成对应的函数或类
+    * 继承是对数据的复制，复制虚表、数据
+
+
+### 函数模板
+
+ **类型**
+
+  * 成员函数模板
+  * 普通函数模板
+
+ **调用方式**
+
+  * 自动推导，隐式调用
+    * `myswap(a, b)`
+    * 参数类型和模板定义的一致才可以
+    * 模板必须确定出T的类型
+  * 显式调用
+    * `myswap<int>(a, b)`
+
+ **普通函数和模板函数**
+
+ 区别
+  * 普通函数调用时可以发生自动类型转换（隐式类型转换）
+  * 如果使用函数模板，自动类型推导的话，则不会发生隐式转换
+  * 如果使用函数模板，显式指定类型，则可以发生隐式转换
+
+ 调用规则
+  * 优先调用普通函数
+  * 可以使用空模板参数来强制调用模板函数
+  * 函数模板也可以重载
+  * 如果函数模板可以产生更好的匹配，优先调用函数模板
+
+### 类模板
+
+ **调用方式**
+
+  只有显式指定参数类型
+
+ **普通类和模板类**
+
+ 成员函数
+  * 普通类在编译时创建
+  * 模板类在调用时创建
+ 
+ 类模板对象作函数参数
+  * 指定传入类型，直接显示对象的数据类型
+
+  ```c++
+  void print(Person<string, int>& p);
+  ```
+
+  * 参数模板化，将对象中的参数变为模板进行传递
+  ```c++
+  template <class T1, class T2>
+  void print(Person<T1, T2>& p);
+  ```
+
+  * 整个类模板化，将整个对象类型模板化进行传递
+
+  ```c++
+  template <class T>
+  void print(T& t);
+  ```
+
+
+ **类模板与继承**
+
+  * 当派生类继承基类的一个类模板时，子类在声明时，要指定出分类中的T类型
+
+  ```c++
+  template <class T>
+  class father{
+    T t;
+  };
+
+  // 子类在声明时，要指定出分类中的T类型
+  class son : public father<int>{
+
+  }
+  ```
+
+  * 如果还需要灵活，则子类需要变为类模板
+
+  ```c++
+  template <class T>
+  class father{
+    T t;
+  };
+
+  template <class T1, class T2>
+  class son : public father <T2>{
+    T1 obj;
+  }
+  ```
+
+  * 类模板成员的类外实现
+
+  ```c++
+  // 构造函数类外实现
+  template<class T1, class T2>
+  Person<T1, T2>::Person(T1 name, T2 age){}
+
+  // 成员函数类外实现
+  template<class T1, class T2>
+  void Person<T1, T2>::show(){}
+  ```
+
+ **文件要求**
+  * 要求模板和实现在一个文件内
