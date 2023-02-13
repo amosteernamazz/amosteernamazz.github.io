@@ -1,8 +1,8 @@
 ---
 layout: article
-title: 设计模式
-key: 100026
-tags: 设计模式
+title: 单例模式
+key: 100028
+tags: 设计模式 单例模式
 category: blog
 date: 2023-02-10 00:00:00 +08:00
 mermaid: true
