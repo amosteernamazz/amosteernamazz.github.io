@@ -14,21 +14,6 @@ mermaid: true
 
 ## **C++特性**
 
-<br>
-
-***<font color = purple>封装：原因</font>***
-<br>
-
-***<font color = purple>继承：原因、类型、缺点、class与struct的继承、什么不能继承</font>***
-<br>
-
-***<font color = purple>多态：原因、形式、实现</font>***
-<br>
-
-
-<br>
-
-
 ### 封装
  **原因**
   * 结合性：属性与方法结合
