@@ -997,6 +997,12 @@ static和const不可同时修饰成员函数
  **目的**
   * 解决shared_ptr指针循环引用出现内存泄漏问题
 
+ **方法**
+  * `ptr.expired()`判断是否被释放
+  * `ptr.use_count()`返回原生指针引用次数
+  * `std::shared_ptr<CTxxx>ptr2 = ptr.lock()`返回为空的shared_ptr或转化为强指针`shared_ptr`
+  * `reset()`将本身置为空
+
  **应用场景**
   * 观察者功能
 
@@ -1144,6 +1150,39 @@ static和const不可同时修饰成员函数
   
   * 当将`t1.join()`换为`t1.detach()`时候，让`main`主线程结束，`p`智能指针析构，`Test`对象析构，此时`show()`不会被调用
     * threadProc方法中，`pw`提升到`ps`时，`lock`方法判定`Test`对象已经析构，提升失败
+
+
+
+### unique_ptr
+
+ 拥有对持有对象的唯一所有权，两个`unique_ptr`不能同时指向同一个对象
+
+ **特点**
+  * 不能复制
+  * 只能通过转移语义将所有权转移到另外一个
+
+
+  ```c++
+  std::unique_ptr<A> a1(new A());
+  std::unique_ptr<A> a2 = a1;//编译报错，不允许复制
+  std::unique_ptr<A> a3 = std::move(a1);//可以转移所有权，所有权转义后a1不再拥有任何指针
+  ```
+
+
+ **方法**
+  * `get()` 获取其保存的原生指针
+  * `bool()` 判断是否拥有指针
+  * `release()` 释放所管理指针的所有权，返回原生指针。但并不销毁原生指针。
+  * `reset()`释放并销毁原生指针。如果参数为一个新指针，将管理这个新指针
+
+  ```c++
+  std::unique_ptr<A> a1(new A());
+  A *origin_a = a1.get();//尽量不要暴露原生指针
+  std::unique_ptr<A> a2(a1.release());//常见用法，转义拥有权
+  a2.reset(new A());//释放并销毁原有对象，持有一个新对象
+  a2.reset();//释放并销毁原有对象，等同于下面的写法
+  a2 = nullptr;//释放并销毁原有对象
+  ```
 
 
 ## 模板元编程
