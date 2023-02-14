@@ -4,7 +4,7 @@ title: C++运行时特征
 key: 100002
 tags: C++ 多态
 category: blog
-date: 2023-02-07 00:00:00 +08:00
+date: 2019-09-07 00:00:00 +08:00
 mermaid: true
 ---
 
