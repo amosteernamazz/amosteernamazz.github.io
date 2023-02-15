@@ -4,7 +4,7 @@ title: 单例模式
 key: 100005
 tags: 设计模式 单例模式
 category: blog
-date: 2019-01-03 00:00:00 +08:00
+date: 2020-01-03 00:00:00 +08:00
 mermaid: true
 ---
 
