@@ -16,13 +16,13 @@ mermaid: true
 
 ## 算数算子
 
+### 算数算子
+
  * 确定template待确定的变量类型（其中为算数类型与数据类型）
    * `template<ArithmeticOpType op_type, typename T>`
- * 对于int8类型变量，为了区分，定义新template函数`ppl_arithmetic_scalar_int8`
+ * 对于int8类型变量（有上下范围时候的差异），为了区分，定义新template函数`ppl_arithmetic_scalar_int8`
  * 对于CUDA内置half类型，重写函数`ppl_arithmetic_scalar`
  * 定义自定义类型half8_的实现
-
-### 算数算子
 
 ### 逻辑算子
 ### 比较算子
