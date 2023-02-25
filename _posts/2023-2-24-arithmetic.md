@@ -10,6 +10,28 @@ mermaid: true
 
 ***为什么需要定义一种类型为half8_***
 
+# 基础
+
+ **NHWC和NCHW**
+  * 它们在表示图像数据时的存储方式不同。
+    * NHWC表示图像的顺序为：（batch_size, height, width, channels），即批次大小、图像高度、图像宽度和通道数的顺序
+    * NCHW表示图像的顺序为：（batch_size, channels, height, width），即批次大小、通道数、图像高度和图像宽度的顺序
+  * NCHW通常更适合GPU的并行计算方式
+    * 更好利用GPU的内存布局和数据传输特性
+  * NHWC通常更适合CPU的计算方式
+    * 符合CPU的内存层次结构和缓存策略
+
+ **什么是带stride的算子方法**
+  * 在计算机视觉和深度学习中，带有stride的算子方法通常用于处理图像或其他类型的多维数据
+  * Stride是指在多维数组中，沿着每个轴或维度的间隔（或跳过）的元素数
+    * 带有stride的算子方法会根据输入和输出的内存布局以及stride参数，计算每个元素的位置，以便在处理多维数据时能够正确地访问每个元素
+    * 例如，如果一个算子需要处理一个四维张量（例如图像），则它需要知道每个维度的步长，以便能够正确地遍历整个张量
+    * 使用带有stride的算子方法可以大大简化计算多维数据的代码，并且可以加速算法的执行速度
+
+ **带stride的算子方法为什么能够加速**
+  * 通过对输入和输出数据的内存地址进行计算，从而在一个线程块中对多个数据进行计算。
+  * 带stride的算子方法可以将输入数据中每个数据的访问间隔设置为固定值，从而能够更好地利用CPU或GPU的cache机制，提高数据的缓存命中率，进一步提高计算效率。
+
 
 # 算子库方法
  算子库包括算数算子（算数运算、逻辑运算、关系运算）、reduce算子（argmax、argmin等）、format算子（类型转换算子）、unary算子（cast、clip、relu、neg、not、zero等）、nn算子（层归一化、conv、lstm、one-hot、pooling-max、topk、gemm等）、数据大小的转变算子（expand、gather、pad、split、tile、reshape等）
@@ -21,6 +43,7 @@ mermaid: true
  * 确定template待确定的变量类型（其中为算数类型与数据类型）
    * `template<ArithmeticOpType op_type, typename T>`
  * 对于int8类型变量（有上下范围时候的差异），为了区分，定义新template函数`ppl_arithmetic_scalar_int8`
+ * 为了解决张量缩放等问题，将`ppl_arithmetic_scalar_int8`函数引入输入张量缩放因子`in_scale0`和`in_scale1`以及输出张量缩放因子`out_scale`
  * 对于CUDA内置half类型，重写函数`ppl_arithmetic_scalar`
  * 定义自定义类型half8_的实现
 
@@ -42,7 +65,366 @@ mermaid: true
     * 如果当前维度和前一个维度需要进行不同的广播操作，则跳出循环
   * 更新输入张量的维度数为实际维度数
 
- ****
+
+在算子方法中，针对不同的数据结构，定义了不同的算子方法，包括双向量算子(无数据结构算子方法、带维度结构的算子方法、图像算子)、单向量算子
+
+#### 无数据结构的算子方法
+
+ **ppl_cukernel_arithmetic_nobroadcast**
+  ```c++
+  template<ArithmeticOpType op_type, typename T>
+  __global__ void ppl_cukernel_arithmetic_nobroadcast(
+      const uint64_t num_elems,
+      const T *input0,
+      const T* input1,
+      T *output) {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems) return;
+      output[index] = ppl_arithmetic_scalar<op_type, T>(input0[index], input1[index]);
+  }
+  ```
+
+ **ppl_cukernel_arithmetic_nobroadcast_int8**
+  
+  ```c++
+  template<ArithmeticOpType op_type, typename T>
+  __global__ void ppl_cukernel_arithmetic_nobroadcast_int8(
+      const uint64_t num_elems,
+      const T *input0,
+      const T* input1,
+      T *output,
+      float in_scale0 = 0,
+      float in_scale1 = 0,
+      float out_scale = 0) {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems) return;
+      output[index] = ppl_arithmetic_scalar_int8<op_type, T>(input0[index], input1[index], in_scale0, in_scale1, out_scale);
+  }
+  ```
+
+#### 带维度结构算子（stride方法）
+
+ **ppl_cukernel_arithmetic_fp16算子**
+  * 实现两个输入张量的逐元素算术运算，输出结果保存在输出张量中
+  * 参数定义
+    * num_elems：输出张量中元素的总数
+    * dim_count：输入张量和输出张量的维度数
+    * param：一个包含输入张量和输出张量的尺寸、步长等信息的结构体
+    * input0：第一个输入张量的指针
+    * input1：第二个输入张量的指针
+    * output：输出张量的指针
+  * 实现流程
+    * 根据线程索引计算出当前线程需要处理的元素索引
+    * 利用输入张量的步长信息，计算出当前元素在输入张量中的索引
+    * 把当前元素所在位置的两个输入张量元素加载到共享内存中
+    * 对共享内存中的两个元素执行逐元素算术运算，并将结果保存在共享内存中
+    * 把共享内存中的运算结果写回到输出张量中
+
+  ```c++
+
+  template <ArithmeticOpType op_type, typename T1, typename T2>
+  __global__ void ppl_cukernel_arithmetic_fp16(
+      const uint64_t num_elems,
+      const int dim_count,
+      ArithmeticParam param,
+      const T1 *input0,
+      const T1 *input1,
+      T1 *output)
+  {
+      // index tid out_index
+      // 根据线程索引计算出当前线程需要处理的元素索引
+  #if __CUDA_ARCH__ >= 600 && __CUDACC_VER_MAJOR__ >= 9
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems)
+          return;
+      int tid = threadIdx.x;
+      __shared__ T2 transm[512];
+      T1 *transm_half      = reinterpret_cast<T1 *>(transm);
+      const T2 *input0_ptr = reinterpret_cast<const T2 *>(input0);
+      const T2 *input1_ptr = reinterpret_cast<const T2 *>(input1);
+      T2 *output_ptr       = reinterpret_cast<T2 *>(output);
+
+      uint64_t out_index = index;
+      uint64_t offset0   = 0;
+      uint64_t offset1   = 0;
+      for (int i = 0; i < dim_count; i++) {
+          // 根据输入张量的步长信息，计算当前元素在输入张量中的索引
+          uint64_t dim_off = index / param.stride_out[i];
+          offset0 += dim_off * param.stride_in0[i];
+          offset1 += dim_off * param.stride_in1[i];
+          index = index % param.stride_out[i];
+      }
+      // 将当前元素所在位置的元素输入到共享内存中
+      transm[tid + 0]   = input0_ptr[offset0];
+      transm[tid + 256] = input1_ptr[offset1];
+      // 对共享内存中的两个元素执行逐元素算术运算，并将结果保存在共享内存中
+      // 解决了shared memory bank conflict问题
+      transm_half[tid] = ppl_arithmetic_vector_fp16<op_type>(transm_half[tid + 0], transm_half[tid + 256]);
+      // 把共享内存中的运算结果写回到输出张量中
+      output_ptr[out_index] = transm[tid];
+  #endif
+  }
+  ```
+
+ **ppl_cukernel_arithmetic**
+  * 执行了对两个输入数组进行逐元素算术操作的操作
+    * 通过索引计算输出元素的索引，然后计算输入数组的偏移量
+    * 在循环中遍历输入数组的每个维度，计算偏移量的公式是将索引除以输出数据在该维度的步幅
+    * 将其乘以相应的输入数据步幅
+    * 将输入数组中的值进行算术操作，将结果存储到输出数组中
+
+
+  ```c++
+  template<ArithmeticOpType op_type, typename T>
+  __global__ void ppl_cukernel_arithmetic(
+      const uint64_t num_elems,
+      const int dim_count, 
+      ArithmeticParam param,
+      const T *input0,
+      const T* input1,
+      T *output) {
+      // 通过索引计算输出元素的索引，然后计算输入数组的偏移量
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems) return;
+
+      uint64_t out_index = index;
+      uint64_t offset0 = 0;
+      uint64_t offset1 = 0;
+      // 在循环中遍历输入数组的每个维度，计算偏移量的公式是将索引除以输出数据在该维度的步幅
+      for (int i = 0; i < dim_count; i++) {
+          uint64_t dim_off = index / param.stride_out[i];
+          // 将其乘以相应的输入数据步幅
+          offset0 += dim_off * param.stride_in0[i];
+          offset1 += dim_off * param.stride_in1[i];
+          index = index % param.stride_out[i]; 
+      }
+      // 将输入数组中的值进行算术操作，将结果存储到输出数组中
+      output[out_index] = ppl_arithmetic_scalar<op_type, T>(input0[offset0], input1[offset1]);
+  }
+  ```
+
+ **ppl_cukernel_arithmetic_int8**
+
+  * 不同与第一种fp16的算子方法，本方法是带张量缩放因子的int8方法
+
+  ```c++
+
+  template<ArithmeticOpType op_type, typename T>
+  __global__ void ppl_cukernel_arithmetic_int8(
+      const uint64_t num_elems,
+      const int dim_count, 
+      ArithmeticParam param,
+      const T *input0,
+      const T* input1,
+      T *output,
+      float in_scale0 = 0,
+      float in_scale1 = 0,
+      float out_scale = 0) {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems) return;
+
+      uint64_t out_index = index;
+      uint64_t offset0 = 0;
+      uint64_t offset1 = 0;
+      for (int i = 0; i < dim_count; i++) {
+          uint64_t dim_off = index / param.stride_out[i];
+          offset0 += dim_off * param.stride_in0[i];
+          offset1 += dim_off * param.stride_in1[i];
+          index = index % param.stride_out[i]; 
+      }
+      
+      output[out_index] = ppl_arithmetic_scalar_int8<op_type, T>(input0[offset0], input1[offset1], in_scale0, in_scale1, out_scale);
+  }
+
+  ```
+
+#### 图像算子
+
+ **ppl_cukernel_arithmetic_limit_nhwc**
+  * 与ppl_cukernel_arithmetic类似，不同的是对output进行重排
+
+  ```c++
+  template<ArithmeticOpType op_type, typename T>
+  __global__ void ppl_cukernel_arithmetic_limit_nhwc(
+      const uint64_t num_elems,
+      const int dim_count, 
+      ArithmeticParam param_ndarray,
+      ArithmeticParam param_nhwc,
+      const T *input0,
+      const T* input1,
+      T *output) {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems) return;
+
+      uint64_t offset0 = 0;
+      uint64_t offset1 = 0;
+      uint64_t out_offset = 0;
+      for (int i = 0; i < dim_count; i++) {
+          uint64_t dim_off = index / param_ndarray.stride_out[i];
+          offset0 += dim_off * param_nhwc.stride_in0[i];
+          offset1 += dim_off * param_nhwc.stride_in1[i];
+          out_offset += dim_off * param_nhwc.stride_out[i];
+          index = index % param_ndarray.stride_out[i]; 
+      }
+      
+      output[out_offset] = ppl_arithmetic_scalar<op_type, T>(input0[offset0], input1[offset1]);
+  }
+  ```
+
+ **ppl_cukernel_arithmetic_limit_nhwc_int8**
+  * 不同于前面的方法，int8方法引入了张量缩放因子
+
+  ```c++
+
+  template<ArithmeticOpType op_type, typename T>
+  __global__ void ppl_cukernel_arithmetic_limit_nhwc_int8(
+      const uint64_t num_elems,
+      const int dim_count, 
+      ArithmeticParam param_ndarray,
+      ArithmeticParam param_nhwc,
+      const T *input0,
+      const T* input1,
+      T *output,
+      float in_scale0,
+      float in_scale1,
+      float out_scale) {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems) return;
+
+      uint64_t offset0 = 0;
+      uint64_t offset1 = 0;
+      uint64_t out_offset = 0;
+      for (int i = 0; i < dim_count; i++) {
+          uint64_t dim_off = index / param_ndarray.stride_out[i];
+          offset0 += dim_off * param_nhwc.stride_in0[i];
+          offset1 += dim_off * param_nhwc.stride_in1[i];
+          out_offset += dim_off * param_nhwc.stride_out[i];
+          index = index % param_ndarray.stride_out[i]; 
+      }
+      // 引入张量缩放因子
+      // (input0[offset0] * in_scale0 +input1[offset1] * in_scale1) / out_scale;
+      output[out_offset] = ppl_arithmetic_scalar_int8<op_type, T>(input0[offset0], input1[offset1],
+              in_scale0, in_scale1, out_scale);
+  }
+  ```
+
+#### 单向量算子
+
+ **ppl_cukernel_arithmetic_one_scalar**
+
+  ```c++
+
+  template<ArithmeticOpType op_type, typename T>
+  __global__ void ppl_cukernel_arithmetic_one_scalar(
+      const uint64_t num_elems,
+      const bool first_shorter, 
+      const T *input0,
+      const T* input1,
+      T *output) {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems) return;
+      int calc_index = 0;
+      uint64_t offset0 = first_shorter ? calc_index : index;
+      uint64_t offset1 = first_shorter ? index : calc_index;
+      output[index] = ppl_arithmetic_scalar<op_type, T>(input0[offset0], input1[offset1]);
+  }
+  ```
+
+ **ppl_cukernel_arithmetic_one_scalar_int8**
+
+  ```c++
+  template<ArithmeticOpType op_type, typename T>
+  __global__ void ppl_cukernel_arithmetic_one_dimension(
+      const uint64_t num_elems,
+      const int32_t inner_dim,
+      const bool first_shorter, 
+      const T *input0,
+      const T* input1,
+      T *output) {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems) return;
+      int calc_index = index % inner_dim;
+      uint64_t offset0 = first_shorter ? calc_index : index;
+      uint64_t offset1 = first_shorter ? index : calc_index;
+      output[index] = ppl_arithmetic_scalar<op_type, T>(input0[offset0], input1[offset1]);
+  }
+  ```
+
+ **ppl_cukernel_arithmetic_one_not_broadcast**
+  * 相对于上述方法引入axis_lgt变量
+    * 为了解决非广播情况，两个输入张量在该轴上的长度必须相同才能进行元素级别的算数操作
+      * 假设输入张量 input0 的形状为 (N, C, H, W)
+      * 输入张量 input1 的形状为 (N, 1, H, W)
+      * 这里的 axis_lgt 就等于 H * W，表示在 H 和 W 两个轴上计算元素级别的算术操作
+      * 在函数中，calc_index 的计算方式为 (index / inner_dim) % axis_lgt，
+      * 计算在该轴上的索引位置，用于在 input0 和 input1 中获取对应位置的元素，进行元素级别的算术操作
+
+  ```c++
+  template<ArithmeticOpType op_type, typename T>
+  __global__ void ppl_cukernel_arithmetic_one_not_broadcast(
+      const uint64_t num_elems,
+      const int32_t axis_lgt,
+      const int32_t inner_dim,
+      const bool first_shorter, 
+      const T *input0,
+      const T* input1,
+      T *output) {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems) return;
+      int calc_index = (index / inner_dim) % axis_lgt;
+      uint64_t offset0 = first_shorter ? calc_index : index;
+      uint64_t offset1 = first_shorter ? index : calc_index;
+      output[index] = ppl_arithmetic_scalar<op_type, T>(input0[offset0], input1[offset1]);
+  }
+
+  ```
+
+ **ppl_cukernel_arithmetic_one_dimension**
+  * 基于某维度做算数运算
+
+  ```c++
+  template<ArithmeticOpType op_type, typename T>
+  __global__ void ppl_cukernel_arithmetic_one_dimension(
+      const uint64_t num_elems,
+      const int32_t inner_dim,
+      const bool first_shorter, 
+      const T *input0,
+      const T* input1,
+      T *output) {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems) return;
+      int calc_index = index % inner_dim;
+      uint64_t offset0 = first_shorter ? calc_index : index;
+      uint64_t offset1 = first_shorter ? index : calc_index;
+      output[index] = ppl_arithmetic_scalar<op_type, T>(input0[offset0], input1[offset1]);
+  }
+  ```
+
+ **ppl_cukernel_arithmetic_one_dimension_int8**
+
+  ```c++
+
+  template<ArithmeticOpType op_type, typename T>
+  __global__ void ppl_cukernel_arithmetic_one_dimension_int8(
+      const uint64_t num_elems,
+      const int32_t inner_dim,
+      const bool first_shorter, 
+      const T *input0,
+      const T* input1,
+      T *output,
+      float in_scale0 = 0,
+      float in_scale1 = 0,
+      float out_scale = 0) {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems) return;
+      int calc_index = index % inner_dim;
+      uint64_t offset0 = first_shorter ? calc_index : index;
+      uint64_t offset1 = first_shorter ? index : calc_index;
+      output[index] = ppl_arithmetic_scalar_int8<op_type, T>(input0[offset0], input1[offset1], in_scale0, in_scale1, out_scale);
+  }
+  ```
+
+
 
 ### 逻辑算子
 
