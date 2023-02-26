@@ -331,6 +331,8 @@ mermaid: true
   ```
 
  **ppl_cukernel_arithmetic_one_scalar_int8**
+  * 其中`inner_dim`表示向量的内部算数操作的单位
+    * 对(512,3,1024,1024)和(512,4,1024,1024)来说`inner_dim`应设置为1024*1024
 
   ```c++
   template<ArithmeticOpType op_type, typename T>
@@ -351,13 +353,9 @@ mermaid: true
   ```
 
  **ppl_cukernel_arithmetic_one_not_broadcast**
-  * 相对于上述方法引入axis_lgt变量
-    * 为了解决非广播情况，两个输入张量在该轴上的长度必须相同才能进行元素级别的算数操作
-      * 假设输入张量 input0 的形状为 (N, C, H, W)
-      * 输入张量 input1 的形状为 (N, 1, H, W)
-      * 这里的 axis_lgt 就等于 H * W，表示在 H 和 W 两个轴上计算元素级别的算术操作
-      * 在函数中，calc_index 的计算方式为 (index / inner_dim) % axis_lgt，
-      * 计算在该轴上的索引位置，用于在 input0 和 input1 中获取对应位置的元素，进行元素级别的算术操作
+  主要针对HW两个维度进行非广播算数运算，`axis_lgt`为C维度的大小，`inner_dim`则是H*W
+  * 在图像领域，`axis_lgt`（即轴长度）通常对应于图像的通道数量（例如，RGB图像有3个通道，RGBA图像有4个通道等）`inner_dim`为`H*W`
+  * 如果在对多个通道进行算术运算的过程中，需要使用该函数，其中一个输入张量在通道数量上与另一个不匹配，可以使用此函数进行处理。
 
   ```c++
   template<ArithmeticOpType op_type, typename T>
@@ -380,7 +378,7 @@ mermaid: true
   ```
 
  **ppl_cukernel_arithmetic_one_dimension**
-  * 基于某维度做算数运算
+  * 一般用于元素级别的运算，在图像中为常见的像素级算数运算
 
   ```c++
   template<ArithmeticOpType op_type, typename T>
@@ -425,6 +423,57 @@ mermaid: true
   ```
 
 
+ **ppl_cukernel_arithmetic_one_broadcast**
+  * 假设有两个形状分别为 (N, C, H, W) 和 (1, C, 1, 1) 的输入张量 input0 和 input1，我们要对它们进行广播操作并进行 element-wise 的二元运算。其中 N, C, H, W 分别表示 batch size, channel 数量，高度和宽度。
+  * 在这种情况下，我们将 `outer_stride` 设为 CHW，也就是 outermost dimension 的大小，因为在这个 dimension(N) 上进行广播。而 inner_dim 则是 1，因为 input1 在这个 dimension(N) 上只有一个元素。
+
+  ```c++
+  template<ArithmeticOpType op_type, typename T>
+  __global__ void ppl_cukernel_arithmetic_one_broadcast(
+      const uint64_t num_elems,
+      const int outer_stride, 
+      const int inner_dim, 
+      const bool first_shorter, 
+      const T *input0,
+      const T* input1,
+      T *output) {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems) return;
+      int inner_idx = index % inner_dim;
+      int outer_idx = index / outer_stride;
+      uint64_t calc_index = outer_idx * inner_dim + inner_idx;
+      uint64_t offset0 = first_shorter ? calc_index : index;
+      uint64_t offset1 = first_shorter ? index : calc_index;
+      output[index] = ppl_arithmetic_scalar<op_type, T>(input0[offset0], input1[offset1]);
+  }
+  ```
+
+
+ **ppl_cukernel_arithmetic_one_broadcast_int8**
+
+  ```c++
+  template<ArithmeticOpType op_type, typename T>
+  __global__ void ppl_cukernel_arithmetic_one_broadcast_int8(
+      const uint64_t num_elems,
+      const int outer_stride, 
+      const int inner_dim, 
+      const bool first_shorter, 
+      const T *input0,
+      const T* input1,
+      T *output,
+      float in_scale0 = 0,
+      float in_scale1 = 0,
+      float out_scale = 0) {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems) return;
+      int inner_idx = index % inner_dim;
+      int outer_idx = index / outer_stride;
+      uint64_t calc_index = outer_idx * inner_dim + inner_idx;
+      uint64_t offset0 = first_shorter ? calc_index : index;
+      uint64_t offset1 = first_shorter ? index : calc_index;
+      output[index] = ppl_arithmetic_scalar_int8<op_type, T>(input0[offset0], input1[offset1], in_scale0, in_scale1, out_scale);
+  }
+  ```
 
 ### 逻辑算子
 
