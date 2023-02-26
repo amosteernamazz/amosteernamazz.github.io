@@ -78,6 +78,18 @@ mermaid: true
   };
   ```
 
+#### 维度结构宏
+
+  ```c++
+  #define MAXDIMENSIONS 7
+
+  struct ArithmeticParam {
+      uint32_t stride_in0[MAXDIMENSIONS];
+      uint32_t stride_in1[MAXDIMENSIONS];
+      uint32_t stride_out[MAXDIMENSIONS];
+  };
+
+  ```
 
 #### 标量算数方法
 
@@ -561,6 +573,20 @@ mermaid: true
   };
   ```
 
+#### 维度结构宏
+
+  ```c++
+  #define MAXDIMENSIONS 7
+
+  struct LogicalParam {
+      uint32_t stride_in0[MAXDIMENSIONS];
+      uint32_t stride_in1[MAXDIMENSIONS];
+      uint32_t stride_out[MAXDIMENSIONS];
+  };
+
+  ```
+
+
 
 #### 标量逻辑方法
 
@@ -646,5 +672,157 @@ mermaid: true
       #endif
     }
   ```
+
+
+
+
+
+
+
 ## 比较算子
+
+
+ 首先明确比较算子的**逻辑运算**方法和**数据类型**
+ `template <RelationOpType op_type, typename T>`
+
+### 比较算子宏与基本方法
+ 
+
+#### 比较算子宏
+
+**比较运算方法enum**
+  ```c++
+
+  enum RelationOpType {
+    Relation_Unknown = 0,
+    Relation_Equal,
+    Relation_Greater,
+    Relation_Greater_Or_Equal,
+    Relation_Less,
+    Relation_OpNum,
+    Relation_ForceWord = INT_MAX,
+  };
+
+  ```
+
+**新建数据结构bool8_和 half8_**
+  ```c++
+  struct half8_ {
+    half x0;
+    half y0;
+    half z0;
+    half w0;
+    half x1;
+    half y1;
+    half z1;
+    half w1;
+  };
+
+  struct bool8_ {
+    bool x0;
+    bool y0;
+    bool z0;
+    bool w0;
+    bool x1;
+    bool y1;
+    bool z1;
+    bool w1;
+  };
+  ```
+
+#### 维度结构宏
+
+  ```c++
+  #define MAXDIMENSIONS 7
+
+  struct RelationParam {
+      uint32_t stride_in0[MAXDIMENSIONS];
+      uint32_t stride_in1[MAXDIMENSIONS];
+      uint32_t stride_out[MAXDIMENSIONS];
+  };
+
+
+  ```
+
+
+
+#### 标量比较方法
+
+**template结构**
+  ```c++
+  template<LogicalOpType op_type, typename T>
+  __device__ inline bool ppl_relation_scalar(T a, T b);
+  ```
+
+**标量方法实现**
+
+根据**标量比较方法**的不同和**数据类型**的不同，对标量方法进行**实现**
+
+ * Equal方法使用`fabsf(a-b) <1e-6`
+ * 
+提供上层**不同数据类型**的**static方法**
+
+  ```c++
+  template<LogicalOpType op_type>
+  static __device__ inline bool ppl_logical_vector(bool a, bool b){
+    bool ans;
+    ans = ppl_logical_scalar<op_type>(a, b);
+    return ans;
+  }
+
+  // 还有bool8_数据结构的实现
+
+  ```
+
+
+#### 比较算子方法
+
+ 比较算子方法根据数据结构的不同有两种方法
+
+**没有数据结构的比较算子方法**
+  ```c++
+  template <LogicalOpType op_type, typename T1, typename T2>
+  __global__ void ppl_cukernel_logical_naive(
+    const uint64_t num_elems,
+    const T1* input0,
+    const T1* input1,
+    const T2* output){
+      #if __CUDA_ARCH__ >= 600 && __CUDACC_VER_MAJOR__ >= 9
+        uint64_t index = blockId.x * blockDim.x + threadId.x;
+        if(index >= num_elems){
+          return;
+        }
+        output[index] = ppl_logical_vector<op_type>(input0[index], input1[index]);
+      #endif
+    }
+  ```
+**带数据结构的比较算子方法**
+ * 使用`stride_in`和`stride_out`可能会有不同，主要是为了输出的时候进行**shape的更改**
+  ```c++
+  template <LogicalOpType op_type, typename T1, typename T2>
+  __global__ void ppl_cukernel_logical(
+    uint64_t num_elems,
+    int dim_count,
+    LogicalParam param,
+    const T1* input0,
+    const T1* input1,
+    const T2* output){
+      #if __CUDA_ARCH__ >= 600 && __CUDACC_VER_MAJOR >= 9
+        uint64_t index = blockId.x * blockDim.x + threadId.x;
+        if(index >num_elems){
+          return;
+        }
+        uint64_t out_index = index;
+        uint64_t offset0 = 0;
+        uint64_t offset1 = 0;
+        for(int i = 0; i <dim_count; i++){
+            uint64_t dim_off = index / param.stride_out[i];
+            offset0 += dim_off * param.stride_in0[i];
+            offset1 += dim_off * param.stride_in1[i];
+            index = index % param.stride_out[i];
+        }
+        output[out_index] = ppl_logical_vector<op_type>(input0[offset0], input1[offset1]);
+      #endif
+    }
+  ```
 
