@@ -757,74 +757,158 @@ mermaid: true
 **标量方法实现**
 
 根据**标量比较方法**的不同和**数据类型**的不同，对标量方法进行**实现**
+ * 主要针对float、int64_t类型、half(fp16)类型进行实现
 
- * Equal方法使用`fabsf(a-b) <1e-6`
+**标量方法注意事项**
+ * 在float中equal方法使用`fabsf(a-b) <1e-6`
+ * 针对half类型的比较方法采用nvidia内置方法
 
 
 
 提供上层**不同数据类型**的**static方法**
 
   ```c++
-  template<LogicalOpType op_type>
-  static __device__ inline bool ppl_logical_vector(bool a, bool b){
-    bool ans;
-    ans = ppl_logical_scalar<op_type>(a, b);
-    return ans;
+  template <RelationOpType op_type>
+  static __device__ inline bool ppl_relation_vector_fp16(half a, half b)
+  {
+      bool res;
+      res = ppl_relation_scalar_fp16<op_type>(a, b);
+      return res;
   }
 
-  // 还有bool8_数据结构的实现
-
+  // 除了该方法还有bool8_类型的方法
   ```
-
 
 #### 比较算子方法
 
- 比较算子方法根据数据结构的不同有两种方法
+ 比较算子方法包括无维度特征的比较算子、带维度信息的比较算子、标量比较算子、带广播的比较算子
 
-**没有数据结构的比较算子方法**
+**无维度特征的比较算子**
+
   ```c++
-  template <LogicalOpType op_type, typename T1, typename T2>
-  __global__ void ppl_cukernel_logical_naive(
-    const uint64_t num_elems,
-    const T1* input0,
-    const T1* input1,
-    const T2* output){
-      #if __CUDA_ARCH__ >= 600 && __CUDACC_VER_MAJOR__ >= 9
-        uint64_t index = blockId.x * blockDim.x + threadId.x;
-        if(index >= num_elems){
+  template <RelationOpType op_type, typename T>
+  __global__ void ppl_cukernel_relation_naive(
+      const uint64_t num_elems,
+      const T *input0,
+      const T *input1,
+      bool *output)
+  {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems)
           return;
-        }
-        output[index] = ppl_logical_vector<op_type>(input0[index], input1[index]);
-      #endif
-    }
+      output[index] = ppl_relation_scalar<op_type, T>(input0[index], input1[index]);
+  }
   ```
-**带数据结构的比较算子方法**
- * 使用`stride_in`和`stride_out`可能会有不同，主要是为了输出的时候进行**shape的更改**
+
+**带维度信息的比较算子**
+
+
   ```c++
-  template <LogicalOpType op_type, typename T1, typename T2>
-  __global__ void ppl_cukernel_logical(
+
+  template <RelationOpType op_type, typename T>
+  __global__ void ppl_cukernel_relation(
+      const uint64_t num_elems,
+      const int dim_count,
+      RelationParam param,
+      const T *input0,
+      const T *input1,
+      bool *output)
+  {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems)
+          return;
+
+      uint64_t out_index = index;
+      uint64_t offset0   = 0;
+      uint64_t offset1   = 0;
+      for (int i = 0; i < dim_count; i++) {
+          uint64_t dim_off = index / param.stride_out[i];
+          offset0 += dim_off * param.stride_in0[i];
+          offset1 += dim_off * param.stride_in1[i];
+          index = index % param.stride_out[i];
+      }
+      output[out_index] = ppl_relation_scalar<op_type, T>(input0[offset0], input1[offset1]);
+  }
+
+  ```
+
+
+**带维度信息的比较算子fp16**
+
+
+  ```c++
+  __global__ void ppl_cukernel_relation_fp16(
+      const uint64_t num_elems,
+      const int dim_count,
+      RelationParam param,
+      const T1 *input0,
+      const T1 *input1,
+      T2 *output)
+  {
+  #if __CUDA_ARCH__ >= 600 && __CUDACC_VER_MAJOR__ >= 9
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems)
+          return;
+      uint64_t out_index = index;
+      uint64_t offset0   = 0;
+      uint64_t offset1   = 0;
+      for (int i = 0; i < dim_count; i++) {
+          uint64_t dim_off = index / param.stride_out[i];
+          offset0 += dim_off * param.stride_in0[i];
+          offset1 += dim_off * param.stride_in1[i];
+          index = index % param.stride_out[i];
+      }
+      output[out_index] = ppl_relation_vector_fp16<op_type>(input0[offset0], input1[offset1]);
+  #endif
+  }
+
+
+  ```
+
+
+**标量比较算子**
+  ```c++
+
+  template <RelationOpType op_type, typename T>
+  __global__ void ppl_cukernel_relation_one_scalar(
+      const uint64_t num_elems,
+      const bool first_shorter,
+      const T *input0,
+      const T *input1,
+      bool *output)
+  {
+      uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems)
+          return;
+      int calc_index   = 0;
+      uint64_t offset0 = first_shorter ? calc_index : index;
+      uint64_t offset1 = first_shorter ? index : calc_index;
+      output[index]    = ppl_relation_scalar<op_type, T>(input0[offset0], input1[offset1]);
+  }
+  ```
+
+
+
+**带广播的比较算子**
+  ```c++
+  template <RelationOpType op_type, typename T>
+  __global__ void ppl_cukernel_relation_one_broadcast(
     uint64_t num_elems,
-    int dim_count,
-    LogicalParam param,
-    const T1* input0,
-    const T1* input1,
-    const T2* output){
-      #if __CUDA_ARCH__ >= 600 && __CUDACC_VER_MAJOR >= 9
-        uint64_t index = blockId.x * blockDim.x + threadId.x;
-        if(index >num_elems){
-          return;
-        }
-        uint64_t out_index = index;
-        uint64_t offset0 = 0;
-        uint64_t offset1 = 0;
-        for(int i = 0; i <dim_count; i++){
-            uint64_t dim_off = index / param.stride_out[i];
-            offset0 += dim_off * param.stride_in0[i];
-            offset1 += dim_off * param.stride_in1[i];
-            index = index % param.stride_out[i];
-        }
-        output[out_index] = ppl_logical_vector<op_type>(input0[offset0], input1[offset1]);
-      #endif
+    const int outer_stride,
+    const int inner_dim,
+    const bool first_shorter,
+    const T* input0,
+    const T* input1,
+    bool* output){
+      uint64_t index = blockId.x * blockDim.x + threadId.x;
+      if(index > num_elems){
+        return;
+      }
+      int outer_index = index / outer_stride;
+      int inner_index = index % inner_dim;
+      uint64_t clc_index = outer_index * outer_stride + inner_index;
+      int offset0 = first_shorter ? clc_index : index;
+      int offset1 = first_shorter ? index : clc_index;
+      output[index] =ppl_relation_scalar<op_type, T>(input0[offset0], input1[offset1]);
     }
   ```
-
