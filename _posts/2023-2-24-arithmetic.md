@@ -44,7 +44,7 @@ mermaid: true
 
 ### 算数算子宏与基本方法
 
-**算数算子宏**
+#### 算数算子宏
  * 算数方法枚举类
 
   ```c++
@@ -79,14 +79,18 @@ mermaid: true
   ```
 
 
-### 标量算数方法
+#### 标量算数方法
 
- 形成标量算数方法
+**算数方法template**
+
   ```c++
   template<ArithmeticOpType op_type, typename T>
   __device__ inline T ppl_arithmetic_scalar(T a, T b);
   ```
- 根据不同**数据类型**，不同**算数方法**进行方法实现
+
+根据不同**数据类型**，不同**算数方法**，进行实现
+
+**标量算数方法实现注意点**
  * 对于int8类型变量（有上下范围时候的差异），为了区分，定义新template函数`ppl_arithmetic_scalar_int8`
  * 对于CUDA内置half类型，重写函数`ppl_arithmetic_scalar`
  * 定义自定义类型half8_的实现
@@ -354,6 +358,8 @@ mermaid: true
 
 #### 单向量算子
 
+ 包括标量与向量的算数算子方法、多维标量数据算数方法（NCHW结构中的C不同）、带广播机制的算子方法
+
  **ppl_cukernel_arithmetic_one_scalar**
 
   ```c++
@@ -519,6 +525,126 @@ mermaid: true
   }
   ```
 
-### 逻辑算子
+## 逻辑算子
 
-### 比较算子
+ 首先明确逻辑算子的**逻辑运算**方法和**数据类型**，数据类型为bool类型
+ `template <LogicalOpType op_type>`
+
+### 逻辑算子宏与基本方法
+ 
+
+#### 逻辑算子宏
+
+**逻辑运算方法enum**
+  ```c++
+
+  enum LogicalOpType {
+      Logical_Unknown = 0,
+      Logical_And,
+      Logical_Xor,
+      Logical_OpNum,
+      Logical_ForceWord = INT_MAX,
+  };
+  ```
+
+**新建数据结构bool8_**
+  ```c++
+  struct bool8_ {
+      bool x0;
+      bool y0;
+      bool z0;
+      bool w0;
+      bool x1;
+      bool y1;
+      bool z1;
+      bool w1;
+  };
+  ```
+
+
+#### 标量逻辑方法
+
+**template结构**
+  ```c++
+  template<LogicalOpType op_type>
+  __device__ inline bool ppl_logical_scalar(bool a, bool b);
+  ```
+
+**标量方法实现**
+
+根据**标量逻辑方法**的不同，对bool类型标量方法进行实现
+
+
+  ```c++
+  template<>
+  __device__ inline bool ppl_logical_scalar<Logical_And>(bool a, bool b){
+    return a && b;
+  }
+  ```
+提供上层**不同数据类型**的**static方法**
+
+  ```c++
+  template<LogicalOpType op_type>
+  static __device__ inline bool ppl_logical_vector(bool a, bool b){
+    bool ans;
+    ans = ppl_logical_scalar<op_type>(a, b);
+    return ans;
+  }
+
+  // 还有bool8_数据结构的实现
+
+  ```
+
+
+#### 逻辑算子方法
+
+ 逻辑算子方法根据数据结构的不同有两种方法
+
+**没有数据结构的逻辑算子方法**
+  ```c++
+  template <LogicalOpType op_type, typename T1, typename T2>
+  __global__ void ppl_cukernel_logical_naive(
+    const uint64_t num_elems,
+    const T1* input0,
+    const T1* input1,
+    const T2* output){
+      #if __CUDA_ARCH__ >= 600 && __CUDACC_VER_MAJOR__ >= 9
+        uint64_t index = blockId.x * blockDim.x + threadId.x;
+        if(index >= num_elems){
+          return;
+        }
+        output[index] = ppl_logical_vector<op_type>(input0[index], input1[index]);
+      #endif
+    }
+  ```
+**带数据结构的逻辑算子方法**
+ * 使用`stride_in`和`stride_out`可能会有不同，主要是为了输出的时候进行**shape的更改**
+  ```c++
+  template <LogicalOpType op_type, typename T1, typename T2>
+  __global__ void ppl_cukernel_logical(
+    uint64_t num_elems,
+    int dim_count,
+    LogicalParam param,
+    const T1* input0,
+    const T1* input1,
+    const T2* output){
+      #if __CUDA_ARCH__ >= 600 && __CUDACC_VER_MAJOR >= 9
+        uint64_t index = blockId.x * blockDim.x + threadId.x;
+        if(index >num_elems){
+          return;
+        }
+        uint64_t out_index = index;
+        uint64_t offset0 = 0;
+        uint64_t offset1 = 0;
+        for(int i = 0; i <dim_count; i++){
+            uint64_t dim_off = index / param.stride_out[i];
+            offset0 += dim_off * param.stride_in0[i];
+            offset1 += dim_off * param.stride_in1[i];
+            index = index % param.stride_out[i];
+        }
+        output[out_index] = ppl_logical_vector<op_type>(input0[offset0], input1[offset1]);
+      #endif
+    }
+  ```
+## 比较算子
+
