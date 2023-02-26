@@ -34,20 +34,64 @@ mermaid: true
 
 
 # 算子库方法
+
  算子库包括算数算子（算数运算、逻辑运算、关系运算）、reduce算子（argmax、argmin等）、format算子（类型转换算子）、unary算子（cast、clip、relu、neg、not、zero等）、nn算子（层归一化、conv、lstm、one-hot、pooling-max、topk、gemm等）、数据大小的转变算子（expand、gather、pad、split、tile、reshape等）
 
 ## 算数算子
 
-### 算数算子
+  首先确定算数算子方法使用template方法，其中包括待确定的**算数类型**和算数元素的**数据类型**
+  `template<ArithmeticOpType op_type, typename T>`
 
- * 确定template待确定的变量类型（其中为算数类型与数据类型）
-   * `template<ArithmeticOpType op_type, typename T>`
+### 算数算子宏与基本方法
+
+**算数算子宏**
+ * 算数方法枚举类
+
+  ```c++
+  enum ArithmeticOpType {
+      Arithmetic_Unknown = 0,
+      Arithmetic_Add,
+      Arithmetic_Sub,
+      Arithmetic_Mul,
+      Arithmetic_Div,
+      Arithmetic_Max,
+      Arithmetic_Min,
+      Arithmetic_Pow,
+      Arithmetic_PRelu, // similar to arithmetic
+      Arithmetic_Mod,
+      Arithmetic_OpNum,
+      Arithmetic_ForceWord = INT_MAX,
+  };
+  ```
+ * 新建数据类型`half8_`
+
+  ```c++
+  struct half8_ {
+      half x0;
+      half y0;
+      half z0;
+      half w0;
+      half x1;
+      half y1;
+      half z1;
+      half w1;
+  };
+  ```
+
+
+### 标量算数方法
+
+ 形成标量算数方法
+  ```c++
+  template<ArithmeticOpType op_type, typename T>
+  __device__ inline T ppl_arithmetic_scalar(T a, T b);
+  ```
+ 根据不同**数据类型**，不同**算数方法**进行方法实现
  * 对于int8类型变量（有上下范围时候的差异），为了区分，定义新template函数`ppl_arithmetic_scalar_int8`
- * 为了解决张量缩放等问题，将`ppl_arithmetic_scalar_int8`函数引入输入张量缩放因子`in_scale0`和`in_scale1`以及输出张量缩放因子`out_scale`
  * 对于CUDA内置half类型，重写函数`ppl_arithmetic_scalar`
  * 定义自定义类型half8_的实现
 
-#### static方法
+### 算数算子static方法
 
  **计算两个输入张量的形状并在需要时对它们进行填充，以使它们具有相同的最大维度数**
   * 计算输入张量形状的最大维度数`tensor_shape0`、`tensor_shape1`
@@ -65,8 +109,8 @@ mermaid: true
     * 如果当前维度和前一个维度需要进行不同的广播操作，则跳出循环
   * 更新输入张量的维度数为实际维度数
 
-
-在算子方法中，针对不同的数据结构，定义了不同的算子方法，包括双向量算子(无数据结构算子方法、带维度结构的算子方法、图像算子)、单向量算子
+### 算数算子方法
+ **在算子方法中，针对不同的数据结构，定义了不同的算子方法，包括双向量算子(无数据结构算子方法、带维度结构的算子方法、图像算子)、单向量算子（元素算子、某维度算子、带广播的算子）**
 
 #### 无数据结构的算子方法
 
