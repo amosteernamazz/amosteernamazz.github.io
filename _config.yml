@@ -77,7 +77,7 @@ paginate_path: /blog/page:num
 comments:
   provider: disqus
   disqus:
-    shortname: kitian616-github-io
+    shortname: amosteernamazz-github-io
 
 
 ## => Pageview
