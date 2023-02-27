@@ -255,21 +255,64 @@ mermaid: true
 
 
 **nhwc的concat操作**
+  * `nhwc_axis`指示拼接操作应在哪个轴上进行的参数，即输入张量的哪个维度需要进行拼接。
+  * `axis_offset`指示拼接在指定轴上时需要跳过的元素数。
+    * 对于拼接操作，输出张量在拼接轴上的维度大小将等于所有输入张量在该轴上的维度大小之和
+    * 表示跳过第一个输入张量中的元素数，以便输出张量中的元素与输入张量中的元素对齐
+  * `input_stride_fast`其元素表示输入张量在每个维度上的 stride 值
+  * `intput_strides`输入张量在每个维度上的 stride 值
+  * `output_strides`输出张量在每个维度上的 stride 值
+  * `output_strides`、`intput_strides`和`input_stride_fast`三个参数应该都类似之前算数运算中的数据分布方式，通过不断取余最后到最后一维，得到offset
+
+  ```c++
+  template <typename T>
+  __global__ void ppl_cukernel_concat_nhwc(
+      int64_t num_elems,
+      int num_dims,
+      int nhwc_axis,
+      int axis_offset,
+      GArray<DivModFast> input_strides_fast,
+      GArray<int64_t> input_padded_strides,
+      GArray<int64_t> output_padded_strides,
+      const T* input,
+      T* output)
+  {
+      int index = blockIdx.x * blockDim.x + threadIdx.x;
+      if (index >= num_elems)
+          return;
+
+      int64_t output_offset = 0, input_offset = 0;
+      int idx, remain                         = index;
+      for (int it = 0; it < num_dims; ++it) {
+          input_strides_fast[it].divmod(remain, idx, remain);
+          input_offset += idx * input_padded_strides[it];
+          idx = (it == nhwc_axis) ? idx + axis_offset : idx;
+          output_offset += idx * output_padded_strides[it];
+      }
+      output[output_offset] = input[input_offset];
+  }
+  ```
+
+**注意**
+
+ * 使用时，`input_strides`和`output_strides`在主机上分配并填充
+   * 因为stride信息在声明空间的时候已经确定，其值不会随着GPU线程变化而变化，没有必要再每个线程中都分配一次
+
+**nhwc两个进行concat**
 
 ```c++
-template <typename T>
-void ppl_cukernel_concat_nhwc(
-  int64_t num_elems;
-  int num_dims;
-  int nhwc_axis;
-  int axis_offset;
-  GArray<int64_t> intput_strides;
-  GArray<int64_t> output_strides;
-  const T* inputs;
-  T* output){
-    int index = blockId.x * blockDim.x + threadId.x;
-    for(int i = 0; i < num_dims; i++){
-      
+template <typename T1, typename T2>
+__launch_bounds__(256)
+__global__ void ppl_cukernel_concat_nhwc_two_inputs(
+  int64_t num_elems,
+  int inner_dims,
+  int axis_width0,
+  int axis_width1,
+  const T1* input0,
+  const T1* input1,
+  T2* output){
+    for(int64_t i = (int64_t)blockIdx.x * blockDim.x + threadIdx.x; i < num_elems; i += (int64_t)blockDim.x * gridDim.x){
+      int 
     }
   }
 ```
