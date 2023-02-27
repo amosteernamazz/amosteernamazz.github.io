@@ -60,8 +60,94 @@ mermaid: true
 
   ```
 
+## array数据结构
 
-# NN 算子
+
+**目的**
+  * 为NCHW结构中的涉及到concat函数提供GPU数据结构支持
+
+**array的实现**
+  * array数据主要是提供GPU端的array实现
+
+  ```c++
+  #ifndef PPLCUDA_KERNEL_INCLUDE_MEMORY_UTILS_H_
+  #define PPLCUDA_KERNEL_INCLUDE_MEMORY_UTILS_H_
+  #define MAX_DIMENSION 7
+  #include <vector>
+  #include <stdint.h>
+  #include <assert.h>
+
+  template <typename T, int32_t capacity = MAX_DIMENSION>
+  struct GArray{
+    // constructor
+    Garray()
+    :size_(0)
+    ,data_(){
+    }
+
+    // constructor
+    Garray(int32_t size)
+    :size_(size)
+    ,data_(){
+      assert(size >= 0 && size<= capacity);
+    }
+
+    // constructor
+    Garray(const std::vector<T>& vec)
+    :size_(static_cast<int32_t>vec.size())
+    {
+      #if !defined(__GNUC__) || __GNUC__ >=5
+        static_assert(std::is_trivially_copyable<T>::value, "T must be trivially copyable.");
+      #endif
+      memcpy(data_, vec.data(), vec.size()*sizeof(T));
+    }
+
+
+    void SetSize(int32_t size)
+    {
+      assert(size >= 0 && size <= capacity);
+      size_ = size;
+    }
+
+    __host__ __device__ int32_t Size() const{
+      return size_;
+    }
+
+    __host__ __device__ T& operator[] (int32_t index){
+      return data_[index];
+    }
+    
+    __host__ __device__ __forceinline__ const T& operator[](int32_t index) const
+    {
+      return data_[index];
+    }
+
+    __host__ __device__ T* Data()
+    {
+      return data_;
+    }
+
+    __host__ __device__ const T* Data() const
+    {
+      return data_;
+    }
+
+    static constexpr int32_t Capacity()
+    {
+      return capacity;
+    };
+
+
+  private:
+    int32_t size_;
+    T data_[capacity];
+  }
+
+  #endif
+  ```
+
+
+# memory 算子
 
 ## concat算子
 
@@ -131,6 +217,11 @@ mermaid: true
 
 **两个input的concat**
 
+  * 使用Grid-stride loop解决大数据量的并发性能要求
+    * 当为七次array的时候每维达到54左右，数据量可达到10000亿
+    * 需要使用Grid-stride loop方法
+
+
   ```c++
   template <typename T1, typename T2>
   __launch_bounds__(256)
@@ -139,6 +230,8 @@ mermaid: true
     const T1* input0;
     const T1* input1;
     T2* output;){
+      // 使用Grid-stride loop
+
       for(int64_t i = blockId.x * blockDim.x + threadId.x; i < num_elems ; i += (int64_t)gridDim.x * blockDim.x){
         int threadid = threadId.x;
         __shared__ T1 buffer[512];
@@ -160,3 +253,23 @@ mermaid: true
     * warp-shuffle，用于在同一个warp内的线程之间交换数据
       * 与本目的concat没有关系
 
+
+**nhwc的concat操作**
+
+```c++
+template <typename T>
+void ppl_cukernel_concat_nhwc(
+  int64_t num_elems;
+  int num_dims;
+  int nhwc_axis;
+  int axis_offset;
+  GArray<int64_t> intput_strides;
+  GArray<int64_t> output_strides;
+  const T* inputs;
+  T* output){
+    int index = blockId.x * blockDim.x + threadId.x;
+    for(int i = 0; i < num_dims; i++){
+      
+    }
+  }
+```
