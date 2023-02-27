@@ -60,6 +60,8 @@ mermaid: true
 
   ```
 
+<!--more-->
+
 ## array数据结构
 
 
