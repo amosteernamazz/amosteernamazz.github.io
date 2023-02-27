@@ -1,6 +1,6 @@
 ---
 layout: article
-title: 算子库
+title: concat算子
 key: 100030
 tags: C++ 算子库 CUDA GPU算法 算法
 category: blog
@@ -302,19 +302,91 @@ mermaid: true
 
 **nhwc两个进行concat**
 
-```c++
-template <typename T1, typename T2>
-__launch_bounds__(256)
-__global__ void ppl_cukernel_concat_nhwc_two_inputs(
-  int64_t num_elems,
-  int inner_dims,
-  int axis_width0,
-  int axis_width1,
-  const T1* input0,
-  const T1* input1,
-  T2* output){
-    for(int64_t i = (int64_t)blockIdx.x * blockDim.x + threadIdx.x; i < num_elems; i += (int64_t)blockDim.x * gridDim.x){
-      int 
+  ```c++
+  template <typename T1, typename T2>
+  __launch_bounds__(256)
+  __global__ void ppl_cukernel_concat_nhwc_two_inputs(
+    int64_t num_elems,
+    int inner_dims,
+    int axis_width0,
+    int axis_width1,
+    const T1* input0,
+    const T1* input1,
+    T2* output){
+      for(int64_t i = (int64_t)blockIdx.x * blockDim.x + threadIdx.x; i < num_elems; i += (int64_t)blockDim.x * gridDim.x){
+        int outer_index = i / inner_dims;
+        int inner_index = i % inner_dims;
+        if(inner_index > axis_width0){
+          int index = outer_index * axis_width1 + (inner_index - axis_width0);
+          output[i] = input0[index];
+        }
+        else{
+          int index = outer_index * axis_width0 + inner_index;
+          output[i] = input1[index];
+        }
+      }
     }
+  ```
+
+
+**带padding的最后维度的concat**
+  * concat是需要对input进行padding
+    * 不同输入张量的维度大小不一，可能会导致输出张量的大小超出GPU内存的限制。为了解决这个问题，通常会对输出张量进行Padding，使其大小符合GPU内存的限制，从而能够在GPU上高效地运行。
+    * Padding后的输出张量，有一部分无用数据不属于输入张量的有效数据，为输出张量大小符合GPU内存限制，填充这些无用的数据。
+      * 这会导致内存浪费，相比于无法在GPU上运行模型，内存浪费的影响相对较小。
+      * 同时，在一些情况下，Padding后的输出张量也可以被复用，例如在进行反向传播时，可以将输出张量中的Padding数据设置为0，从而方便计算梯度。
+
+
+  ```c++
+  template<typename T1, typename T2>
+  __launch_bounds__(256)
+  __global__ void ppl_cukernel_concat_nhwc_two_inputs(
+    int64_t num_elems,
+    int inner_dims,
+    int pad_inner_dims,
+    int axis_width0,
+    int pad_axis_width0,
+    int axis_width1,
+    int pad_axis_width1,
+    const T1* input0,
+    const T1* input1,
+    T2* output){
+      for (int64_t i = (int64_t)blockIdx.x * blockDim.x + threadIdx.x;i < num_elems;i += (int64_t)blockDim.x * gridDim.x){
+        int outer_index = i / pad_inner_dims;
+        int inner_index = i % pad_inner_dims;
+        if(inner_index >= axis_width0){
+          int asis_offset = inner_index - axis_width0;
+          int input_offset = outer_index * pad_axis_width1 + asis_offset;
+          output[i] = asis_offset >= axis_width0 ? 0 : input1[input_offset];
+        }else{
+          int asis_offset = inner_index - axis_width1;
+          int input_offset = outer_index * pad_axis_width0 + asis_offset;
+          output[i] = asis_offset >= axis_width1 ? 0 : input0[input_offset];
+        }
+      }
+    }
+  ```
+
+**对NHWC格式数据concat**
+
+  ```c++
+  template <typename T>
+  __global__ void ppl_cukernel_concat_nhwc_nopadding(
+      int64_t num_elems,
+      const T* inputs,
+      int64_t concat_size,
+      int64_t top_axis_width,
+      DivModFast num_elems_inner_fast,
+      int axis_offset,
+      T* output)
+  {
+      for (int64_t i = (int64_t)blockIdx.x * blockDim.x + threadIdx.x;
+          i < num_elems;
+          i += (int64_t)blockDim.x * gridDim.x) {
+          int outer_idx, inner_idx;
+          num_elems_inner_fast.divmod(i, outer_idx, inner_idx);
+          int64_t top_idx = inner_idx + (outer_idx * top_axis_width + axis_offset);
+          output[top_idx] = inputs[i];
+      }
   }
-```
+  ```
