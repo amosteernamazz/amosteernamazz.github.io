@@ -166,7 +166,7 @@ mermaid: true
    * axis_offset：拼接轴在输入 tensor 中的偏移量
 
  c++实现
- 
+
   ```c++
   template<typename T>
   __global__  void ppl_cukernel_concat(
@@ -191,6 +191,8 @@ mermaid: true
 
  * 数据结构为[batch_size, height, width, channels]
  * 拼接在channels维度上进行
+
+
   ```c++
   int batch_size = 2;
   int height = 32;
