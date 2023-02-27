@@ -65,6 +65,29 @@ mermaid: true
 
 ## concat算子
 
-### 
+**目的**
+ * 用于在GPU上对输入数据进行**并行拼接**
+
+### 实现
+
+**ppl_cukernel_concat**
 
 
+```c++
+template<typename T>
+void ppl_cukernel_concat(
+  int64_t num_elems,
+  const T* inputs,
+  int64_t concat_size;
+  int64_t axis_width;
+  int64_t axis_offset;
+  DivModFast num_input_fast_div,
+  T* output){
+    for(int64_t i = blockId.x * blockDim.x + threadId.x; i< num_elems; i +=(int64_t)gridDim.x * blockDim.x){
+      int inner_index, outer_index;
+      num_input_fast_div.divmod(i, outer_index, inner_index);
+      int64_t output_index = inner_index + (outer_index * axis_width+ axis_offset) * concat_size;
+      output[output_index] = inputs[i];
+    }
+  }
+```
