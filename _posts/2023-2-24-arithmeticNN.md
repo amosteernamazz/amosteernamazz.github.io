@@ -14,7 +14,7 @@ mermaid: true
 
 **步骤**
 
-![](https://images0.cnblogs.com/blog/258391/201412/311730547311897.png)
+![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e4a1ed43282a40fca58df70aa2d4947b~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 **论文链接**
 [快速整数除法论文链接](https://gmplib.org/~tege/divcnst-pldi94.pdf)
