@@ -1,6 +1,6 @@
 ---
 layout: article
-title: concat算子
+title: concat 算子
 key: 100030
 tags: C++ 算子库 CUDA GPU算法 算法
 category: blog
