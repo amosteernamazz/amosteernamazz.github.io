@@ -16,7 +16,7 @@ mermaid: true
 
 ## array数据结构
 
-
+[array数据结构链接](https://amosteernamazz.github.io/blog/2023/02/26/arithmeticNN.html#array%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
 # channel shuffle 算子
 
 **目的**
