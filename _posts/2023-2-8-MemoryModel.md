@@ -686,8 +686,12 @@ mermaid: true
 
 
 
-  **shared memory配置**
+  **shared memory位置**
+   * cc 2.x、cc 3.x、cc 7.x、cc 8.x、cc 9.x、L1和shared memory一块配置
+   * cc 5.x、cc 6.x L1和 texture memory 一块配置，shared memory有自己的空间
 
+
+  **shared memory配置**
 
    * L1 + Shared 一共有64 kb memory (在某些device上)
 
