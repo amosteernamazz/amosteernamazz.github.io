@@ -159,11 +159,14 @@ mermaid: true
 ### 实现
 
 **广义concat函数**
+
  * 广义的concat函数，可以指定对不同轴进行concat
    * `concat_size`表示拼接的 tensor 数量
    * top_axis_width：拼接的轴的宽度
    * axis_offset：拼接轴在输入 tensor 中的偏移量
 
+ c++实现
+ 
   ```c++
   template<typename T>
   __global__  void ppl_cukernel_concat(
