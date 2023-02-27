@@ -1,6 +1,6 @@
 ---
 layout: article
-title: 算子库
+title: 算数、逻辑、关系算子
 key: 100030
 tags: C++ 算子库 CUDA GPU算法 算法
 category: blog
