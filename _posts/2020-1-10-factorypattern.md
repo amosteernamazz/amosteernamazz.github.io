@@ -2,7 +2,7 @@
 layout: article
 title: 工厂模式
 key: 100006
-tags: 设计模式 工厂模式
+tags: 设计模式
 category: blog
 date: 2020-01-10 00:00:00 +08:00
 mermaid: true
