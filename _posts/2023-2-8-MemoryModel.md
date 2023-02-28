@@ -1599,8 +1599,9 @@ mermaid: true
 
 
 
- CAS(compare and swap) 是一切atomic operation 的基础，全部的<font color = red>atomic 操作都可以使用CAS 实现</font>。
- CUDA的`atomicCAS()`支持输入参数为`unsigned long long`或`unsigned int`或`int`或`unsigned short int`其他的参数需要进行转换才可使用（详见**PyTorch中的CAS相关实现**）
+ * CAS(compare and swap) 是一切atomic operation 的基础，全部的<font color = red>atomic 操作都可以使用CAS 实现</font>。
+
+ * CUDA的`atomicCAS()`支持输入参数为`unsigned long long`或`unsigned int`或`int`或`unsigned short int`其他的参数需要进行转换才可使用（详见**PyTorch中的CAS相关实现**）
 
  **CAS 输入**
   * 某<font color = red>内存地址</font>
