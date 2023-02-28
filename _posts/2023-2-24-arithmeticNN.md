@@ -156,6 +156,13 @@ mermaid: true
 **目的**
  * 用于在GPU上对输入数据进行**并行拼接**
 
+**concat算子中为什么没有scale变换**
+
+ * Concatenate（concat）操作通常用于将多个张量（tensor）在某个维度上拼接起来。例如，将两个形状为（batch_size，height，width，channels_1）和（batch_size，height，width，channels_2）的张量在第4个维度上拼接起来，得到形状为（batch_size，height，width，channels_1+channels_2）的张量
+ * Scale变换通常用于缩放输入数据，以便更好地适应激活函数的范围。在Concatenate操作中，由于拼接的张量具有不同的尺寸和特征数量，缩放可能会引入不必要的复杂性和计算量，并且可能会导致梯度消失或爆炸的问题。
+ * 通常使用批量归一化（batch normalization）等技术来控制模型中的尺度问题。这些技术可以通过缩放和平移来标准化每个特征维度，从而避免尺度不一致带来的问题。
+ * 在大多数情况下，对于Concatenate操作来说，不需要进行Scale变换。如果需要进行缩放，通常可以在**拼接操作之前**使用其他的方法来调整张量的尺度，例如全局平均池化（global average pooling）或卷积操作等。
+
 ### 实现
 
 **广义concat函数**
