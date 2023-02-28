@@ -2,7 +2,7 @@
 layout: article
 title: 观察者模式
 key: 100007
-tags: 设计模式 观察者模式 
+tags: 设计模式
 category: blog
 date: 2020-01-10 00:00:00 +08:00
 mermaid: true
