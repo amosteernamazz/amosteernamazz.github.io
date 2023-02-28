@@ -82,6 +82,7 @@ mermaid: true
 **其他**
  * 零拷贝内存
  * Unified Memory
+ * Weakly-Ordered Memory Model
  * 
 
 
