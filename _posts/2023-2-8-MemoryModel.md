@@ -1733,7 +1733,12 @@ mermaid: true
 
 
   **延迟改进**
-   针对global memory读取时间长的问题，现代GPU将支持的原子操作改为<font color = red>last level cache上进行</font>，把atomic的latency从few hunderdes cycle变为了few tens cycle. 这个优化不需要任何programmer的更改，是通过使用<font color = red>更先进的hardware来实现的</font>。
+  * 硬件改进
+    * 针对global memory读取时间长的问题，现代GPU将支持的原子操作改为<font color = red>last level cache上进行</font>，把atomic的latency从few hunderdes cycle变为了few tens cycle. 这个优化不需要任何programmer的更改，是通过使用<font color = red>更先进的hardware来实现的</font>。
+  * 软件改进
+    * 将global memory保存在shared memory中，但可能会带来SMs和并行度的下降
+    * 将global memory保存在texture memory中，但对于texture的访问可能会有问题
+    * 
 
 
 
