@@ -2,7 +2,7 @@
 layout: article
 title: 特殊数据结构
 key: 100010
-tags: 数据结构 查找 算法
+tags: 数据结构 查找 算法 CPU算法
 category: blog
 date: 2020-08-18 00:00:00 +08:00
 mermaid: true
