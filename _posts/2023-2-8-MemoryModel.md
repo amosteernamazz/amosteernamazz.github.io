@@ -1872,25 +1872,32 @@ mermaid: true
 
 ## zero-copy memory
 
+ **硬件支持**
+  * 支持Unified Memory或NVLink等技术
+  * 延迟在几ms以下，仅仅只快于CPU、GPU数据传输
+
+
  **零拷贝内存定义与使用条件**
   * 本质上是将主机内存映射到device memory
   * GPU threads 直接获得host的零拷贝内存
-  * 如果在host/device修改了内存，需要synchronize来保证一致性。
+  * 如果在host/device修改了内存，需要**synchronize()**来保证一致性。
 
  **优点**
 
   * 当device memory不够用，可以使用零拷贝内存
   * 可以避免从device 到host 之间的数据传输
+    * 但是存在数据竟态问题
 
  **缺点**
 
   * 对于GPU设备连接到PCIs总线，只针对特殊场景效果较好。零拷贝速度比global memory/device memory要慢。
     * 在集成架构中，当CPU和GPU在一个芯片上，且共享内存，零拷贝内存不用走PCIs总线，对性能和可编程性都有帮助。
+  * 潜在的性能问题和数据竞争条件。
   
-  **应用**
-   * 很多时候用zero copy memory只是因为
-     * device memory不够用
-     * 简化程序
+ **应用**
+  * 在需要频繁地传输大量数据时，如在**机器学习**、**图形处理**和**数据分析**等应用中，可以使用GPU零拷贝内存来减少主机和设备之间的数据传输时间
+  * 在需要实现低延迟数据传输时，如在**实时音视频处理**、**高性能计算**等领域，可以使用GPU零拷贝内存来避免CPU和GPU之间的数据复制，从而减少传输延迟，提高处理速度
+  * 在需要同时使用CPU和GPU时，可以使用GPU零拷贝内存来实现共享内存，避免CPU和GPU之间的数据复制，从而提高数据传输效率和程序性能
 
 ### API
 
