@@ -11,9 +11,22 @@ My Name is amosteernamazz (You can also call me Thomas A), I am a student seekin
 - CUDA
 - C++
 - GPU
-- computer architectures
+- Computer Architectures
 - microelectronics
 - Adobe Photoshop, Sketch
+
+## Studying
+- openppl算子库
+
+
+## Job Required
+- 源对源编码器
+- tensorflow、pytorch、MNVM、TVM、ResNet
+- tracer、player、nsight、ide、qa工具开发
+- 数据结构算法
+- cublass、cufft、cusparse库
+- tensorrt、mlir
+- TVM、GCC、LLVM、Clang
 
 
 <!--more-->
