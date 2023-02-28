@@ -10,11 +10,6 @@ mermaid: true
 
 
 
-
-
-
-
-
 # Memory Model
 
 
@@ -60,6 +55,24 @@ mermaid: true
   -><font color=red>*gather*</font> 和<font color=red>*scatter*</font>
     * getter:memory到thread有多个输入，只有一个输出（图像模糊算法）
     * scatter:thread到memory有一个输入，多个输出（每个thread将结果scatter到各个memory，将附近值+1）
+
+
+**内存模型在GPU编程中优化方向**
+
+ * global memory
+   * 带宽、内存合并和内存对齐
+ * shared memory
+   * bank conflict、数据分布、conner-turning、async
+ * const cache
+   * broadcast、serialization
+ * texture cache
+   * 内存对齐、纹理过滤、纹理大小、内存访问模式
+ * L2 cache
+   * persisting
+ * local memory
+   * 数据重用、数据对齐、同步原语
+ * register
+   * 数据重用、循环展开
 
 
 
@@ -1136,7 +1149,7 @@ mermaid: true
 
 **不同cc的const memory, texture memory & L1 cache**
   * cc 2.x -> 只有L1
-  * cc 3.x -> L1/shared  
+  * cc 3.x -> L1/shared
 
  对于不同cc ，constant cache，read-only texture cache, L1 cache的关系是不太一样的。
 
@@ -1149,7 +1162,7 @@ mermaid: true
   * <font color = red>read-only texture cache</font> (thorugh texture memory / ldg load global memory)
 
 
- **constant cache 和read-only cache**
+ **constant cache 和 read-only cache**
   * <font color = red>constant cache</font>相对小，且存取格式统一，更适合warp内的所有thread访问同一地址。
   * <font color = red>read-only cache</font>适用于更大的场景，数据传输没有必要统一。
   * 使用constant cache对于warp内的所有thread访问同一地址性能更好，因为constant对broadcast优化更好。
