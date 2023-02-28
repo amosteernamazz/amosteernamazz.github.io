@@ -79,6 +79,11 @@ mermaid: true
  * global memory -> texture memory
  * global memory -> warp/block
 
+**其他**
+ * 零拷贝内存
+ * Unified Memory
+ * 
+
 
 ## Global Memory
 
