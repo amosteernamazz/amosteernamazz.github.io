@@ -1755,7 +1755,7 @@ mermaid: true
 #### 例子
 
   **配置**
-  
+
    如果DRAM 配置为8 channels、1GHz、double data rate、word大小为8 bytes。DRAM的延迟为200 cycles。
 
 
@@ -1860,6 +1860,7 @@ mermaid: true
   * 由于atomic执行会产生serial execution，将带宽降低，因此选择<font color = red>只用一个thread执行atomic</font>，减少了atomic操作的执行次数。
 
  **atomic大小参考**
+ 
   atomic次数与bandwidth是log的反向相关。
   ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5fda906fba8b4669a8b8157e12b7f7a3~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
