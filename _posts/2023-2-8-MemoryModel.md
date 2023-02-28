@@ -8,8 +8,8 @@ date: 2023-02-08 00:00:00 +08:00
 mermaid: true
 ---
 
-
-
+***replay如何解决？***
+***Warp-aggregated当中硬件如何实现atomic***
 # Memory Model
 
 
@@ -57,7 +57,7 @@ mermaid: true
     * scatter:thread到memory有一个输入，多个输出（每个thread将结果scatter到各个memory，将附近值+1）
 
 
-**内存模型在GPU编程中优化方向**
+**内存模型对GPU编程中优化方向**
 
  * global memory
    * 带宽、内存合并和内存对齐
@@ -74,7 +74,10 @@ mermaid: true
  * register
    * 数据重用、循环展开
 
-
+**与锁有关的优化方向**
+ * global memory -> shared memory
+ * global memory -> texture memory
+ * global memory -> warp/block
 
 
 ## Global Memory
@@ -1860,7 +1863,7 @@ mermaid: true
   * 由于atomic执行会产生serial execution，将带宽降低，因此选择<font color = red>只用一个thread执行atomic</font>，减少了atomic操作的执行次数。
 
  **atomic大小参考**
- 
+
   atomic次数与bandwidth是log的反向相关。
   ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5fda906fba8b4669a8b8157e12b7f7a3~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
