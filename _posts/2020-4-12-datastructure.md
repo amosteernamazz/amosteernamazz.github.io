@@ -2,7 +2,7 @@
 layout: article
 title: 排序算法
 key: 100008
-tags: 算法 排序
+tags: 算法 排序 CPU算法
 category: blog
 date: 2020-04-12 00:00:00 +08:00
 mermaid: true
