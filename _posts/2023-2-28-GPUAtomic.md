@@ -10,6 +10,14 @@ mermaid: true
 
 # 锁机制
 
+
+## CUDA锁函数`atomicCAS()`
+
+**接受参数**
+ * int / unsinged int
+ * unsigned long long int
+ * unsigned short int
+
 ## 锁机制模板类
 
 ```c++
@@ -30,7 +38,7 @@ __device__ void atomic_min(T *addr, T val)
 }
 ```
 
-## 实现
+## 锁机制实现
 
 ```c++
 __device__ __inline__ void atomic_max(int8_t* addr, int8_t val){
