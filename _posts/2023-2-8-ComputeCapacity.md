@@ -2,7 +2,7 @@
 layout: article
 title: GPU 各版本
 key: 100024
-tags: GPU
+tags: GPU架构
 category: blog
 date: 2023-02-08 00:00:00 +08:00
 mermaid: true
