@@ -45,6 +45,13 @@ mermaid: true
   * <font color=red>CUDA arrays</font> -> 常用于texture
 
 
+ **各种内存的物理实现**
+  * global memory -> DRAM
+  * shared memory -> SRAM
+  * const memory -> 专门存储器
+  * texture memory -> DRAM，专门用于高速图像缓存，具备二维结构
+  * L1/L2 cache -> 利用SRAM和逻辑电路实现
+
 <!--more-->
 
  **为什么重视内存访问**
@@ -65,7 +72,9 @@ mermaid: true
 带宽有理论带宽和实际带宽，该部分是实际带宽，包括CPU方法和GPU方法
 
 #### 带宽的计时器
+
 实际带宽的计算主要通过定时器实现，包括CPU方法和GPU方法
+
 ##### CPU计时
 
 相比起GPU 计时来说，<font color=red>比较粗糙</font>
@@ -1125,6 +1134,9 @@ mermaid: true
 ### 不同点
 
 
+**不同cc的const memory, texture memory & L1 cache**
+  * cc 2.x -> 只有L1
+  * cc 3.x -> L1/shared  
 
  对于不同cc ，constant cache，read-only texture cache, L1 cache的关系是不太一样的。
 
