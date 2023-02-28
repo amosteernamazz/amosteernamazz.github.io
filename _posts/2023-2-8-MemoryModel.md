@@ -1717,7 +1717,7 @@ mermaid: true
 #### 延迟
 
   **延迟影响**
-   * 在原子类操作中，需要<font color = red>先读取gloabl memory</font>，把数据<font color = red>传送给SM</font>（这个时候其余的线程和SM不能读写这块内存)，最后把数据<font color = red>传送给global memory</font>
+   * 在原子类操作中，需要<font color = red>先读取**gloabl memory**</font>，把数据<font color = red>传送给SM</font>（这个时候其余的线程和SM不能读写这块内存)，最后把数据<font color = red>传送给global memory</font>
   
   **延迟来源**
    * 原子类操作的延迟 = DRAM 取数据延迟+ internal routing + DRAM 存数据延迟
@@ -1734,12 +1734,14 @@ mermaid: true
 
   **延迟改进**
   * 硬件改进
-    * 针对global memory读取时间长的问题，现代GPU将支持的原子操作改为<font color = red>last level cache上进行</font>，把atomic的latency从few hunderdes cycle变为了few tens cycle. 这个优化不需要任何programmer的更改，是通过使用<font color = red>更先进的hardware来实现的</font>。
+    * 针对global memory读取时间长的问题，现代GPU将支持的原子操作改为L2 cache(cc 3.x)、shared memory(cc 4.x)、warp/block(cc 5.x and later)
+    * <font color = red>last level cache上进行</font>，把atomic的latency从few hunderdes cycle变为了few tens cycle. 这个优化不需要任何programmer的更改，是通过使用<font color = red>更先进的hardware来实现的</font>。
   * 软件改进
-    * 将global memory保存在shared memory中，但可能会带来SMs和并行度的下降
-    * 将global memory保存在texture memory中，但对于texture的访问可能会有问题
-    * 
-
+    * 将global memory保存在**shared memory**中，但可能会带来SMs和并行度的下降(kepler, maxwell)
+    * 将global memory保存在**texture memory**中，但对于texture的访问可能会有问题
+    * 合并原子操作，可以将多个原子操作合并为一个原子操作，这样可以减少原子操作的数量，从而降低延迟，但需要加锁
+    * 将global memory保存在**warp/block**中，存在`Privatization`私有副本合并开销问题与序列问题
+      * 开销问题：将数据拷贝到shared memory
 
 
 #### 带宽
