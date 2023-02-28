@@ -1642,7 +1642,15 @@ mermaid: true
  **PyTorch中的CAS相关实现**
 
 
+ 无**特殊类型**输入情况
+  ```c++
+  template <typename T>
+  __device__ void atomic_add(T* addr, T value){
+    atomicAdd(addr, value);
+  }
+  ```
 
+ 重写**其他数据类型**
   ```c++
   __device__ __inline__ void atomic_add(int64_t *addr, int64_t val)
   {
