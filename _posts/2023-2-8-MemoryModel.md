@@ -1748,31 +1748,39 @@ mermaid: true
 
   * GPU的低延迟通过线程并行进行 -> 需要DRAM数据访问并发 -> 当使用原子类，访问被序列化，导致带宽降低
 
-  * <font color = red>带宽和延迟是成反比的</font>。
+  * <font color = red>带宽和延迟是成反比的</font>
 
 
 
 #### 例子
 
   **配置**
+  
    如果DRAM 配置为8 channels、1GHz、double data rate、word大小为8 bytes。DRAM的延迟为200 cycles。
 
+
   **峰值带宽**
+  
    $
    8 * 2 * 8 * 1G = 128GB/s
    $
   
 
+
   **带atomic的延迟的带宽**
+
    $
    1/400 * 1G= 2.5M \ atomic/s
    $
 
+
   **带uniform的atomic的延迟的带宽**
+
    如果 uniform为26得到的是
    $
    2.5M *26 \ atomic/s
    $
+
 
 ### 原子类操作的更新
 
