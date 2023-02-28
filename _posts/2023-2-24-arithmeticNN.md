@@ -2,7 +2,7 @@
 layout: article
 title: concat 算子
 key: 100030
-tags: C++ 算子库 CUDA GPU算法 算法
+tags: 算子 CUDA GPU算法 算法
 category: blog
 date: 2023-02-26 00:00:00 +08:00
 mermaid: true
