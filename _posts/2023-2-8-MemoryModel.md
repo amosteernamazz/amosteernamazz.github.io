@@ -1647,6 +1647,14 @@ mermaid: true
   {
       if (*addr >= val)
           return;
+      // int8_t      : typedef signed char;
+      // uint8_t    : typedef unsigned char;
+      // int16_t    : typedef signed short ;
+      // uint16_t  : typedef unsigned short ;
+      // int32_t    : typedef signed int;
+      // uint32_t  : typedef unsigned int;
+      // int64_t    : typedef signed  long long;
+      // uint64_t  : typedef unsigned long long
 
       unsigned long long *const addr_as_ull = (unsigned long long *)addr;
       unsigned long long old                = *addr_as_ull, assumed;
