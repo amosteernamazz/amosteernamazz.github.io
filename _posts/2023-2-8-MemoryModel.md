@@ -2003,6 +2003,7 @@ mermaid: true
   * __syncthreads()同步的是**可以到达**`__syncthreads()`函数的**线程**，而不是所有的线程（应避免部分线程到达，为了避免数据一致性问题）
 
 **推荐方法**
+
   ```c++
   __shared__ val[];
   ...
@@ -2031,6 +2032,7 @@ mermaid: true
    ```
 
   如果不同线程操作同一块内存的话，对数据竞态与一致性有影响
+
   ```cpp
   __share__ val[];
   ....
@@ -2047,6 +2049,11 @@ mermaid: true
 
 
 ### Memory Fence
+
+ **Memory Fence与barrier**
+  * 区别
+    * Memory fence是一种**硬件**层面的同步机制，它可以控制线程对内存的访问顺序和可见性，确保对内存的访问操作完成之前，**先前的访问操作**已经**完成**；Memory fence只影响调用它的线程，而不影响其他线程；Memory fence可以分为Threadfence和Blockfence两种类型
+    * Barrier是一种软件层面的同步机制，它可以控制线程的执行顺序和同步，确保在某个点上的所有线程都完成它们的工作，然后再继续执行下一个任务。Barrier只有在同一个block的线程之间才有效，不同block之间的线程无法互相等待
 
   **意义**
    fence之前写完了，fence之后其它thread就都知道这块Memory写后的值了
