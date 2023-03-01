@@ -17,6 +17,24 @@ mermaid: true
 
 ## Program Hierarchy
 
+
+**GPU硬件与软件的关系**
+ * GPU的硬件依托于SMs、warp机制（warp的划分、调度）
+ * 软件依托于Grid、block、thread的模型结构
+ * GPU的SMs与block对应
+ * SMs在处理block的时候，由硬件的warp调度器完成block的拆分（拆分为以32个threads为单位），然后由SM调度给SMs的cores
+
+
+
+| 编程结构 | 函数对应 | 硬件实现 |
+|---|---|---|
+| grid | kernel function | null |
+| block | block | SM |
+| warp | 每32的threads | SM中的一个单元 |
+| thread | thread | core |
+
+
+
 ### Grid, Block, Warp, Thread
 
 ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5d212c2838bb4a48ac6e48ad0af83e44~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
