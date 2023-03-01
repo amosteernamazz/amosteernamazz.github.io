@@ -18,7 +18,7 @@ mermaid: true
 ## Program Hierarchy
 
 
-**GPU硬件与软件的关系**
+**GPU硬件模型与软件模型的关系**
  * GPU的硬件依托于SMs、warp机制（warp的划分、调度）
  * 软件依托于Grid、block、thread的模型结构
  * GPU的SMs与block对应
@@ -26,12 +26,12 @@ mermaid: true
 
 
 
-| 编程结构 | 函数对应 | 硬件实现 |
-|---|---|---|
-| grid | kernel function | null |
-| block | block | SM |
-| warp | 每32的threads | SM中的一个单元 |
-| thread | thread | core |
+| 编程结构 | 函数对应 | 硬件实现 | 所在内存共享区
+|---|---|---|---|
+| grid | kernel function | null | global memory |
+| block | block | SM | shared memory |
+| warp | 每32的threads | SM中的一个单元 | null |
+| thread | thread | core | null |
 
 
 
@@ -67,13 +67,6 @@ mermaid: true
   2. threads on GPUs are extremely lightweight
 
 <!--more-->
-
-
-  **软件层面与硬件层面的对应**
-  ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/69524e29e5fd456c960dcf127f6c888c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
-
-
 
 
   **什么时候使用CUDA**
@@ -115,7 +108,7 @@ mermaid: true
 
 
 
-## Device Management
+## GPU设备
 
 ### device属性
 
@@ -148,7 +141,7 @@ mermaid: true
 
 
 
-## Block
+## SMs配置(block)
 
 ### 设置经验
 
@@ -197,7 +190,7 @@ mermaid: true
 
 
 
-## Thread和 Wrap
+## (硬件调度单元)Wrap 与 Thread
 
 ### Map block to warp
 
