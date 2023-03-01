@@ -1892,7 +1892,7 @@ mermaid: true
 
   * 当device memory不够用，可以使用零拷贝内存
   * 可以避免从device 到host 之间的数据传输
-    * 但是存在数据竟态问题
+    * 但是存在数据竞态问题
 
  **缺点**
 
@@ -1988,22 +1988,49 @@ mermaid: true
 
 ## Weakly-Ordered Memory Model
 
-### 原因
-  * 当同一个地址的值被多个thread修改就导致了inter-thread conflict，所以我们需要同步操作。常用的同步方法包括barriers 和memory fences。
-    * barriers：block内所有thread会等待其他thread到达barrier point
-    * Memory fence，所有thread会阻塞到所有修改Memory的操作对其他thread可见。
-  * 同步的原因
-    * 现代内存架构有非常宽松的内存模式，也就是意味着，Memory的读不必按照程序中的顺序来执行。CUDA采用了一种叫做weakly-ordered Memory model来获取更激进的编译器优化。
 
-    * GPU thread写数据到不同的Memory的顺序（比如shared Memory，global Memory，page-locked host memory或者另一个device上的Memory）没必要跟程序里面顺序呢相同。如果两个thread一个read，一个write，没有sync的话，则行为是undefined的
+**barrier/fence与atomic的关系**
+ * atomic保证了共享内存位置上的操作没有**数据竞争**和其他同步问题，但无法解决**数据读取的顺序问题**
+   * 针对读写问题，读前值还是读后值
 
-    * 为了显式的强制程序以一个确切的顺序运行，就需要用到fence和barrier。他们也是唯一能保证kernel对Memory有正确的行为的操作。
+**解决方法**
+ * block内的barriers方法
+ * fence方法
 
 ### Explicit Barriers
 
-  * 任何到达barrier的线程都会等待block内所有线程都到达此处。
-  * 使用时候最终要的理解是那些可以到达__syncthreads()的线程需要其他可以到达该点的线程，而不是等待块内所有其他线程。
+**__syncthreads()原语**
+  * __syncthreads()同步的是**可以到达**`__syncthreads()`函数的**线程**，而不是所有的线程（应避免部分线程到达，为了避免数据一致性问题）
 
+**推荐方法**
+  ```c++
+  __shared__ val[];
+  ...
+  if(index < n){
+    if(tid condition){
+      do something with val;
+      
+    }
+    __syncthreads();
+    do something with val;
+    __syncthreads();
+  }
+  ```
+
+
+  **错误**
+
+  如果不同线程操作同一块内存的话，对数据竞态与一致性有影响
+
+   ```cpp
+   if (threadID % 2 == 0) {
+     __syncthreads();
+   } else { 
+     __syncthreads();
+   }
+   ```
+
+  如果不同线程操作同一块内存的话，对数据竞态与一致性有影响
   ```cpp
   __share__ val[];
   ....
@@ -2018,19 +2045,6 @@ mermaid: true
    }
   ```
 
-
-
-  **错误**
-
-   使用中的注意：当某个thread的 syncthreads 运行以后，需要all threads in threads block都运行这个特定的synchthread方程才可以继续
-
-   ```cpp
-   if (threadID % 2 == 0) {
-     __syncthreads();
-   } else { 
-     __syncthreads();
-   }
-   ```
 
 ### Memory Fence
 
