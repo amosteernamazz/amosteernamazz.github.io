@@ -74,10 +74,15 @@ mermaid: true
  * register
    * 数据重用、循环展开
 
+
 **与锁有关的优化方向**
  * global memory -> shared memory
  * global memory -> texture memory
  * global memory -> warp/block
+
+**解决数据竞争与数据一致性的锁与内存屏障**
+ * 数据竞争 -> 锁
+ * 数据一致性 -> memory barrier / fence
 
 **其他**
  * 零拷贝内存
@@ -2037,12 +2042,12 @@ mermaid: true
   __share__ val[];
   ....
    if(index < n)
-   {      
-       if(tid condition)      
-       {          
-           do something  with val;          
-           __syncthreads();       
-       }      
+   {
+       if(tid condition)
+       {
+           do something  with val;
+           __syncthreads();
+       }
        do something with val;
    }
   ```
@@ -2052,21 +2057,25 @@ mermaid: true
 
  **Memory Fence与barrier**
   * 区别
-    * Memory fence是一种**硬件**层面的同步机制，它可以控制线程对内存的访问顺序和可见性，确保对内存的访问操作完成之前，**先前的访问操作**已经**完成**；Memory fence只影响调用它的线程，而不影响其他线程；Memory fence可以分为Threadfence和Blockfence两种类型
-    * Barrier是一种软件层面的同步机制，它可以控制线程的执行顺序和同步，确保在某个点上的所有线程都完成它们的工作，然后再继续执行下一个任务。Barrier只有在同一个block的线程之间才有效，不同block之间的线程无法互相等待
+    * Memory fence是一种**硬件层面**的同步机制，它可以控制线程对内存的访问顺序和可见性，确保对内存的访问操作完成之前，**先前的访问操作**已经**完成**；Memory fence只影响调用它的线程，而不影响其他线程；Memory fence可以分为Threadfence和Blockfence两种类型
+    * Barrier是一种**软件层面**的同步机制，它可以控制线程的执行顺序和同步，确保在某个点上的所有线程**都完成它们的工作**，然后再继续执行下一个任务。Barrier只有在同一个block的线程之间才有效，不同block之间的线程无法互相等待
 
-  **意义**
-   fence之前写完了，fence之后其它thread就都知道这块Memory写后的值了
+ **保证**
+  * 使用fence保证在下面的内存操作执行前，前面的内存操作都已经完成
+  * 保证**内存访问同步**
 
   **`void __threadfence_block();`**
 
-   保证同一个block中thread在fence之前写完的值对block中其它的thread可见，不同于barrier，该function不需要所有的thread都执行。
+   * 保证同一个block中thread在fence之前写完的值对block中其它的thread可见，不同于barrier，该function不需要所有的thread都执行。
+   * 使用该函数效果类似__syncthreads()函数
 
   **`void __threadfence();`**
 
-   应用范围在grid
+   * 应用范围在grid层面
+   * 主要针对不同的block进行同步
 
   **`void __threadfence_system();`**
+
    其范围针对整个系统，包括device和host
 
   **例子 1**
@@ -2095,28 +2104,48 @@ mermaid: true
 
    * 一个block写入global memory数据以及用atomic写入flag，另一个block通过flag判断是否可以读取global memory的数据。
 
-   * 如果没有memory fence的话，可能flag会首先被atomic设置了，然后才设置global memory的数据。这样另一个block在读取到flag以后就开始读取global memmory的值可能就是不对的。
+   * 如果没有memory fence的话，可能flag会首先被atomic设置了，然后才设置global memory的数据。这样另一个block在读取到flag以后就开始读取global memmory的值可能就是不对的
 
    * 通过使用memory fence，确保在fence后面读取memory的数据确实是fence之前写入的数据
 
 ### Volatile
 
+ **目的**
+  * 在读取和写入该变量时需要**强制使用内存操作**，而不是将变量缓存到寄存器中
 
 
-  **是什么**
+ **应用**
+  * 用于共享内存和全局内存中的变量：由于共享内存和全局内存中的数据可能会被其他线程修改，因此在读取和写入这些数据时需要使用Volatile关键字，以确保数据的一致性和正确性。
 
-   * 不使用volatile，compiler可以对global memory/shared memory的read write进行优化，例如cache在L1 cache或者register上，只要符合memory fence的要求就可以进行优化。
+  ```c++
+  __shared__ volatile int shared_data[1024];
 
-   * 当声明volatile以后，compiler假设某个thread对内存的操作会any time被其余的thread使用，所以不适用cache进行优化，全部的写入会写入到gloabl memory/shared memory上。这样另一个thread可以读取对应的内存并且得到正确的数值。
+  __global__ void kernel() {
+      int tid = threadIdx.x;
+      shared_data[tid] = tid;
 
+      // 使用Volatile关键字确保其他线程可以立即读取到写入的值
+      volatile int value = shared_data[(tid + 1) % blockDim.x];
 
+      // ...
+  }
+  ```
 
+  * 用于GPU和CPU之间的变量：由于GPU和CPU之间的数据传输可能会受到许多因素的影响，例如数据缓存、数据预取等，因此在进行数据传输时需要使用Volatile关键字来确保数据的正确性和一致性。
 
+  ```c++
+  __host__ void transfer_data(int *data, int n) {
+      int *dev_data;
+      cudaMalloc(&dev_data, n * sizeof(int));
+      cudaMemcpy(dev_data, data, n * sizeof(int), cudaMemcpyHostToDevice);
 
+      // 使用Volatile关键字确保CPU可以立即读取到GPU写入的值
+      volatile int result;
+      cudaMemcpy(&result, dev_data, sizeof(int), cudaMemcpyDeviceToHost);
 
-
-
-
+      // ...
+  }
+  ```
 
 
 
