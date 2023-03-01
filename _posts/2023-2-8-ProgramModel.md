@@ -40,6 +40,33 @@ mermaid: true
 ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5d212c2838bb4a48ac6e48ad0af83e44~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 
+cc 2
+shared/ L1
+
+cc 3
+shared/ L1
+L2外
+
+cc 5
+shared memory + l1
+L2外
+
+cc 6
+shared memory + l1
+L2外
+
+cc 7
+shared/ l1
+L2外
+
+cc 8
+shared/ l1
+L2外
+
+cc 9
+shared/ l1
+L2外
+
   **Grid** 
 
    * 每个<font color = red>kernel function</font>被映射到一个grid上
