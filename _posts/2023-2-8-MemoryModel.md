@@ -9,7 +9,9 @@ mermaid: true
 ---
 
 ***replay如何解决？***
+
 ***Warp-aggregated当中硬件如何实现atomic***
+
 # Memory Model
 
 
