@@ -8,7 +8,23 @@ date: 2023-02-10 00:00:00 +08:00
 mermaid: true
 ---
 
-
+***1***
+```c++
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map <int,int> map;
+        for(int i = 0 ; i < nums.size(); i++){
+            auto num = map.find(target - nums[i]);
+            if(num != map.end()){
+                return {i, num->second};
+            }
+            map[nums[i]] = i;
+        }
+        return {};
+    }
+};
+```
 
 ***92***
 
