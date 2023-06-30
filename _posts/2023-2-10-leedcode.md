@@ -26,8 +26,56 @@ public:
     }
 };
 ```
+#### [6. N 字形变换](https://leetcode.cn/problems/zigzag-conversion/)
+
+```c++
+class Solution {
+public:
+	string convert(string s, int numRows) {
+
+		if (numRows == 1) return s;
+
+		vector<string> rows(min(numRows, int(s.size()))); // 防止s的长度小于行数
+		int curRow = 0;
+		bool goingDown = false;
+
+		for (char c : s) {
+			rows[curRow] += c;
+			if (curRow == 0 || curRow == numRows - 1) {// 当前行curRow为0或numRows -1时，箭头发生反向转折
+				goingDown = !goingDown;
+			}
+			curRow += goingDown ? 1 : -1;
+		}
+
+		string ret;
+		for (string row : rows) {// 从上到下遍历行
+			ret += row;
+		}
+
+		return ret;
+	}
+};
+```
 
 
+#### [7. 整数反转](https://leetcode.cn/problems/reverse-integer/)
+```c++
+class Solution {
+public:
+    int reverse(int x) {
+        int rev = 0;
+        while (x != 0) {
+            if (rev < INT_MIN / 10 || rev > INT_MAX / 10) {
+                return 0;
+            }
+            int digit = x % 10;
+            x /= 10;
+            rev = rev * 10 + digit;
+        }
+        return rev;
+    }
+};
+```
 
 
 ***92***
@@ -43,10 +91,113 @@ public:
 
 
 
+### 滑动窗口
+
+#### [3. 无重复最长子串](https://leetcode.cn/problems/longest-substring-without-repeating-characters/)
 
 
+```c++
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        // 哈希集合，记录每个字符是否出现过
+        unordered_set<char> occ;
+        int n = s.size();
+        // 右指针，初始值为 -1，相当于我们在字符串的左边界的左侧，还没有开始移动
+        int rk = -1, ans = 0;
+        // 枚举左指针的位置，初始值隐性地表示为 -1
+        for (int i = 0; i < n; ++i) {
+            if (i != 0) {
+                // 左指针向右移动一格，移除一个字符
+                occ.erase(s[i - 1]);
+            }
+            while (rk + 1 < n && !occ.count(s[rk + 1])) {
+                // 不断地移动右指针
+                occ.insert(s[rk + 1]);
+                ++rk;
+            }
+            // 第 i 到 rk 个字符是一个极长的无重复字符子串
+            ans = max(ans, rk - i + 1);
+        }
+        return ans;
+    }
+};
 
+```
 
+#### [11. 盛最多水的容器](https://leetcode.cn/problems/container-with-most-water/)
+
+![](https://aliyun-lc-upload.oss-cn-hangzhou.aliyuncs.com/aliyun-lc-upload/uploads/2018/07/25/question_11.jpg)
+
+```c++
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int i = 0, j = height.size() - 1, res = 0;
+        while(i < j) {
+            res = height[i] < height[j] ? 
+                max(res, (j - i) * height[i++]): 
+                max(res, (j - i) * height[j--]); 
+        }
+        return res;
+    }
+};
+```
+
+### 动态规划 
+
+#### [5. 最长回文子串](https://leetcode.cn/problems/longest-palindromic-substring/)
+
+```c++
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        int n = s.size();
+        if (n < 2) {
+            return s;
+        }
+
+        int maxLen = 1;
+        int begin = 0;
+        // dp[i][j] 表示 s[i..j] 是否是回文串
+        vector<vector<int>> dp(n, vector<int>(n));
+        // 初始化：所有长度为 1 的子串都是回文串
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = true;
+        }
+        // 递推开始
+        // 先枚举子串长度
+        for (int L = 2; L <= n; L++) {
+            // 枚举左边界，左边界的上限设置可以宽松一些
+            for (int i = 0; i < n; i++) {
+                // 由 L 和 i 可以确定右边界，即 j - i + 1 = L 得
+                int j = L + i - 1;
+                // 如果右边界越界，就可以退出当前循环
+                if (j >= n) {
+                    break;
+                }
+
+                if (s[i] != s[j]) {
+                    dp[i][j] = false;
+                } else {
+                    if (j - i < 3) {
+                        dp[i][j] = true;
+                    } else {
+                        dp[i][j] = dp[i + 1][j - 1];
+                    }
+                }
+
+                // 只要 dp[i][L] == true 成立，就表示子串 s[i..L] 是回文，此时记录回文长度和起始位置
+                if (dp[i][j] && j - i + 1 > maxLen) {
+                    maxLen = j - i + 1;
+                    begin = i;
+                }
+            }
+        }
+        return s.substr(begin, maxLen);
+    }
+};
+```
 
 ### 链表
 
