@@ -8,7 +8,8 @@ date: 2023-02-10 00:00:00 +08:00
 mermaid: true
 ---
 
-***1***
+#### [1. 两数之和](https://leetcode.cn/problems/two-sum/)
+
 ```c++
 class Solution {
 public:
@@ -25,6 +26,9 @@ public:
     }
 };
 ```
+
+
+
 
 ***92***
 
@@ -44,7 +48,43 @@ public:
 
 
 
+### 链表
 
+#### [2. 两数相加](https://leetcode.cn/problems/add-two-numbers/)
+
+![](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2021/01/02/addtwonumber1.jpg)
+
+```c++
+class Solution {
+public:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        ListNode *head = nullptr, *tail = nullptr;
+        int carry = 0;
+        while (l1 || l2) {
+            int n1 = l1 ? l1->val: 0;
+            int n2 = l2 ? l2->val: 0;
+            int sum = n1 + n2 + carry;
+            if (!head) {
+                head = tail = new ListNode(sum % 10);
+            } else {
+                tail->next = new ListNode(sum % 10);
+                tail = tail->next;
+            }
+            carry = sum / 10;
+            if (l1) {
+                l1 = l1->next;
+            }
+            if (l2) {
+                l2 = l2->next;
+            }
+        }
+        if (carry > 0) {
+            tail->next = new ListNode(carry);
+        }
+        return head;
+    }
+};
+```
 
 
 
@@ -245,56 +285,6 @@ ListNode* swapPairs(ListNode* head) {
   return temp-> next;
 }
 ```
-
-#### [2. 两数相加](https://leetcode-cn.com/problems/add-two-numbers/)
-
-![](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2021/01/02/addtwonumber1.jpg)
-
-
-  ```c++
-  ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
-    ListNode* node = new ListNode();
-    ListNode* cur = node;
-    int sum = 0;
-    int carry = 0;
-    int single = 0;
-    while(l1 && l2){
-      sum = l1->val + l2->val+ carry;
-      carry = sum/10;
-      single = sum%10;
-      ListNode* current = new ListNode(single);
-      node->next = current;
-      node = node ->next;
-      l1 = l1->next;
-      l2 = l2 ->next;
-    }
-    while(l1){
-      sum = l1->val + carry;
-      carry = sum/10;
-      single = sum%10;
-      ListNode* current = new ListNode(single);
-      node->next = current;
-      node = node ->next;
-      l1 = l1->next;
-    }
-    while(l2){
-      sum = l2->val + carry;
-      carry = sum/10;
-      single = sum%10;
-      ListNode* current = new ListNode(single);
-      node->next = current;
-      node = node ->next;
-      l2 = l2->next;
-    }
-    if(carry){
-      ListNode* current = new ListNode(carry);
-      node->next = current;
-      node = node->next;
-    }
-    return cur->next;
-  }
-  ```
-
 
 
 #### [445. 两数相加 II](https://leetcode-cn.com/problems/add-two-numbers-ii/)
