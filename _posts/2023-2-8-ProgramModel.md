@@ -847,6 +847,7 @@ L2外
    * stalled warp: 并未准备好执行
    * eligible warp: 为active，但当前并未执行
 
+
  #### Zero-overhead scheduling
 
   **定义**
