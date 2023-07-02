@@ -21,7 +21,7 @@ mermaid: true
 **GPU硬件模型与软件模型的关系**
  * GPU的硬件依托于SMs、warp机制（warp的划分、调度）
  * 软件依托于Grid、block、thread的模型结构
- * GPU的SMs与block对应
+ * GPU的SMs与block对应（一个sm对应多个block）
  * SMs在处理block的时候，由硬件的warp调度器完成block的拆分（拆分为以32个threads为单位），然后由SM调度给SMs的cores
 
 
