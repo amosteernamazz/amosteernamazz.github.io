@@ -445,7 +445,7 @@ L2外
      * `int y = shfl(x, 3, 16);`
        * threads 0 到 15 would 得到thread 3 数据， threads 16 到 31 得到thread 19数据。
 
-      * 当srcLane > width的话，会warp around the width
+      * 当srcLane > width的话，会取余数并进行broadcast。
       * 当warp内的thread使用shuf使用同一个srcLane的时候，会发生broadcast。
 
    ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4ccfb34e327b4b60b5f1721f41ca9c04~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
