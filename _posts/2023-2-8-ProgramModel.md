@@ -611,8 +611,10 @@ L2外
 
    **原因**
     之所以需要使用syncwarp是因为cuda9开始，warp内的thread并不保证在一个clock内同时运行相同的指令。
+
    **定义**
     同步warp内的thread，并提供memory fence保证同步。
+    
    **应用条件**
     memory fence的道理是和syncthread与shared memory一起使用相同的。
     warp内的thread并不能保证lock step，在写入/读取shared memory的时候，需要使用syncwarp来确保memory fence。发生在thread数据与global或shared memory数据发生交换的时候
