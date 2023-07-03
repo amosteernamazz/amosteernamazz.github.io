@@ -8,6 +8,8 @@ date: 2023-02-10 00:00:00 +08:00
 mermaid: true
 ---
 
+
+
 #### [1. 两数之和](https://leetcode.cn/problems/two-sum/)
 
 ```c++
@@ -88,8 +90,95 @@ public:
 
 
 
+### 数组
+
+#### [704. 二分查找](https://leetcode.cn/problems/binary-search/)
+
+```c++
+class Solution {
+public:
+    int search(vector<int>& nums, int target) {
+        int left = 0, right = nums.size() - 1;
+        while(left <= right){
+            int mid = (right - left) / 2 + left;
+            int num = nums[mid];
+            if (num == target) {
+                return mid;
+            } else if (num > target) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return -1;
+    }
+};
+```
+
+#### [27. 移除元素] (https://leetcode.cn/problems/remove-element/)
+
+```c++
+class Solution {
+public:
+    int removeElement(vector<int>& nums, int val) {
+        int n = nums.size();
+        int left = 0;
+        for (int right = 0; right < n; right++) {
+            if (nums[right] != val) {
+                nums[left] = nums[right];
+                left++;
+            }
+        }
+        return left;
+    }
+};
+```
+#### [977. 有序数组的平方]()
 
 
+```c++
+class Solution {
+public:
+    vector<int> sortedSquares(vector<int>& nums) {
+        vector<int> ans;
+        for (int num: nums) {
+            ans.push_back(num * num);
+        }
+        sort(ans.begin(), ans.end());
+        return ans;
+    }
+};
+
+```
+
+#### [209. 长度最小的子数组]()
+
+
+```c++
+class Solution {
+public:
+    int minSubArrayLen(int s, vector<int>& nums) {
+        int n = nums.size();
+        if (n == 0) {
+            return 0;
+        }
+        int ans = INT_MAX;
+        int start = 0, end = 0;
+        int sum = 0;
+        while (end < n) {
+            sum += nums[end];
+            while (sum >= s) {
+                ans = min(ans, end - start + 1);
+                sum -= nums[start];
+                start++;
+            }
+            end++;
+        }
+        return ans == INT_MAX ? 0 : ans;
+    }
+};
+
+```
 
 ### 滑动窗口
 
@@ -233,6 +322,23 @@ public:
             tail->next = new ListNode(carry);
         }
         return head;
+    }
+};
+```
+
+#### [203. 移除链表元素](https://leetcode.cn/problems/remove-linked-list-elements/)
+
+![](https://assets.leetcode.com/uploads/2021/03/06/removelinked-list.jpg)
+
+```c++
+class Solution {
+public:
+    ListNode* removeElements(ListNode* head, int val) {
+        if (head == nullptr) {
+            return head;
+        }
+        head->next = removeElements(head->next, val);
+        return head->val == val ? head->next : head;
     }
 };
 ```
