@@ -61,6 +61,7 @@ public:
 
 
 #### [7. 整数反转](https://leetcode.cn/problems/reverse-integer/)
+
 ```c++
 class Solution {
 public:
@@ -77,16 +78,8 @@ public:
         return rev;
     }
 };
+
 ```
-
-
-***92***
-
-***25***
-
-
-
-***35***
 
 ### 栈与队列
 
