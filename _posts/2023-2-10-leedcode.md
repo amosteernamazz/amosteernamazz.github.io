@@ -89,8 +89,7 @@ public:
 class Solution {
 public:
     bool isValid(string s) {
-        unordered_map<char,int> m{{'(',1},{'[',2},{'{',3},
-                                {')',4},{']',5},{'}',6}};
+        // 设置unordered_map m，对应(为1，[为2，{为3，)为4，]为5，}为6
         stack<char> st;
         bool istrue=true;
         for(char c:s){
