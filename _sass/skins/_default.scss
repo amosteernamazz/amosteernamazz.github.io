@@ -1,39 +1,39 @@
 ///
-// Skin: Default
+// Skin: Dark
 // Author: Tian Qi
 // Email: kitian616@outlook.com
 ///
 
 // main colors
-$main-color-1:     #fc4d50;
-$text-color-1:     #fff;
+$main-color-1:     #ff9500;
+$text-color-1:     rgba(#fff, .8);
 
-$main-color-2:     #fca24d;
-$text-color-2:     #fff;
+$main-color-2:     #ff006a;
+$text-color-2:     rgba(#fff, .8);
 
-$main-color-3:     #f2f2f2;
-$text-color-3:     #333;
+$main-color-3:     #202020;
+$text-color-3:     rgba(#fff, .8);
 
-$main-color-theme-light: rgba(#000, .9);
-$main-color-theme-dark:  rgba(#fff, .9);
+$main-color-theme-light: rgba(#000, .8);
+$main-color-theme-dark:  rgba(#fff, .8);
 
 // page background
-$background-color: #fff;
+$background-color: #121212;
 
 // text colors
 $text-color-theme-light-d: #000;
 $text-color-theme-light:   #222;
 $text-color-theme-light-l: #888;
 
-$text-color-theme-dark-d:  #fff;
-$text-color-theme-dark:    rgba(#fff, .95);
-$text-color-theme-dark-l:  rgba(#fff, .85);
+$text-color-theme-dark-d:  rgba(#fff, .8);
+$text-color-theme-dark:    rgba(#fff, .7);
+$text-color-theme-dark-l:  rgba(#fff, .5);
 
-$text-color-d:     $text-color-theme-light-d;
-$text-color:       $text-color-theme-light;
-$text-color-l:     $text-color-theme-light-l;
+$text-color-d:     $text-color-theme-dark-d;
+$text-color:       $text-color-theme-dark;
+$text-color-l:     $text-color-theme-dark-l;
 
-$text-background-color: rgba(#000, .05);
+$text-background-color: rgba(#fff, .05);
 
 // header and footer colors
 $header-text-color: $text-color-3;
@@ -43,18 +43,18 @@ $footer-text-color: $text-color-3;
 $footer-background: $main-color-3;
 
 // border and shadow colors
-$border-color:     mix(#000, $background-color, 20%);
-$border-color-l:   mix(#000, $background-color, 10%);
-$decorate-color:   rgba(#000, .1);
+$border-color:     mix(#fff, $background-color, 20%);
+$border-color-l:   mix(#fff, $background-color, 10%);
+$decorate-color:   rgba(#fff, .1);
 $mask-color:       rgba(#000, .9);
 $select-color:     rgba($main-color-1, .5);
 
 // function colors
-$green:           #52c41a;
-$blue:            #1890ff;
-$yellow:          #fa8c16;
-$red:             #f5222d;
-$text-color-function: #fff;
+$green:           #5baa34;
+$blue:            #1c7cd4;
+$yellow:          #c9771f;
+$red:             #da3d45;
+$text-color-function: rgba(#fff, .8);
 
 // logo colors
 $mail-color:       #0072c5;
@@ -69,4 +69,4 @@ $npm-color:        #fff;
 $telegram-color:   #32afed;
 
 // highlight colors
-@import "skins/highlight/tomorrow";
+@import "skins/highlight/tomorrow-night";
