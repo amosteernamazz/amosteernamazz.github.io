@@ -78,7 +78,6 @@ public:
         return rev;
     }
 };
-
 ```
 
 ### 栈与队列
