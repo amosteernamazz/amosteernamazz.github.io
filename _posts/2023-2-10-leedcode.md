@@ -8,7 +8,36 @@ date: 2023-02-10 00:00:00 +08:00
 mermaid: true
 ---
 
+#### [剑指offer 05: 替换空格](https://leetcode.cn/problems/ti-huan-kong-ge-lcof/)
 
+
+```c++
+class Solution {
+public:
+    string replaceSpace(string s) {
+        int count = 0, len = s.size();
+        // 统计空格数量
+        for (char c : s) {
+            if (c == ' ') count++;
+        }
+        // 修改 s 长度
+        s.resize(len + 2 * count);
+        // 倒序遍历修改
+        for(int i = len - 1, j = s.size() - 1; i < j; i--, j--) {
+            if (s[i] != ' ')
+                s[j] = s[i];
+            else {
+                s[j - 2] = '%';
+                s[j - 1] = '2';
+                s[j] = '0';
+                j -= 2;
+            }
+        }
+        return s;
+    }
+};
+
+```
 
 #### [1. 两数之和](https://leetcode.cn/problems/two-sum/)
 
@@ -81,6 +110,50 @@ public:
 ```
 
 ### 栈与队列
+
+
+#### [151. 翻转字符串里的单词](https://github.com/youngyangyang04/leetcode-master)
+
+```c++
+class Solution {
+public:
+    string reverseWords(string s) {
+        int left = 0, right = s.size() - 1;
+        // 去掉字符串开头的空白字符
+        while (left <= right && s[left] == ' ') ++left;
+
+        // 去掉字符串末尾的空白字符
+        while (left <= right && s[right] == ' ') --right;
+
+        stack<string> d;
+        string word;
+
+        while (left <= right) {
+            char c = s[left];
+            if (word.size() && c == ' ') {
+                // 将单词 push 到队列的头部
+                d.push(move(word));
+                word = "";
+            }
+            else if (c != ' ') {
+                word += c;
+            }
+            ++left;
+        }
+        d.push(move(word));
+        
+        string ans;
+        while (!d.empty()) {
+            ans += d.top();
+            d.pop();
+            if (!d.empty()) ans += ' ';
+        }
+        return ans;
+    }
+};
+
+```
+
 
 #### [20. 有效的括号](https://leetcode.cn/problems/valid-parentheses/)
 
