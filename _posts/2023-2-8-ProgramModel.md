@@ -929,20 +929,25 @@ L2外
 
    * cc 2.x: 20 warp 每1 个SM。 Fermi have 32 single-precision floating point pipelines (throughput)； latency of one arithemetic instruction is 20 cycles (latency), min of 20 * 32 = 640 threads = 20 warps per SM needed to keep device busy.
 
-#### latency来源
+#### warp配置需要参考的其他因素
 
 ##### 寄存器依赖
 
    **来源**
+    由于warp指令的下发和wrap指令的执行之间的差别，因此对于warp的thread操作需要多个clock的时候，warp schdulator会idle。
     当全部的操作数在register上的时候，操作数的前一条指令的依赖还没有写入。
 
 
    **举例**
-   cc 7.x 算数指令 需要 16 warp来hide latency。因为计算操作一般是4 clock cycle，需要4*4(L=4)=16 instruction/warps (cc 7.x 每个warp scheduler issue 1 instruction per clock cycle)。如果ready warp数量不够16的话，会导致idle。
+   cc 7.x 算数指令 需要 16 warp来hide latency。
+   计算操作一般是4 clock cycle，需要4*4(L=4)=16 instruction/warps (cc 7.x 每个warp scheduler issue 1 instruction per clock cycle)。如果ready warp数量不够16的话，会导致idle。
+
+   **设置**
+   通过block的大小配置？？？
 
 ##### 片外内存 
 
-   * 对片外内存来说，因为延迟高达几百个cycles，为了降低硬件复杂度，通过提高ILP来提高需求的warp数目。相关指标主要通过intensity（不使用片外内存的指令数与使用片外内存的指令书的比值）来衡量。
+   * 对片外内存来说，因为延迟高达几百个cycles，为了降低硬件复杂度，通过提高ILP来提高需求的warp数目。相关指标主要通过intensity（不使用片外内存的指令数与使用片外内存的指令数的比值）来衡量。
    * 当比值很小的时候，需要更多的warp。
 
 ##### block 内的sync
@@ -952,7 +957,7 @@ L2外
     让sm有更多的resident block。以减少idle。
     当一个block存在syncthread idle的时候，其余block的warp可以运行来hide latency
    **larger block**
-    larger block size并不意味着higher occupancy, 因为sync导致的idle以及resource按照block为单位进行分配
+    larger block size并不意味着higher occupancy
 
 
 
