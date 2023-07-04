@@ -861,7 +861,7 @@ L2外
   **与CPU区别**
    * 在不同warp内切换减少hide latency决定了GPU不需要大的cache，不需要branch prediction等硬件，可以把更多的硬件给floating point operation的原因
   
-   * GPU的warp一旦分配到资源，就会占用资源直到block整个运行结束。CPU存在context switch把register保存到memory中的overhead。
+   * CPU存在context switch把register保存到memory中的overhead。
 
   ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b588ca7bc66844a5822e472c4831fda9~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
@@ -880,37 +880,34 @@ L2外
    还有instruction level parallel（也就是一个thread内的前后两个independent instruction可以在一个clock cycle内运行）
 
   **选择activate warp**
-   * 每个clock，会从64个可能来自不同blocks的active warp中选择4个active wap（active warp的定义是sm maintain warp execution context)。其中SM对block的调度是使用或不使用整个block。通过interleave这64个warp来hide latency。这里的平行是**simutaneous multi-threading**。
+   * 每个clock，会从64个可能来自不同blocks的active warp中选择4个active warp(active warp的定义是sm maintain warp execution context)。这里的平行是**simutaneous multi-threading**（当一个线程出现hit miss，处理器切换到另外的一个线程继续执行，因此hide latency），执行起来是利用分时共享执行的，在对应的时间片上运行当前的warp，在其中因为已经分配registers & shared memory，因此可以减少时间延迟（线程级别并行）
      * 之所以能选择4个warp是因为有4个warp scheduler (以及对应的pc)
-   * SM可以维持64个active warp。通过维持他们的execution context。这64个active warp可以来自多个block。SM对block的schedule是使用或者不使用整个block。SM通过interleave这64个warp来hide latency。
+
 
   **选择指令**
-   * 每个clock，每个warp (out of 4)，会选择两个独立的instruction来运行 (并非每个GPU arch都可以双发，Volta就不可以双发)。这里的平行是**ILP**。这里独立指令指的是使用各自独立的functional units in SM。
+   * 选择4个active warp之后，针对warp的指令，可以选择两个独立的指令（独立的指令指的是指令对应计算单元互不牵扯）并行执行，但并非每个GPU arch都可以双发，Volta不可以双发。这里的平行是**ILP**（线程级别并行）
      * 如果程序中有两个独立的FMA，SM硬件中有两组FMA，则在一个clock cycle内这两个FMA会同时运行
-   * 如果找不到两个独立指令来运行的话，则运行一个instruction。
+   * 如果找不到两个独立指令来运行的话，则运行一个指令
 
-  **计算**
-   * 从最多8个可能的instruction里，最多4个是数学计算，可以同时被4个32长度的SIMTD ALU处理（same clock)，也可以同时处理load store
+  **执行计算**
+   * 在选择active warp和独立指令后，执行计算，其中最多8个可能的instruction里，最多4个是数学计算，可以同时被4个32长度的SIMTD ALU处理(same clock)，也可以同时处理load store
 
 ### Latency Hiding
 
 #### Why & How GPU Hide latency
 
-  **计算资源利用率**
-   * 计算资源的使用率与SM的active warp数量直接相关。每次处理指令之后，warp scheduler会选择1个instruction来运行（可能来自于同一个warp/不同的warp）
-  
-  **latency定义**
-   * latency是warp可以运行下一个指令(从waiting到ready status)的时钟周期的数值。
+  **提出原因**
+   * 由于针对warp的计算采用时间片的方式，因此可以有指标latency：warp可以运行下一个指令的时间差(从waiting到ready status)
   
   **latency降低的思路**
-   * 硬件：利用sm 硬件是通过让warp scheduler总能找到某些指令来处理，当等待前一个warp的latency。也就是我们希望有尽量让多个指令变为ready status。 
+   * 硬件：利用sm 硬件是通过让warp scheduler总能找到某些指令来处理，当等待前一个warp的latency。也就是我们希望有尽量让多个指令变为ready status。 （让GPU计算单元一直有事干）
 
-   * 软件：希望更多的warp resident in SM + instruction independent 
+   * 软件：希望更多的warp resident in SM + 独立指令
 
-   * 举例：如果在等待全局内存访问完成时如果有的独立算术指令，则线程调度程序可以隐藏大部分全局内存延迟。
+   * 举例：如果在等待全局内存访问完成时如果有独立算术指令，则线程调度程序可以隐藏大部分全局内存延迟。
 ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/38e691dc4977416684d095e9c96ff91b~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
-  显示有无足够warp比较，scheduler 0有足够的eligable warp，可以通过运行其余的warp来hide latency。scheduler 1没有足够的eligable warp，只能通过stall来hide latency。
+  上图：显示有无足够warp比较，scheduler 0有足够的eligable warp，可以通过运行其余的warp来hide latency。scheduler 1没有足够的eligable warp，只能通过stall来hide latency。
 
 #### 实现hide latency的warp需求数目
 
