@@ -88,7 +88,70 @@ public:
 
 ***35***
 
+### 栈与队列
 
+#### [239. 滑动窗口最大值](https://leetcode.cn/problems/sliding-window-maximum/)
+
+```c++
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        int n = nums.size();
+        priority_queue<pair<int, int>> q;
+        for (int i = 0; i < k; ++i) {
+            q.emplace(nums[i], i);
+        }
+        vector<int> ans = {q.top().first};
+        for (int i = k; i < n; ++i) {
+            q.emplace(nums[i], i);
+            while (q.top().second <= i - k) {
+                q.pop();
+            }
+            ans.push_back(q.top().first);
+        }
+        return ans;
+    }
+};
+```
+
+
+#### [347. 前K个高频元素](https://leetcode.cn/problems/top-k-frequent-elements/)
+
+```c++
+class Solution {
+public:
+
+
+    static bool cmp(pair<int, int>&m, pair<int, int> & n){
+        return m.second > n.second;
+    }
+
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        unordered_map<int,int> map;
+        for(int i = 0 ; i <nums.size(); i++){
+            map[nums[i]]++;
+        }
+        priority_queue<pair<int,int>, vector<pair<int,int>>, decltype(&cmp)> q(cmp);
+
+        for(auto& [num, count] : map){
+            if(q.size() == k){
+                if(q.top().second < count){
+                    q.pop();
+                    q.emplace(num, count);
+                }
+            }else{
+                q.emplace(num, count);
+            }
+        }
+        vector<int> res;
+        while(!q.empty()){
+            res.emplace_back(q.top().first);
+            q.pop();
+        }
+        return res;
+    }
+};
+```
 
 ### 数组
 
