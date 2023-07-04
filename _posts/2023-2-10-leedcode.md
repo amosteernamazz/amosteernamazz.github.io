@@ -90,6 +90,74 @@ public:
 
 ### 栈与队列
 
+#### [20. 有效的括号](https://leetcode.cn/problems/valid-parentheses/)
+
+
+```c++
+class Solution {
+public:
+    bool isValid(string s) {
+        unordered_map<char,int> m{{'(',1},{'[',2},{'{',3},
+                                {')',4},{']',5},{'}',6}};
+        stack<char> st;
+        bool istrue=true;
+        for(char c:s){
+            int flag=m[c];
+            if(flag>=1&&flag<=3) st.push(c);
+            else if(!st.empty()&&m[st.top()]==flag-3) st.pop();
+            else {istrue=false;break;}
+        }
+        if(!st.empty()) istrue=false;
+        return istrue;
+    }
+};
+
+```
+
+
+#### [150. 逆波兰表达式求解](https://leetcode.cn/problems/evaluate-reverse-polish-notation/)
+
+```c++
+class Solution {
+public:
+    int evalRPN(vector<string>& tokens) {
+        stack<int> stk;
+        int n = tokens.size();
+        for (int i = 0; i < n; i++) {
+            string& token = tokens[i];
+            if (isNumber(token)) {
+                stk.push(atoi(token.c_str()));
+            } else {
+                int num2 = stk.top();
+                stk.pop();
+                int num1 = stk.top();
+                stk.pop();
+                switch (token[0]) {
+                    case '+':
+                        stk.push(num1 + num2);
+                        break;
+                    case '-':
+                        stk.push(num1 - num2);
+                        break;
+                    case '*':
+                        stk.push(num1 * num2);
+                        break;
+                    case '/':
+                        stk.push(num1 / num2);
+                        break;
+                }
+            }
+        }
+        return stk.top();
+    }
+
+    bool isNumber(string& token) {
+        return !(token == "+" || token == "-" || token == "*" || token == "/");
+    }
+};
+
+```
+
 #### [239. 滑动窗口最大值](https://leetcode.cn/problems/sliding-window-maximum/)
 
 ```c++
@@ -152,6 +220,28 @@ public:
     }
 };
 ```
+
+#### [1047. 删除字符串中的所有相邻重复项](https://leetcode.cn/problems/remove-all-adjacent-duplicates-in-string/)
+
+```c++
+class Solution {
+public:
+    string removeDuplicates(string s) {
+        string stk;
+        for (char ch : s) {
+            if (!stk.empty() && stk.back() == ch) {
+                stk.pop_back();
+            } else {
+                stk.push_back(ch);
+            }
+        }
+        return stk;
+    }
+};
+
+```
+
+
 
 ### 数组
 
