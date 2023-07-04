@@ -952,10 +952,6 @@ ListNode* deleteDuplicates(ListNode* head) {
 
 
 
-#### [25. K 个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
-
-![](https://assets.leetcode.com/uploads/2021/02/19/rev1ex1.jpg)
-
 
 
 
@@ -986,24 +982,39 @@ ListNode* deleteDuplicates(ListNode* head) {
   ```
 
 
-<!-- 
-#### [剑指 Offer 35. 复杂链表的复制](https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/)
+### 二叉树
+
+#### [101. 对称二叉树](https://leetcode.cn/problems/symmetric-tree/)
+
+![](https://assets.leetcode.com/uploads/2021/02/19/symtree1.jpg)
 
 ```c++
-Node* copyRandomList(Node* head) {
-  if(!head){
-    return head;
-  }
-  Node* temp = head;
-  while(temp){
-    Node* tmp = new Node(temp->val);
-    tmp ->next = temp ->next;
+class Solution {
+public:
+    bool check(TreeNode *p, TreeNode *q) {
+        if (!p && !q) return true;
+        if (!p || !q) return false;
+        return p->val == q->val && check(p->left, q->right) && check(p->right, q->left);
+    }
 
-  }
-}
+    bool isSymmetric(TreeNode* root) {
+        return check(root, root);
+    }
+};
 
-``` -->
+```
 
+#### [104. 二叉树的最大深度](https://leetcode.cn/problems/maximum-depth-of-binary-tree/)
+
+```c++
+class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+        if (root == nullptr) return 0;
+        return max(maxDepth(root->left), maxDepth(root->right)) + 1;
+    }
+};
+```
 
 
 #### [226. 翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
@@ -1017,7 +1028,7 @@ Node* copyRandomList(Node* head) {
       return nullptr;
     }
     TreeNode* temp = root->left;
-    root->left = roor->right;
+    root->left = root->right;
     root->right = temp;
 
     root ->left = invertTree(root->left);
@@ -1025,6 +1036,37 @@ Node* copyRandomList(Node* head) {
     return root;
   }
   ```
+
+#### [111. 二叉树最小深度](https://leetcode.cn/problems/minimum-depth-of-binary-tree/)
+
+
+```c++
+class Solution {
+public:
+    int minDepth(TreeNode *root) {
+        if (root == nullptr) {
+            return 0;
+        }
+
+        if (root->left == nullptr && root->right == nullptr) {
+            return 1;
+        }
+
+        int min_depth = INT_MAX;
+        if (root->left != nullptr) {
+            min_depth = min(minDepth(root->left), min_depth);
+        }
+        if (root->right != nullptr) {
+            min_depth = min(minDepth(root->right), min_depth);
+        }
+
+        return min_depth + 1;
+    }
+};
+
+```
+
+
 #### [112. 路径总和](https://leetcode-cn.com/problems/path-sum/)
 
 ![](https://assets.leetcode.com/uploads/2021/01/18/pathsum1.jpg)
@@ -1169,7 +1211,7 @@ Node* get_next_node(Node* root){
   ```
 
 
-#### :o:[105. 从前序与中序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)（★面试常考）
+#### [105. 从前序与中序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)（★面试常考）
 
 ![](https://assets.leetcode.com/uploads/2021/02/19/tree.jpg)
 
