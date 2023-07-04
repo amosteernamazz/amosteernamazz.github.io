@@ -1041,6 +1041,7 @@ L2外
 
 #### Stream工作原理
 
+ **stream是在host端创建，最终计算侧是在device上执行**
   * host stream (software) 可以无限
   * host stream 通过hardware work queue将操作发送给device
     * 单hardware work queue 会导致false dependency
