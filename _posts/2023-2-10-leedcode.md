@@ -1066,6 +1066,86 @@ public:
 
 ```
 
+#### [222. 完全二叉树的节点个数](https://leetcode.cn/problems/count-complete-tree-nodes/)
+
+![](https://assets.leetcode.com/uploads/2021/01/14/complete.jpg)
+
+```c++
+class Solution {
+public:
+    int countNodes(TreeNode* root) {
+        if(!root) return 0;
+        return countNodes(root->left) + countNodes(root->right) + 1;
+    }
+};
+```
+
+
+#### [257. 二叉树的所有路径](https://leetcode.cn/problems/binary-tree-paths/)
+
+![](https://assets.leetcode.com/uploads/2021/03/12/paths-tree.jpg)
+
+```c++
+class Solution {
+public:
+    void construct_paths(TreeNode* root, string path, vector<string>& paths) {
+        if (root != nullptr) {
+            path += to_string(root->val);
+            if (root->left == nullptr && root->right == nullptr) {  
+                
+                // 当前节点是叶子节点
+                paths.push_back(path);
+            } else {
+                path += "->";
+
+                // 当前节点不是叶子节点，继续递归遍历
+                construct_paths(root->left, path, paths);
+                construct_paths(root->right, path, paths);
+            }
+        }
+    }
+
+    vector<string> binaryTreePaths(TreeNode* root) {
+        vector<string> paths;
+        construct_paths(root, "", paths);
+        return paths;
+    }
+};
+
+```
+
+#### [404. 左叶子之和](https://leetcode.cn/problems/sum-of-left-leaves/)
+
+```c++
+class Solution {
+public:
+
+    // 判断是否是叶子节点
+    bool isLeafNode(TreeNode* node) {
+        return !node->left && !node->right;
+    }
+
+    int dfs(TreeNode* node) {
+        int ans = 0;
+        if (node->left) {
+
+            // 如果有节点，如果是叶子则+，否则递归
+            ans += isLeafNode(node->left) ? node->left->val : dfs(node->left);
+        }
+        if (node->right && !isLeafNode(node->right)) {
+          
+            // 如果为右侧节点，如果右节点非叶子节点，则递归
+            ans += dfs(node->right);
+        }
+        return ans;
+    }
+
+    int sumOfLeftLeaves(TreeNode* root) {
+        return root ? dfs(root) : 0;
+    }
+};
+
+```
 
 #### [112. 路径总和](https://leetcode-cn.com/problems/path-sum/)
 
