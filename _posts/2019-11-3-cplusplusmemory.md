@@ -18,6 +18,7 @@ mermaid: true
 
 
  **不同**
+ new/delete带构造析构部分
   * 返回类型安全性 （new返回安全，malloc返回`void *`）
   * 返回失败后返回值 （new失败后要捕获异常`bad_alloc`，malloc返回nullptr）
   * 是否指定内存大小（new不，malloc需要）
@@ -53,6 +54,10 @@ mermaid: true
  **问题**
   * 会爆栈
 
+## 野指针和悬空指针
+
+ * 野指针：没有初始化的指针
+ * 悬空指针：指向内存已经被释放了
 
 ## 内存泄漏
  **原因**
@@ -68,9 +73,25 @@ mermaid: true
   * linux使用swap命令观察还有多少可以用的交换空间，两分钟内执行三四次，肉眼看看交换区是不是变小了
   * 使用/usr/bin/stat工具如netstat、vmstat等。如果发现有内存被分配且没有释放，有可能进程出现了内存泄漏。
 
-## 智能指针 shared_ptr
+## 智能指针种类
+  
+ * unique_ptr（独占式）、shared_ptr（共享式、强引用）、weak_ptr（弱引用，只提供访问，但不管理）
+
+
+ ```c++
+ T* get();  // 获得原生指针
+ T& operator*();  // 重写*
+ T* operator->(); // 重写->
+ T& operator=(const T& val);  // 重写=
+ T* release();  // 释放智能指针，返回原生指针
+ void reset (T* ptr = nullptr); // 释放原先的对象，将智能指针管理新指针的对象
+ ```
+
+### 智能指针 shared_ptr
+
  * 是RAII类模型，用来动态分配内存
    * 将指针用类封装，然后实例化为对象，当对象过期，让析构函数删除指向的内存
+
 
  **shared_ptr**
   * 多个指针可以指向一个相同的对象，当最后一个shared_ptr离开作用域的时候才会释放掉内存。
@@ -174,7 +195,7 @@ mermaid: true
   ```
    * 不存在内存泄漏问题
 
-## 智能指针 weak_ptr
+### 智能指针 weak_ptr
 
  **目的**
   * 解决shared_ptr指针循环引用出现内存泄漏问题
@@ -335,7 +356,7 @@ mermaid: true
 
 
 
-## unique_ptr
+### unique_ptr
 
  拥有对持有对象的唯一所有权，两个`unique_ptr`不能同时指向同一个对象
 
