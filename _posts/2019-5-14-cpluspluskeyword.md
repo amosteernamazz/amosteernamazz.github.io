@@ -28,6 +28,18 @@ char * (*pf)(char * p);   // pf函数指针
 pf = fun;                 // 函数指针指向函数
 pf(p);                    // 调用
 ```
+# bool、int、float、指针类型变量a与0的比较语句
+
+  ```c++
+  if(!a) or if(a)
+
+  if (a ==0)
+
+  if(a <= 0.000001 && a >=-0.000001)
+
+  if(a != NULL ) or if(a == NULL)
+  ```
+
 
 # **C++特性**
 
@@ -160,6 +172,35 @@ pf(p);                    // 调用
 
 # **C++关键字**
 
+
+## ++i与i++
+
+  前置加加不会产⽣临时对象，后置加加必须产⽣临时对象，临时对象会导致效率降低
+
+  ++i
+  ```c++
+  int& int::operator++ (){
+  *this +=1；
+  return *this；
+  }
+  ```
+
+  i++
+  ```c++
+  const int int::operator（int）{
+  int oldValue = *this；
+  ++（*this）；
+  return oldValue；
+  }
+
+  ```
+
+## printf实现原理
+
+函数参数通过压入堆栈的方式来传递参数
+而栈是从内存高地址向低地址生长，因此最后压栈的在堆栈指针的上方，printf第一个被找到的参数就是字符指针。函数通过判断字符串控制参数的个数来判断参数个数与数据类型，进而算出需要的堆栈指针偏移量
+
+
 ## NULL和nullptr
 
  **NULL**
@@ -232,7 +273,25 @@ pf(p);                    // 调用
  **应用**
   * 多出现在泛型编程，编译期间确定
 
-
+ **decltype(c)**
+  * 若 e 为⼀个⽆括号的变量、函数参数、类成员，则返回类型为该变量/参数/类成员在源程序中的声明类型
+  * 否则的话，根据表达式的值分类
+    * 若 e 是⼀个左值，即可寻址的，返回 T& ；
+    * 若 e 是⼀个临终值，则返回值为 T&& ；
+    * 若 e 是⼀个纯右值，则返回值为 T 。
+```c++
+const std::vector<int> v(1);
+const int&& foo(); // 返回临终值：⽣命周期已结束但内存还未拿⾛
+auto a = v[0]; // a 为 int
+decltype(v[0]) b = 0; // b 为 const int&
+ // 即 vector<int>::operator[](size_type) const 的
+返回值类型
+auto c = 0; // c, d 均为 int
+auto d = c; 
+decltype(c) e; // e 为 int，即 c 的类型
+decltype((c)) f = e; // f 为 int&，因为 c 是左值
+decltype(0) g; // g 为 int，因为 0 是右值
+```
 ## explicit
 
  **目的**
@@ -617,3 +676,202 @@ int main(int argc, char *argv[])
     return 0;
 }
 ```
+
+
+## 回调函数
+
+当发⽣某种事件时，系统或其他函数将会⾃动调⽤你定义的⼀段函数，相当于**中断处理函数**，当系统在符合条件的时候自动调用，其通过函数指针调用的函数，如果将某函数的指针作为参数给另外一个函数，当另外的这个函数在满足一定条件后通过函数指针完成函数的调用，那么称这个被调用的函数为回调函数
+
+步骤：声明，定义，设置触发条件
+
+
+
+## lambda 表达式
+
+提供了一种**匿名函数**的特性，可以编写内嵌的匿名函数，用于替换独立函数，而且更可读
+本质上来讲， lambda 表达式只是**一种语法糖**，因为所有其能完成的⼯作都可以⽤其它稍微复杂的代码来实现。
+
+
+
+从[]开始，结束于{}，{}内定义的是lambda表达式体
+
+```c++
+auto basicLambda = [] { cout << "Hello, world!" << endl; };
+basicLambda(); 
+```
+
+带返回值类型的
+```c++
+auto add[](int a, int b) -> int{return a+b;};
+
+auto multiply = [](int a, int b)-> {return a*b;};
+
+int sum = add(2,3);
+int product = multiply(2, 5);
+```
+[]闭包：
+实现原理是每次定义lambda表达式后，都会自动生成匿名类，称为**闭包类型**。运行时候，lambda表达式会返回一个匿名闭包实例，实际是右值。其可以通过**传值或引用**的方式捕捉封装作用域的变量
+
+
+```c++
+int main() {
+ int x = 10;
+ 
+ auto add_x = [x](int a) { return a + x; }; 
+ auto multiply_x = [&x](int a) { return a * x; }; 
+ 
+ cout << add_x(10) << " " << multiply_x(10) << endl;
+ // 输出：20 100
+ return 0;
+}
+```
+[]：默认不捕获任何变量
+[=]：默认以值捕获所有变量；
+[&]：默认以引⽤捕获所有变量；
+[x]：仅以值捕获x，其它变量不捕获；
+[&x]：仅以引⽤捕获x，其它变量不捕获；
+[=, &x]：默认以值捕获所有变量，但是x是例外，通过引⽤捕获；
+[&, x]：默认以引⽤捕获所有变量，但是x是例外，通过值捕获；
+[this]：通过引⽤捕获当前对象（其实是复制指针）；
+[*this]：通过传值⽅式捕获当前对象
+
+应用于函数的参数，实现回调
+
+```c++
+int val = 3;
+vector<int> v{1,8,3,4,7,3};
+int count = std::count_if(v.begin(), v.end(), [val](int x) {return x >3;});
+```
+
+
+## 右值引用
+
+```c++
+Person get(){
+  Person p;
+  return p;
+}
+Person p = get();
+```
+上述获得并初始化过程涉及3次构造、2次析构，因此为了方便传递，引入右值引用，类似move语义，从右值直接拿数据初始化并修改左值，不需要重新构造再析构
+
+
+```c++
+class Person{
+public:
+ Person(Person&& rhs){...}
+ ...
+};
+```
+
+## 泛化常数 constexpr
+
+```c++
+// 告诉编译器这是编译期常量
+constexpr int N = 5;
+int arr[N];
+
+// 也可以为常量表达式
+constexpr int getFive(){ return 5; }
+int arr[getFive() + 1];
+```
+
+
+## 初始化列表 std::initializer_list
+
+```c++
+class A{
+public:
+  A(std::initializer_list<int> list);
+};
+A a = {1,2,3};
+// 只是初始化的时候长度可以变化，只能静态构造
+A b = {1,2};
+```
+
+
+
+
+## 范围for循环
+
+## 构造函数委托
+
+可以在构造函数中调用同一个类的其他构造函数
+
+## final 和override
+
+final用来禁止虚函数被重写/禁止类被继承
+override用来显示地重写虚函数，这样可以提供更多有用错误和警告
+
+## default 和delete
+
+用于显式指定和禁止某些行为
+```c++
+struct classA {
+ classA() = defauult; // 声明⼀个⾃动⽣成的函数
+ classA(T value);
+ void *operator new(size_t) = delete; // 禁⽌⽣成new运算符
+};
+```
+
+## assert断言
+
+一般用于debug程序的逻辑，不用于release版本
+ * assert宏
+   * `assert(x >0)`
+ * #error方法
+
+```c++
+#if defined(DEBUG)
+    // 在调试模式下执行某些操作
+#else
+    #error "DEBUG macro is not defined. Please define DEBUG for release builds."
+#endif
+```
+
+
+ * 模板的assert
+
+```c++
+template< class T >
+struct Check {
+ static_assert( sizeof(int) <= sizeof(T), "T is not big enough!" ) ;
+} ;
+
+```
+
+
+## 正则表达式
+
+```c++
+const char *reg_esp = "[ ,.\\t\\n;:]";
+std::regex rgx(reg_esp) ;
+std::cmatch match ; 
+const char *target = "Polytechnic University of Turin " ;
+if( regex_search( target, match, rgx ) ) {
+ const size_t n = match.size();
+ for( size_t a = 0 ; a < n ; a++ ) {
+ string str( match[a].first, match[a].second ) ;
+ cout << str << "\n" ;
+ }
+}
+```
+
+## 元组
+
+```c++
+typedef std::tuple< int , double, string > tuple_1 t1;
+typedef std::tuple< char, short , const char * > tuple_2 t2 ('X', 2,
+"Hola!");
+t1 = t2 ; // 隐式类型转换
+
+```
+
+## 哈希表
+
+ * map , multimap , set , multiset 使⽤红⿊树实现， 插⼊和查询都是 O(lgn) 的复杂度
+ * C++11 为这四种模板类提供了（底层哈希实现）以达到 O(1) 的复杂度
+ * unordered_map：无序，搜索效率高，额外空间大
+ * unordered_multimap：速度快，无序，空间大，kv可以重复
+ * unordered_set：值单个，无序，速度快，空间大
+ * unordered_multiset：值可以有多个，无序，速度快，空间大
