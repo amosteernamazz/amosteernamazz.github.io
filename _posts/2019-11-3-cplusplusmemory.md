@@ -12,6 +12,89 @@ mermaid: true
 
 # c++内存管理
 
+
+## 大端模式和小端模式
+ * ⼤端模式：是指数据的⾼字节保存在内存的低地址中，⽽数据的低字节保存在内存的⾼地址端。
+ * ⼩端模式，是指数据的⾼字节保存在内存的⾼地址中，低位字节保存在在内存的低地址端。
+ * 判断方法，直接读取十六进制的值 or 使用共同体来判断
+
+
+```c++
+
+#include <stdio.h>
+int main() {
+ 
+ union {
+  int a; //4 bytes
+  char b; //1 byte
+ } data;
+
+
+ data.a = 1; //占4 bytes，⼗六进制可表示为 0x 00 00 00 01
+ 
+ //b因为是char型只占1Byte，a因为是int型占4Byte
+ //所以，在联合体data所占内存中，b所占内存等于a所占内存的低地址部分
+ if(1 == data.b) {
+ //⾛到这⾥意味着说明a的低字节，被取给到了b
+ //即a的低字节存在了联合体所占内存的(起始)低地址，符合⼩端模式特征
+ printf("Little_Endian\n");
+ } else {
+ printf("Big_Endian\n");
+ }
+ return 0;
+
+}```
+
+## 手写实现智能指针
+
+```c++
+template<typename T>
+class SharedPtr {
+private:
+ size_t* m_count_;
+ T* m_ptr_;
+public:
+ // 无参构造
+ SharedPtr(): m_ptr_(nullptr),m_count_(new size_t) {}
+ // 原生指针
+ SharedPtr(T* ptr): m_ptr_(ptr),m_count_(new size_t) { m_count_ = 1;}
+ //析构函数
+ ~SharedPtr() {
+ -- (*m_count_);
+ if (*m_count_ == 0) {
+ delete m_ptr_;
+ delete m_count_;
+ m_ptr_ = nullptr;
+ m_count_ = nullptr;
+ }
+ }
+ //拷⻉构造函数
+ SharedPtr(const SharedPtr& ptr) {
+ m_count_ = ptr.m_count_;
+ m_ptr_ = ptr.m_ptr_;
+ ++(*m_count_);
+ }
+ //拷⻉赋值运算
+ void operator=(const SharedPtr& ptr) { SharedPtr(std::move(ptr)); }
+ //移动构造函数
+ SharedPtr(SharedPtr&& ptr) : m_ptr_(ptr.m_ptr_),
+m_count_(ptr.m_count_) { ++(*m_count_); }
+//移动赋值运算
+ void operator=(SharedPtr&& ptr) { SharedPtr(std::move(ptr)); }
+ //解引⽤
+ T& operator*() { return *m_ptr_; }
+ //箭头运算
+ T* operator->() { return m_ptr_; }
+ //᯿载bool操作符
+ operator bool() {return m_ptr_ == nullptr;}
+ T* get() { return m_ptr_;}
+ size_t use_count() { return *m_count_;}
+ bool unique() { return *m_count_ == 1; }
+ void swap(SharedPtr& ptr) { std::swap(*this, ptr); }
+};
+```
+
+
 ## new/delete与malloc/free
  **相同**
   * 申请动态内存和释放动态内存
@@ -60,6 +143,11 @@ mermaid: true
  * 悬空指针：指向内存已经被释放了
 
 ## 内存泄漏
+ 
+ 申请了一块内存，使用完毕后没有释放。程序运⾏时间越⻓，占⽤内存越多，最终⽤尽全部内存，整个系统崩溃。
+ 
+ 由程序申请的⼀块内存，且没有任何⼀个指针指向它，那么这块内存就泄漏了。
+ 
  **原因**
   * malloc/new和delete/free没有匹配
   * new[] 和 delete[]没有匹配
