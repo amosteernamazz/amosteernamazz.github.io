@@ -108,6 +108,28 @@ pf(p);                    // 调用
   * 自身构造和析构在private作用域，单例模式
   * friend + 虚继承
 
+ ### 类与类之间关系
+
+  * has 包含关系
+  * use friend关系
+  * is  继承关系
+
+### 继承中的控制方式
+  * public继承 -> 不改变基类的访问权限 
+  * protected继承 -> 将基类public成员变为子类protected成员，其他保持不变
+  * private继承 -> 不受继承方式的影响，子类永远无权访问
+
+### 组合
+
+ * ⼀个类⾥⾯的数据成员是另⼀个类的对象，即内嵌其他类的对象作为⾃⼰的成员
+ * **创建组合类的对象**：⾸先创建各个内嵌对象，难点在于构造函数的设计。创建对象时既要对基本类型的成员进⾏初始化，⼜要对内嵌对象进⾏初始化
+ * **构造**函数的**执⾏顺序**：先调⽤内嵌对象的构造函数，然后按照内嵌对象成员
+在组合类中的定义顺序，与组合类构造函数的初始化列表顺序⽆关。然后执⾏组合类构造函数
+的函数体，析构函数调⽤顺序相反。
+
+
+
+
 ![](https://img-blog.csdn.net/20180626002635328?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dhbl9zaGlidWdvbmc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
  **默认继承方式**
@@ -550,3 +572,48 @@ static和const不可同时修饰成员函数
 
  **应用**
   * 一般不要使用dynamic_cast、reinterpret_cast
+
+
+## fork、wait和exec函数
+
+在早期unix系统中，当调⽤ fork 时，内核会把所有的内部数据结构复制⼀份，复制进程的⻚表项，然后把⽗进程的地址空间中的内容逐⻚的复制到⼦进程的地址空间中。但从内核⻆度来说，逐⻚的复制⽅式是⼗分耗时的。现代的 Unix 系统采取了更多的优化，例如 Linux，采⽤了写时复制的⽅法，⽽不是对⽗进程空间进程整体复制。
+
+ * ⽗进程产⽣⼦进程使⽤ fork 拷⻉出来⼀个⽗进程的副本，此时只拷⻉了⽗进程的⻚表，两个进程都读同⼀块内存。
+ * 当有进程写的时候使⽤写实拷⻉机制分配内存，exec 函数可以加载⼀个 elf ⽂件去替换⽗进程，从此⽗进程和⼦进程就可以运⾏不同的程序了。
+ * fork 从⽗进程返回⼦进程的 pid，从⼦进程返回 0，调⽤了 wait 的⽗进程将会发⽣阻塞，直到有⼦进程状态改变，执⾏成功返回 0，错误返回 -1。
+ * exec 执⾏成功则⼦进程从新的程序开始运⾏，⽆返回值，执⾏失败返回 -1。
+
+```c++
+int main(int argc, char *argv[])
+{
+    printf("hello world (pid:%d)\n", (int) getpid());
+    
+    // fork以后子进程pid=0，父进程pid=子进程
+    int rc = fork();
+    if (rc < 0) {
+        // fork failed; exit
+        fprintf(stderr, "fork failed\n");
+        exit(1);
+    } else if (rc == 0) {
+        // child (new process)
+        printf("hello, I am child (pid:%d)\n", (int) getpid());
+
+        // 子进程程序执行为execvp的命令
+        char *myargs[3];
+        myargs[0] = strdup("wc");   // program: "wc" (word count)
+        myargs[1] = strdup("exec.c"); // argument: file to count
+        myargs[2] = NULL;           // marks end of array
+        execvp(myargs[0], myargs);  // runs word count
+
+        // 子进程已经执行了wc程序，因此不会返回此处执行
+        printf("this shouldn't print out");
+    } else {
+        // 父进程等待子进程结束，如果为多个的话等待其中一个结束
+        // parent goes down this path (original process)
+        int wc = wait(NULL);
+        printf("hello, I am parent of %d (wc:%d) (pid:%d)\n",
+	       rc, wc, (int) getpid());
+    }
+    return 0;
+}
+```
