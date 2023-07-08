@@ -8,6 +8,132 @@ date: 2020-04-12 00:00:00 +08:00
 mermaid: true
 ---
 
+string转化为int string2int = atoi(string1.c_str())
+
+# STL算法总结
+
+迭代器
+begin() end()
+rbegin() rend()
+
+sort()方法：vector
+
+## vector
+
+vector<int> vec;
+
+容量
+**vec.size()**
+**vec.empty()**
+**vec.resize()**
+vec.reverse()
+
+元素访问
+vec[]
+vec.front()：返回第一个元素
+vec.back()：返回最后一个元素
+vec.data()：返回第一个元素的指针
+
+修改
+
+**push_back()**
+**pop_back()**
+insert()
+**erase()**
+**clear()**
+**swap()**
+assign()
+**emplace()**
+**emplace_back()**
+
+## unordered_map 
+
+unordered_map<int,int> res;
+
+容量
+**res.empty()**
+**res.size()**
+
+元素访问
+**res.find()** 如果找到返回迭代器，否则返回end()
+**res.count()**
+[]
+at()
+->second
+
+修改
+**res.insert()**
+**res.erase()**
+**res.clear()**
+
+hash相关
+
+## string
+
+string s1;
+
+容量
+s1.length()
+**s1.size()**
+**s1.resize()**
+s1.reserve()
+
+元素访问
+s1.front()
+s1.back()
+**s1.find()**
+**s1.substr()**
+**s1.empty()**
+
+修改
+s1.assign(str1);
+**+=**
+s1.swap()
+s1.push_back()
+**s1.pop_back()**
+s1.clear()
+s1.insert()
+s1.append()
+s1.erase()
+s1.replace()
+s1.copy()
+s1.tranfrom()
+
+## stack
+
+stack<int> st;
+
+st.push()
+st.top()
+st.pop()
+st.empty()
+st.size()
+
+## priority_queue
+
+priority_queue<int, vector<int>, less<int>> queue1;     大堆根
+priority_queue<int, vector<int>, greater<int>> queue2;  小堆根
+
+queue1.push()
+queue1.top()
+queue1.empty()
+queue1.pop()
+queue1.emplace()
+
+自定义比较函数
+
+## unorder_set
+
+unorder_set<string> sets;
+
+sets.empty()
+sets.size()
+sets.find()
+sets.count()
+sets.insert()
+sets.erase()
+sets.clear()
+
 
 ## ⼿写字符串函数 strcat，strcpy，strncpy，memset，memcpy实现
 
