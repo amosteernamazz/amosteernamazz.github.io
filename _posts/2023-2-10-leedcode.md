@@ -8,6 +8,10 @@ date: 2023-02-10 00:00:00 +08:00
 mermaid: true
 ---
 
+**347**
+**209**
+
+
 #### [剑指offer 05: 替换空格](https://leetcode.cn/problems/ti-huan-kong-ge-lcof/)
 
 
@@ -746,19 +750,19 @@ ListNode* reverseList(ListNode* head) {
 
 
 ```c++
-ListNode* swapPairs(ListNode* head) {
-  ListNode* temp = new ListNode(-1);
-  temp->next = head;
-  while(temp ->next && temp->next->next){
-    ListNode* l1 = temp->next;
-    ListNode* l2 = temp->next->next;
-    temp->next = l2;
-    l1 ->next = l2->next;
-    l2->next = l1;
-    temp = l1;
-  }
-  return temp-> next;
-}
+class Solution {
+public:
+    ListNode* swapPairs(ListNode* head) {
+        if (head == nullptr || head->next == nullptr) {
+            return head;
+        }
+        ListNode* newHead = head->next;
+        head->next = swapPairs(newHead->next);
+        newHead->next = head;
+        return newHead;
+    }
+};
+
 ```
 
 
@@ -767,69 +771,35 @@ ListNode* swapPairs(ListNode* head) {
 ![](https://pic.leetcode-cn.com/1626420025-fZfzMX-image.png)
 
   ```c++
-  ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
-    stack<int> s1;
-    stack<int> s2;
-    int carry = 0;
-    int sum = 0;
-    int single = 0;
-    ListNode* node = new ListNode();
-    ListNode* head = node;
-
-    while(l1){
-      s1.push(l1->val);
-      l1 = l1->next;
+class Solution {
+public:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        stack<int> s1, s2;
+        while (l1) {
+            s1.push(l1 -> val);
+            l1 = l1 -> next;
+        }
+        while (l2) {
+            s2.push(l2 -> val);
+            l2 = l2 -> next;
+        }
+        int carry = 0;
+        ListNode* ans = nullptr;
+        while (!s1.empty() || !s2.empty() || carry != 0) {
+            int a = s1.empty() ? 0 : s1.top();
+            int b = s2.empty() ? 0 : s2.top();
+            if (!s1.empty()) s1.pop();
+            if (!s2.empty()) s2.pop();
+            int cur = a + b + carry;
+            carry = cur / 10;
+            cur %= 10;
+            auto curnode = new ListNode(cur);
+            curnode -> next = ans;
+            ans = curnode;
+        }
+        return ans;
     }
-    while(l2){
-      s2.push(l1->val);
-      l2 = l2->next;
-    }
-    while(!s1.empty() && !s2.empty()){
-      sum = s1.top() + s2.top();
-      carry = sum /10;
-      single = sum %10;
-      ListNode* temp = new ListNode(single);
-      node->next = temp;
-      node = node->next;
-      s1.pop();
-      s2.pop();
-    }
-    while(!s1.empty()){
-      sum  = s1.top() + carry;
-      single = sum % 10;
-      carry = sum / 10;
-      ListNode * tmp = new ListNode(single);
-      node -> next = tmp;
-      node = node->next;
-      s1.pop();
-    }
-    while(!s2.empty()){
-      sum  = s2.top() + carry;
-      single = sum % 10;
-      carry = sum / 10;
-      ListNode * tmp = new ListNode(single);
-      node -> next = tmp;
-      node = node->next;
-      s2.pop();
-    }
-    if(carry){
-      ListNode * tmp = new ListNode(carry);
-      node -> next = tmp;
-      node = node->next;
-    }
-    ListNode* res = reverse(head->next);
-    return res;
-  }
-
-  ListNode* reverse(ListNode* list){
-    if(list == nullptr || list->next == nullptr){
-      return list;
-    }
-    ListNode* temp = reverse(list->next);
-    list->next->next = list;
-    list->next = nullptr;
-    return temp;
-  }
+};
   ```
 
 #### [725. 分隔链表](https://leetcode-cn.com/problems/split-linked-list-in-parts/)
