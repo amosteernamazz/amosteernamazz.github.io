@@ -92,15 +92,19 @@ mermaid: true
   void straight_inserting_sort(int a[], int length){
     // 对所有待排序元素来说
     for(int i = 1; i <length; i++){
+      // 如果比排好序的序列的最大值小
       if(a[i] < a[i-1]){
         int temp = a[i];
-        // 确定排序位置ptr
+        // 从序列最大值遍历排好序的序列[0,i-1]
         for(int j = i - 1; j >=0 ; j--){
           a[j + 1] = a[j];
+
+          // 如果找到该位置
           if(a[j] < temp){
             a[j+1] = temp;
             break;
           }
+          // 如果该值最小
           if(a[j] > temp && j == 0 ){
             a[j] = temp;
           }
@@ -161,6 +165,7 @@ mermaid: true
           low = mid +1;
         }
       }
+      // 选择high而不是low的原因：
       for(int j =i - 1 ; j > high ; j--){
         a[j+1] = a[j];
       }
