@@ -12,6 +12,8 @@ mermaid: true
 **209**
 ***3***
 **5**
+**968**
+
 
 #### [剑指offer 05: 替换空格](https://leetcode.cn/problems/ti-huan-kong-ge-lcof/)
 
@@ -1358,33 +1360,36 @@ public:
 
 ```c++
 class Solution {
-    int maxSum = Integer.MIN_VALUE;
+private:
+    int maxSum = INT_MIN;
 
-    public int maxPathSum(TreeNode root) {
-        maxGain(root);
-        return maxSum;
-    }
-
-    public int maxGain(TreeNode node) {
-        if (node == null) {
+public:
+    int maxGain(TreeNode* node) {
+        if (node == nullptr) {
             return 0;
         }
         
         // 递归计算左右子节点的最大贡献值
         // 只有在最大贡献值大于 0 时，才会选取对应子节点
-        int leftGain = Math.max(maxGain(node.left), 0);
-        int rightGain = Math.max(maxGain(node.right), 0);
+        int leftGain = max(maxGain(node->left), 0);
+        int rightGain = max(maxGain(node->right), 0);
 
         // 节点的最大路径和取决于该节点的值与该节点的左右子节点的最大贡献值
-        int priceNewpath = node.val + leftGain + rightGain;
+        int priceNewpath = node->val + leftGain + rightGain;
 
         // 更新答案
-        maxSum = Math.max(maxSum, priceNewpath);
+        maxSum = max(maxSum, priceNewpath);
 
         // 返回节点的最大贡献值
-        return node.val + Math.max(leftGain, rightGain);
+        return node->val + max(leftGain, rightGain);
     }
-}
+
+    int maxPathSum(TreeNode* root) {
+        maxGain(root);
+        return maxSum;
+    }
+};
+
 ```
 
 
