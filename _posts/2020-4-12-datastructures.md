@@ -7,9 +7,12 @@ category: blog
 date: 2020-04-12 00:00:00 +08:00
 mermaid: true
 ---
+push: stack、priority_queue
+insert: unordered_map、unorder_set
+均有：vector、string
 
 string转化为int string2int = atoi(string1.c_str())
-
+int转化string int2string = to_string(number)
 # STL算法总结
 
 迭代器
@@ -133,6 +136,12 @@ sets.count()
 sets.insert()
 sets.erase()
 sets.clear()
+
+## pair
+
+std::pair <int, float> pair1;
+
+pair1.first
 
 
 ## ⼿写字符串函数 strcat，strcpy，strncpy，memset，memcpy实现
