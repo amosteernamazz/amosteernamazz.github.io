@@ -28,7 +28,7 @@ char * (*pf)(char * p);   // pf函数指针
 pf = fun;                 // 函数指针指向函数
 pf(p);                    // 调用
 ```
-# bool、int、float、指针类型变量a与0的比较语句
+### bool、int、float、指针类型变量a与0的比较语句
 
   ```c++
   if(!a) or if(a)
