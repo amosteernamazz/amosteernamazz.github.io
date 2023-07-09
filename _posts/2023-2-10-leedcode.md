@@ -10,7 +10,8 @@ mermaid: true
 
 **347**
 **209**
-
+***3***
+**5**
 
 #### [剑指offer 05: 替换空格](https://leetcode.cn/problems/ti-huan-kong-ge-lcof/)
 
@@ -807,42 +808,32 @@ public:
 ![](https://assets.leetcode.com/uploads/2021/06/13/split1-lc.jpg)
 
   ```c++
-  vector<ListNode*> splitListToParts(ListNode* root, int k) {
-    int length = 0;
-    ListNode* temp = root;
-    while(temp){
-      length++;
-      temp = temp->next;
-    }
-    int array_length = length / k > 0 ? (length / k) : 1;
-    int arr_len[k];
-    for(int i = 0 ; i < k ; i++){
-      arr_len[i] = array_length;
-    }
-    int gap = 0;
-    if(k * array_length <length){
-      gap = length - k * array_length;
-      for(int i = 0 ; i <gap ; i++){
-        arr_len[i]++;
-      }
-    }
-
-    vector<ListNode*> ans;
-    ListNode* temp;
-    for(int i = 0 ; i < k; i++){
-      ans.push_back(root);
-      for(int j = 0; j <arr_len[i]; j++){
-        if(root){
-          temp = root;
-          root = root->next;
+  class Solution {
+public:
+    vector<ListNode*> splitListToParts(ListNode* head, int k) {
+        int n = 0;
+        ListNode *temp = head;
+        while (temp != nullptr) {
+            n++;
+            temp = temp->next;
         }
-      }
-      if(temp){
-        temp->next = nullptr;
-      }
+        int quotient = n / k, remainder = n % k;
+
+        vector<ListNode*> parts(k,nullptr);
+        ListNode *curr = head;
+        for (int i = 0; i < k && curr != nullptr; i++) {
+            parts[i] = curr;
+            int partSize = quotient + (i < remainder ? 1 : 0);
+            for (int j = 1; j < partSize; j++) {
+                curr = curr->next;
+            }
+            ListNode *next = curr->next;
+            curr->next = nullptr;
+            curr = next;
+        }
+        return parts;
     }
-    return ans;
-  }
+};
 
   ```
 
@@ -878,16 +869,45 @@ public:
 
 
 ```c++
-  ListNode* temp = nullptr;
-  ListNode* reverseN(int n,ListNode* node){
-    if(n == 1){
-      temp = node->next;
-      return node;
+class Solution {
+private:
+    
+public:
+
+    void reverse(ListNode* Node){
+        if(Node == nullptr || Node->next == nullptr){
+            return;
+        }
+        ListNode* next = Node->next;
+        reverse(Node->next);
+        next->next = Node;
     }
-    ListNode* last = reverseN(n-1, node->next);
-    node->next->next = node;
-    node ->next = temp
-  }
+    ListNode *reverseBetween(ListNode *head, int left, int right) {
+        ListNode* node = new ListNode(-1);
+        node->next = head;
+        ListNode* pre = node;
+        for(int i = 0 ; i < left -1; i++){
+            pre = pre->next;
+        }
+        ListNode* right1 = pre;
+
+        for(int i = 0 ; i < right - left + 1; i++){
+            right1 = right1 ->next;
+        }
+
+        ListNode* nextpart = right1->next;
+        ListNode* changepart = pre->next;
+        pre->next = nullptr;
+        right1->next = nullptr;
+        reverse(changepart);
+        pre->next = right1;
+        changepart->next = nextpart;
+        
+        return node->next;
+    }
+};
+
+
 
 ```
 #### [83. 删除排序链表中的重复元素](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/)
@@ -895,29 +915,26 @@ public:
 ![](https://assets.leetcode.com/uploads/2021/01/04/list1.jpg)
 
 ```c++
-ListNode* deleteDuplicates(ListNode* head) {
-  if(!head || !head->next){
-    return head;
-  }
-  int value = head->val;
-  ListNode* temp = head->next;
-  ListNode* carry = head;
-  while(temp){
-    if(temp->val == value){
-      ListNode* deleteEle = temp;
-      temp = temp->next;
-      carry->next = temp;
-      delete deleteEle;
-      deleteEle = nullptr;
-    }else{
-      carry = carry->next;
-      value = carry->val;
-      temp = temp->next;
-    }
-  }
-  return head;
-}
+class Solution {
+public:
+    ListNode* deleteDuplicates(ListNode* head) {
+        if (!head) {
+            return head;
+        }
 
+        ListNode* cur = head;
+        while (cur->next) {
+            if (cur->val == cur->next->val) {
+                cur->next = cur->next->next;
+            }
+            else {
+                cur = cur->next;
+            }
+        }
+
+        return head;
+    }
+};
 ```
 
 
@@ -1088,30 +1105,12 @@ public:
 
 ```c++
 class Solution {
-public:
-
-    // 判断是否是叶子节点
-    bool isLeafNode(TreeNode* node) {
-        return !node->left && !node->right;
-    }
-
-    int dfs(TreeNode* node) {
-        int ans = 0;
-        if (node->left) {
-
-            // 如果有节点，如果是叶子则+，否则递归
-            ans += isLeafNode(node->left) ? node->left->val : dfs(node->left);
-        }
-        if (node->right && !isLeafNode(node->right)) {
-          
-            // 如果为右侧节点，如果右节点非叶子节点，则递归
-            ans += dfs(node->right);
-        }
-        return ans;
-    }
-
-    int sumOfLeftLeaves(TreeNode* root) {
-        return root ? dfs(root) : 0;
+    
+    public int sumOfLeftLeaves(TreeNode root) {
+        if(root==null) return 0;
+        return sumOfLeftLeaves(root.left) 
+            + sumOfLeftLeaves(root.right) 
+            + (root.left!=null && root.left.left==null && root.left.right==null ? root.left.val : 0);
     }
 };
 
@@ -1142,23 +1141,32 @@ public:
 ![](https://assets.leetcode.com/uploads/2021/01/18/pathsumii1.jpg)
 
   ```c++
-    vector<vector<int>> ans;
-    vector<int> temp;
+class Solution {
+public:
+    vector<vector<int>> ret;
+    vector<int> path;
+
+    void dfs(TreeNode* root, int targetSum) {
+        if (root == nullptr) {
+            return;
+        }
+        path.emplace_back(root->val);
+        targetSum -= root->val;
+        if (root->left == nullptr && root->right == nullptr && targetSum == 0) {
+            ret.emplace_back(path);
+        }
+        dfs(root->left, targetSum);
+        dfs(root->right, targetSum);
+        path.pop_back();
+    }
+
     vector<vector<int>> pathSum(TreeNode* root, int targetSum) {
-      recurse(root,targetSum);
-      return ans;
+        dfs(root, targetSum);
+        return ret;
     }
-    void recurse(TreeNode* root, int targetSum){
-      if(!root) return;
-      temp.push_back(root->val);
-      targetSum -= root->val;
-      if(!root->left && !root->right && targetSum ==0){
-        ans.push_back(temp);
-      }
-      recurse(root->left, targetSum);
-      recurse(root->right, targetSum);
-      temp.pop_back();
-    }
+};
+
+
 
 
   ```
@@ -1192,41 +1200,27 @@ public:
 ![](https://assets.leetcode.com/uploads/2019/02/15/117_sample.png)
 
 ```c++
-Node* connect(Node* root) {
+class Solution {
+public:
+    Node* connect(Node* root) {
+        if (root == NULL) return root;
+        queue<Node*> q;
+        q.push(root);
 
-  if(root == nullptr || !(root->left && root->right)){
-    return root;
-  }
-
-  if(root->left && left->right){
-    root->left->next = get_next_node(root);
-  }
-  if(!root->right){
-    root->left->next = get_next_node(root);
-  }
-  if(!root->left){
-    root->right->next = get_next_node(root);
-  }
-
-
-  connect(root->left);
-  connect(root->right);
-  return root
-
-}
-
-Node* get_next_node(Node* root){
-    while(root->next){
-      if(root->next->left){
-        return root->next->left;
-      }
-      else if(root->next->right){
-        return root->next->right;
-      }
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                auto node = q.front();
+                q.pop();
+                if (i < size - 1) node->next = q.front();
+                if (node->left) q.push(node->left);
+                if (node->right) q.push(node->right);
+            }
+        }
+        return root;
     }
-    return nullptr;
+};
 
-  }
 ```
 
 
@@ -1235,28 +1229,29 @@ Node* get_next_node(Node* root){
 ![](https://assets.leetcode.com/uploads/2020/12/24/tree1.jpg)
 
   ```c++
-  TreeNode* constructMaximumBinaryTree(vector<int>& nums) {
-    int left = 0;
-    int right= nums.size();
-    return build_tree(nums, left, right);
-  }
-
-  TreeNode* build_tree(vector<int>& nums, int left, int right){
-    int index = -1;
-    int max = INT_MIN;
-    for(int i = left; i <right; i++){
-      if(max > nums[i]){
-        max = nums[i];
-        index = i;
-      }
+class Solution {
+public:
+    TreeNode* constructMaximumBinaryTree(vector<int>& nums) {
+        return construct(nums, 0, nums.size() - 1);
     }
-    TreeNode* root = new TreeNode(max);
-    root->left = build_tree(nums, left, index);
-    root->right = build_tree(nums, index+1, right);
-    
-    return root;
 
-  }
+    TreeNode* construct(const vector<int>& nums, int left, int right) {
+        if (left > right) {
+            return nullptr;
+        }
+        int best = left;
+        for (int i = left + 1; i <= right; ++i) {
+            if (nums[i] > nums[best]) {
+                best = i;
+            }
+        }
+        TreeNode* node = new TreeNode(nums[best]);
+        node->left = construct(nums, left, best - 1);
+        node->right = construct(nums, best + 1, right);
+        return node;
+    }
+};
+
 
   ```
 
@@ -1297,25 +1292,24 @@ TreeNode* buildTree(vector<int>& preorder, int preorder_left, int preorder_right
 
 
 ```c++
-  map<string, int> count_tree;
-  vector<TreeNode*> map_tree;
-  vector<TreeNode*> findDuplicateSubtrees(TreeNode* root) {
-    get_tree(root);
-    return map_tree;
-  }
-  string get_tree(TreeNode* root){
-    if(!root){
-      return "";
+class Solution {
+private:
+    unordered_map<string,int> ump;
+    vector<TreeNode*> ans;
+public:
+    string dfs(TreeNode* node){
+        if(node==nullptr) return "";
+        string ss=to_string(node->val)+","+dfs(node->left)+","+dfs(node->right);
+        ump[ss]++;
+        if(ump[ss]==2) ans.push_back(node);
+        return ss;
     }
-    string left = get_tree(root->left);
-    string right = get_tree(root->right);
-    string str = left + "," + right + "," + to_string(root->val);
-    count_tree[str]++;
-    if(count_tree[str] == 2){
-      map_tree.push_back(root);
+    vector<TreeNode*> findDuplicateSubtrees(TreeNode* root) {
+        dfs(root);
+        return ans;
     }
-    return str;
-  }
+};
+
 ```
 
 
@@ -1363,23 +1357,34 @@ public:
 ![](https://assets.leetcode.com/uploads/2020/10/13/exx1.jpg)
 
 ```c++
-public:
-  int ans = INT_MIN;
-  int case1;
-  int maxPathSum(TreeNode* root) {
-    return dfs(root);
-  }
-  int dfs(TreeNode* root){
-    int left = dfs(root->left);
-    int right = dfs(root->right);
-    case1 = max(case1, left + right + root->val);
-    case1 = max(case1, left);
-    case1 = max(case1, right);
-    int case2 = root->val;
-    case2 = case2(case2, root->val+left);
-    case2 = case2(case2, root->val+right);
-    return case2;
-  }
+class Solution {
+    int maxSum = Integer.MIN_VALUE;
+
+    public int maxPathSum(TreeNode root) {
+        maxGain(root);
+        return maxSum;
+    }
+
+    public int maxGain(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        
+        // 递归计算左右子节点的最大贡献值
+        // 只有在最大贡献值大于 0 时，才会选取对应子节点
+        int leftGain = Math.max(maxGain(node.left), 0);
+        int rightGain = Math.max(maxGain(node.right), 0);
+
+        // 节点的最大路径和取决于该节点的值与该节点的左右子节点的最大贡献值
+        int priceNewpath = node.val + leftGain + rightGain;
+
+        // 更新答案
+        maxSum = Math.max(maxSum, priceNewpath);
+
+        // 返回节点的最大贡献值
+        return node.val + Math.max(leftGain, rightGain);
+    }
+}
 ```
 
 
