@@ -15,55 +15,7 @@ mermaid: true
 **968**
 
 
-#### [剑指offer 05: 替换空格](https://leetcode.cn/problems/ti-huan-kong-ge-lcof/)
 
-
-```c++
-class Solution {
-public:
-    string replaceSpace(string s) {
-        int count = 0, len = s.size();
-        // 统计空格数量
-        for (char c : s) {
-            if (c == ' ') count++;
-        }
-        // 修改 s 长度
-        s.resize(len + 2 * count);
-        // 倒序遍历修改
-        for(int i = len - 1, j = s.size() - 1; i < j; i--, j--) {
-            if (s[i] != ' ')
-                s[j] = s[i];
-            else {
-                s[j - 2] = '%';
-                s[j - 1] = '2';
-                s[j] = '0';
-                j -= 2;
-            }
-        }
-        return s;
-    }
-};
-
-```
-
-#### [1. 两数之和](https://leetcode.cn/problems/two-sum/)
-
-```c++
-class Solution {
-public:
-    vector<int> twoSum(vector<int>& nums, int target) {
-        unordered_map <int,int> map;
-        for(int i = 0 ; i < nums.size(); i++){
-            auto num = map.find(target - nums[i]);
-            if(num != map.end()){
-                return {i, num->second};
-            }
-            map[nums[i]] = i;
-        }
-        return {};
-    }
-};
-```
 #### [6. N 字形变换](https://leetcode.cn/problems/zigzag-conversion/)
 
 ```c++
@@ -114,6 +66,286 @@ public:
         return rev;
     }
 };
+```
+
+### 哈希表
+
+#### [1. 两数之和](https://leetcode.cn/problems/two-sum/)
+
+```c++
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map <int,int> map;
+        for(int i = 0 ; i < nums.size(); i++){
+            auto num = map.find(target - nums[i]);
+            if(num != map.end()){
+                return {i, num->second};
+            }
+            map[nums[i]] = i;
+        }
+        return {};
+    }
+};
+```
+
+#### [242. 有效的字母异位词](https://leetcode.cn/problems/valid-anagram/)
+
+```c++
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+        if (s.length() != t.length()) {
+            return false;
+        }
+        vector<int> table(26, 0);
+        for (auto& ch: s) {
+            table[ch - 'a']++;
+        }
+        for (auto& ch: t) {
+            table[ch - 'a']--;
+            if (table[ch - 'a'] < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+```
+
+#### [1002. 查找常用字符](https://leetcode.cn/problems/find-common-characters/)
+
+```c++
+class Solution {
+public:
+    vector<string> commonChars(vector<string>& words) {
+        vector<int> minfreq(26, INT_MAX);
+        vector<int> freq(26);
+        for (const string& word: words) {
+            fill(freq.begin(), freq.end(), 0);
+            for (char ch: word) {
+                ++freq[ch - 'a'];
+            }
+            for (int i = 0; i < 26; ++i) {
+                minfreq[i] = min(minfreq[i], freq[i]);
+            }
+        }
+
+        vector<string> ans;
+        for (int i = 0; i < 26; ++i) {
+            for (int j = 0; j < minfreq[i]; ++j) {
+                ans.emplace_back(1, i + 'a');
+            }
+        }
+        return ans;
+    }
+};
+
+```
+
+#### [349. 两个数组的交集](https://leetcode.cn/problems/intersection-of-two-arrays/)
+
+```c++
+class Solution {
+public:
+    vector<int> intersection(vector<int>& nums1, vector<int>& nums2) {
+        unordered_set<int> set1, set2;
+        for (auto& num : nums1) {
+            set1.insert(num);
+        }
+        for (auto& num : nums2) {
+            set2.insert(num);
+        }
+        return getIntersection(set1, set2);
+    }
+
+    vector<int> getIntersection(unordered_set<int>& set1, unordered_set<int>& set2) {
+        if (set1.size() > set2.size()) {
+            return getIntersection(set2, set1);
+        }
+        vector<int> intersection;
+        for (auto& num : set1) {
+            if (set2.count(num)) {
+                intersection.push_back(num);
+            }
+        }
+        return intersection;
+    }
+};
+
+```
+
+#### [202. 快乐数](https://leetcode.cn/problems/happy-number/)
+
+```c++
+class Solution {
+public:
+    bool isHappy(int n) {
+        unordered_set<int> set;
+        int res = n;
+        while (true) {
+            res = square(res);
+            if (res == 1) {
+                return true;
+            }
+            if (set.find(res)!=set.end()) {//找到返回迭代器，失败返回end
+                return false;
+            }
+            set.insert(res);
+            
+        }    
+    }
+
+    int square(int n) {
+        int sum = 0, temp = 1;
+        while (n != 0) {
+            temp = n % 10;
+            sum += temp * temp;
+            n /= 10;
+        }
+        return sum;
+    }
+};
+
+
+```
+
+#### [454. 四数相加 II](https://leetcode.cn/problems/4sum-ii/)
+
+```c++
+class Solution {
+public:
+    int fourSumCount(vector<int>& A, vector<int>& B, vector<int>& C, vector<int>& D) {
+        unordered_map<int, int> countAB;
+        for (int u: A) {
+            for (int v: B) {
+                ++countAB[u + v];
+            }
+        }
+        int ans = 0;
+        for (int u: C) {
+            for (int v: D) {
+                if (countAB.count(-u - v)) {
+                    ans += countAB[-u - v];
+                }
+            }
+        }
+        return ans;
+    }
+};
+
+
+```
+
+#### [383. 赎金信](https://leetcode.cn/problems/ransom-note/submissions/)
+
+```c++
+class Solution {
+public:
+    bool canConstruct(string ransomNote, string magazine) {
+        if (ransomNote.size() > magazine.size()) {
+            return false;
+        }
+        vector<int> cnt(26);
+        for (auto & c : magazine) {
+            cnt[c - 'a']++;
+        }
+        for (auto & c : ransomNote) {
+            cnt[c - 'a']--;
+            if (cnt[c - 'a'] < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+```
+
+
+### 字符串
+
+#### [344.反转字符串](https://leetcode.cn/problems/reverse-string/)
+
+```c++
+class Solution {
+public:
+    void reverseString(vector<char>& s) {
+        int n = s.size();
+        for (int left = 0, right = n - 1; left < right; ++left, --right) {
+            swap(s[left], s[right]);
+        }
+    }
+};
+
+```
+
+#### [541.反转字符串II](https://leetcode.cn/problems/reverse-string-ii/)
+
+```c++
+class Solution {
+public:
+    string reverseStr(string s, int k) {
+        int n = s.length();
+        for (int i = 0; i < n; i += 2 * k) {
+            reverse(s.begin() + i, s.begin() + min(i + k, n));
+        }
+        return s;
+    }
+};
+
+```
+
+
+#### [剑指offer 05: 替换空格](https://leetcode.cn/problems/ti-huan-kong-ge-lcof/)
+
+
+```c++
+class Solution {
+public:
+    string replaceSpace(string s) {
+        int count = 0, len = s.size();
+        // 统计空格数量
+        for (char c : s) {
+            if (c == ' ') count++;
+        }
+        // 修改 s 长度
+        s.resize(len + 2 * count);
+        // 倒序遍历修改
+        for(int i = len - 1, j = s.size() - 1; i < j; i--, j--) {
+            if (s[i] != ' ')
+                s[j] = s[i];
+            else {
+                s[j - 2] = '%';
+                s[j - 1] = '2';
+                s[j] = '0';
+                j -= 2;
+            }
+        }
+        return s;
+    }
+};
+
+```
+
+#### [剑指 Offer 58 - II. 左旋转字符串](https://leetcode.cn/problems/zuo-xuan-zhuan-zi-fu-chuan-lcof/)
+
+```c++
+//方法1---借助额外字符串
+class Solution {
+public:
+    string reverseLeftWords(string s, int n) {
+        string ans = s;
+        int length = s.size();
+        for(int i=0;i<length;i++)
+        {
+            ans[(i+length-n)%length] = s[i];
+        }
+        return ans;
+    }
+};
+
 ```
 
 ### 栈与队列
