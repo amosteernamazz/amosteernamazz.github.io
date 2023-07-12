@@ -11,6 +11,10 @@ push: stack、priority_queue
 insert: unordered_map、unorder_set
 均有：vector、string
 
+queue: front
+stack: top
+
+
 string转化为int string2int = atoi(string1.c_str())
 int转化string int2string = to_string(number)
 # STL算法总结
