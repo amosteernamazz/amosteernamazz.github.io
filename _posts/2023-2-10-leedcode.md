@@ -590,7 +590,7 @@ public:
     }
 };
 ```
-#### [977. 有序数组的平方]()
+#### [977. 有序数组的平方](https://leetcode.cn/problems/squares-of-a-sorted-array/)
 
 
 ```c++
@@ -636,6 +636,37 @@ public:
 };
 
 ```
+
+#### [59. 螺旋矩阵II](https://leetcode.cn/problems/spiral-matrix-ii/)
+
+![](https://assets.leetcode.com/uploads/2020/11/13/spiraln.jpg)
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> generateMatrix(int n) {
+        int maxNum = n * n;
+        int curNum = 1;
+        vector<vector<int>> matrix(n, vector<int>(n));
+        int row = 0, column = 0;
+        vector<vector<int>> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};  // 右下左上
+        int directionIndex = 0;
+        while (curNum <= maxNum) {
+            matrix[row][column] = curNum;
+            curNum++;
+            int nextRow = row + directions[directionIndex][0], nextColumn = column + directions[directionIndex][1];
+            if (nextRow < 0 || nextRow >= n || nextColumn < 0 || nextColumn >= n || matrix[nextRow][nextColumn] != 0) {
+                directionIndex = (directionIndex + 1) % 4;  // 顺时针旋转至下一个方向
+            }
+            row = row + directions[directionIndex][0];
+            column = column + directions[directionIndex][1];
+        }
+        return matrix;
+    }
+};
+
+```
+
 
 ### 滑动窗口
 
@@ -746,6 +777,63 @@ public:
 ```
 
 ### 链表
+
+#### [707. 设计链表](https://leetcode.cn/problems/design-linked-list/)
+
+```c++
+class MyLinedList(){
+private:
+    int size;
+    ListNode* head;
+public:
+    MyLinedList(){
+        this->size = 0;
+        this->head = new ListNode(0);
+    }
+    int get(int index){
+        if(index<0 || index >= size){
+            return 0;
+        }
+        ListNode* cur = head;
+        for(int cur_index = 0; cur_index <= index;cur_index++){
+            cur = cur->next;
+        }
+        return cur->val;
+    }
+    int add_at_head(int val){
+        add_at_index(0,val);
+    }
+    int add_at_tail(int val){
+        add_at_index(size,val);
+    }
+    void add_at_index(int index, int val){
+        if(index < 0 || index > size){
+            return;
+        }
+        size++;
+        ListNode* pre = head;
+        ListNode* newone = new ListNode(val);
+
+        for(int i = 0 ; i<index; i++){
+            pre = pre->next;
+        }
+        newone->next = pre->next;
+        pre->next = newone;
+    }
+    void delete_at_index(int index){
+        if(index < 0 || index >= size){
+            return;
+        }
+        ListNode* pre = head;
+        for(int i = 0 ; i <index; i++){
+            pre = pre->next;
+        }
+        ListNode* deleteone = pre->next;
+        pre->next = pre->next->next;
+        delete deleteone;
+}
+}
+```
 
 #### [2. 两数相加](https://leetcode.cn/problems/add-two-numbers/)
 
