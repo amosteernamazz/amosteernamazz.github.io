@@ -2170,7 +2170,7 @@ TreeNode* buildTree(vector<int>& preorder, int preorder_left, int preorder_right
 class Solution {
 public:
     unordered_map<int, int> pos;
-    TreeNode* buildTree(vector<i,knjm. . nt>& inorder, vector<int>& postorder) {
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
         int n = inorder.size();
         for(int i = 0; i < n; i++){
             pos[inorder[i]] = i;     //记录中序遍历的根节点位置
@@ -2190,10 +2190,28 @@ public:
 ```
 
 
+#### [617. 合并二叉树](https://leetcode.cn/problems/merge-two-binary-trees/)
 
+![](https://assets.leetcode.com/uploads/2021/02/05/merge.jpg)
 
+```c++
+class Solution {
+public:
+    TreeNode* mergeTrees(TreeNode* t1, TreeNode* t2) {
+        if (t1 == nullptr) {
+            return t2;
+        }
+        if (t2 == nullptr) {
+            return t1;
+        }
+        auto merged = new TreeNode(t1->val + t2->val);
+        merged->left = mergeTrees(t1->left, t2->left);
+        merged->right = mergeTrees(t1->right, t2->right);
+        return merged;
+    }
+};
 
-
+```
 
 
 #### [652. 寻找重复的子树](https://leetcode-cn.com/problems/find-duplicate-subtrees/)
@@ -2300,5 +2318,146 @@ public:
 
 ```
 
+#### [700. 二叉搜索树中的搜索](https://leetcode.cn/problems/search-in-a-binary-search-tree/)
+
+![](https://assets.leetcode.com/uploads/2021/01/12/tree1.jpg)
+
+```c++
+class Solution {
+public:
+    TreeNode *searchBST(TreeNode *root, int val) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        if (val == root->val) {
+            return root;
+        }
+        return searchBST(val < root->val ? root->left : root->right, val);
+    }
+};
+
+```
+
+#### [98. 验证二叉搜索树](https://leetcode.cn/problems/validate-binary-search-tree/)
+
+```c++
+class Solution {
+public:
+    bool helper(TreeNode* root, long long lower, long long upper) {
+        if (root == nullptr) {
+            return true;
+        }
+        if (root -> val <= lower || root -> val >= upper) {
+            return false;
+        }
+        return helper(root -> left, lower, root -> val) && helper(root -> right, root -> val, upper);
+    }
+    bool isValidBST(TreeNode* root) {
+        return helper(root, LONG_MIN, LONG_MAX);
+    }
+};
+
+```
+
+#### [530. 二叉搜索树的最小绝对差](https://leetcode.cn/problems/minimum-absolute-difference-in-bst/)
+
+```c++
+class Solution {
+private:
+    vector<int> vec;
+    void traversal(TreeNode* root)
+    {
+        if(root==NULL) return;
+        traversal(root->left);
+        vec.push_back(root->val);//将二叉搜索树转换为有序数组
+        traversal(root->right);
+    }
+public:
+    int getMinimumDifference(TreeNode* root) {
+        vec.clear();
+        traversal(root);
+        if(vec.size() < 2) return 0;
+        int result = INT_MAX;
+        for(int i = 1; i < vec.size(); i++)//统计有序数组的最小差值
+        {
+            result = min(result, vec[i] - vec[i-1]);
+        }
+        return result;
+    }
+};
+```
+
+
+#### [501. 二叉搜索树中的众数](https://leetcode.cn/problems/find-mode-in-binary-search-tree/)
+
+
+```c++
+class Solution {
+private:
+    int time;
+    int maxtime = 0;
+    vector <int> result;//用来储存所有的众数
+    TreeNode *pre;//用于中序遍历时存前结点
+    void getresult(TreeNode *root)
+    {
+        if(root == nullptr)
+            return;
+        getresult(root->left);//遍历左
+        if(pre ==nullptr)//对前结点和当下结点进行数值比对
+            time = 1;
+        else if(pre->val == root->val)
+            time ++;
+        else
+            time = 1;
+        pre = root;//更新pre;
+        if(time == maxtime)//如何出现的次数和最高次数一样，那需要将结果加进result中;
+            result.push_back(root->val);
+        if(time > maxtime)//当出现的次数超过最高次数时
+        {
+            result.clear();//需要将之前存的结果清除
+            maxtime = time;
+            result.push_back(root->val);//将最新的存入result中
+        }
+        getresult(root->right);//遍历右
+        return;
+    }
+public:
+    vector<int> findMode(TreeNode* root) {
+        time = 0;
+        maxtime = 0;
+        result={};
+        TreeNode *pre = nullptr;//记录前一个结点
+        getresult(root);
+        return result;
+
+    }
+};
+
+```
 
 #### [236. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+
+
+
+#### [538. 把二叉搜索树转换为累加树](https://leetcode.cn/problems/convert-bst-to-greater-tree/)
+
+![](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2019/05/03/tree.png)
+
+
+```c++
+class Solution {
+public:
+    int sum = 0;
+
+    TreeNode* convertBST(TreeNode* root) {
+        if (root != nullptr) {
+            convertBST(root->right);
+            sum += root->val;
+            root->val = sum;
+            convertBST(root->left);
+        }
+        return root;
+    }
+};
+
+```
