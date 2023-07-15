@@ -1552,6 +1552,172 @@ public:
 
 ### 二叉树
 
+
+#### [前序遍历、中序遍历、后序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/)
+
+
+![](https://assets.leetcode.com/uploads/2020/09/15/inorder_1.jpg)
+
+```c++
+class Solution {
+public:
+    void preorder(TreeNode *root, vector<int> &res) {
+        if (root == nullptr) {
+            return;
+        }
+        res.push_back(root->val);
+        preorder(root->left, res);
+        preorder(root->right, res);
+    }
+
+    vector<int> preorderTraversal(TreeNode *root) {
+        vector<int> res;
+        preorder(root, res);
+        return res;
+    }
+};
+
+```
+#### [102. 二叉树的层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/)
+
+![](https://assets.leetcode.com/uploads/2021/02/19/tree1.jpg)
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector <vector <int>> ret;
+        if (!root) {
+            return ret;
+        }
+
+        queue <TreeNode*> q;
+        q.push(root);
+        while (!q.empty()) {
+            int currentLevelSize = q.size();
+            ret.push_back(vector <int> ());
+            for (int i = 1; i <= currentLevelSize; ++i) {
+                auto node = q.front(); q.pop();
+                ret.back().push_back(node->val);
+                if (node->left) q.push(node->left);
+                if (node->right) q.push(node->right);
+            }
+        }
+        
+        return ret;
+    }
+};
+
+```
+#### [107. 二叉树的层次遍历 II](https://leetcode.cn/problems/binary-tree-level-order-traversal-ii/)
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> levelOrderBottom(TreeNode* root) {
+        queue<TreeNode*> que;
+        if (root != NULL) que.push(root);
+        vector<vector<int>> result;
+        while (!que.empty()) {
+            int size = que.size();
+            vector<int> vec;
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                vec.push_back(node->val);
+                if (node->left) que.push(node->left);
+                if (node->right) que.push(node->right);
+            }
+            result.push_back(vec);
+        }
+        reverse(result.begin(), result.end()); // 在这里反转一下数组即可
+        return result;
+
+    }
+};
+```
+
+#### [199.二叉树的右视图](https://leetcode.cn/problems/binary-tree-right-side-view/)
+
+![](https://camo.githubusercontent.com/fa3ca13a74fca3e710d936cc316769e44819bdeadc014bb2db1109acd7aa278e/68747470733a2f2f636f64652d7468696e6b696e672d313235333835353039332e66696c652e6d7971636c6f75642e636f6d2f706963732f32303231303230333135313330373337372e706e67)
+
+```c++
+class Solution {
+public:
+    vector<int> rightSideView(TreeNode* root) {
+        queue<TreeNode*> que;
+        if (root != NULL) que.push(root);
+        vector<int> result;
+        while (!que.empty()) {
+            int size = que.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                if (i == (size - 1)) result.push_back(node->val); // 将每一层的最后元素放入result数组中
+                if (node->left) que.push(node->left);
+                if (node->right) que.push(node->right);
+            }
+        }
+        return result;
+    }
+};
+```
+
+
+#### [637. 二叉树的层平均值](https://leetcode.cn/problems/average-of-levels-in-binary-tree/)
+
+
+```c++
+class Solution {
+public:
+    vector<double> averageOfLevels(TreeNode* root) {
+        queue<TreeNode*> que;
+        if (root != NULL) que.push(root);
+        vector<double> result;
+        while (!que.empty()) {
+            int size = que.size();
+            double sum = 0; // 统计每一层的和
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                sum += node->val;
+                if (node->left) que.push(node->left);
+                if (node->right) que.push(node->right);
+            }
+            result.push_back(sum / size); // 将每一层均值放进结果集
+        }
+        return result;
+    }
+};
+```
+#### [429. N叉树的层序遍历](https://leetcode.cn/problems/n-ary-tree-level-order-traversal/)
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> levelOrder(Node* root) {
+        queue<Node*> que;
+        if (root != NULL) que.push(root);
+        vector<vector<int>> result;
+        while (!que.empty()) {
+            int size = que.size();
+            vector<int> vec;
+            for (int i = 0; i < size; i++) {
+                Node* node = que.front();
+                que.pop();
+                vec.push_back(node->val);
+                for (int i = 0; i < node->children.size(); i++) { // 将节点孩子加入队列
+                    if (node->children[i]) que.push(node->children[i]);
+                }
+            }
+            result.push_back(vec);
+        }
+        return result;
+
+    }
+};
+```
+
 #### [101. 对称二叉树](https://leetcode.cn/problems/symmetric-tree/)
 
 ![](https://assets.leetcode.com/uploads/2021/02/19/symtree1.jpg)
