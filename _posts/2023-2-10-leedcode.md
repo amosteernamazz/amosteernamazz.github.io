@@ -2435,9 +2435,59 @@ public:
 
 ```
 
+#### [108. 将有序数组转换为二叉搜索树](https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/)
+
+```c++
+class Solution {
+public:
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        return helper(nums, 0, nums.size() - 1);
+    }
+
+    TreeNode* helper(vector<int>& nums, int left, int right) {
+        if (left > right) {
+            return nullptr;
+        }
+
+        // 总是选择中间位置右边的数字作为根节点
+        int mid = (left + right + 1) / 2;
+
+        TreeNode* root = new TreeNode(nums[mid]);
+        root->left = helper(nums, left, mid - 1);
+        root->right = helper(nums, mid + 1, right);
+        return root;
+    }
+};
+
+
+```
+
 #### [236. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
 
+#### [669. 修剪二叉搜索树](https://leetcode.cn/problems/trim-a-binary-search-tree/)
 
+![](https://assets.leetcode.com/uploads/2020/09/09/trim2.jpg)
+
+```c++
+class Solution {
+public:
+    TreeNode* trimBST(TreeNode* root, int low, int high) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        if (root->val < low) {
+            return trimBST(root->right, low, high);
+        } else if (root->val > high) {
+            return trimBST(root->left, low, high);
+        } else {
+            root->left = trimBST(root->left, low, high);
+            root->right = trimBST(root->right, low, high);
+            return root;
+        }
+    }
+};
+
+```
 
 #### [538. 把二叉搜索树转换为累加树](https://leetcode.cn/problems/convert-bst-to-greater-tree/)
 
@@ -2461,3 +2511,33 @@ public:
 };
 
 ```
+
+
+
+
+
+### 算法：贪心算法
+
+#### [455. 分发饼干](https://leetcode.cn/problems/assign-cookies/)
+
+```c++
+class Solution {
+public:
+    int findContentChildren(vector<int>& g, vector<int>& s) {
+        sort(g.begin(), g.end());
+        sort(s.begin(), s.end());
+        int index = s.size() - 1; // 饼干数组的下标
+        int result = 0;
+        for (int i = g.size() - 1; i >= 0; i--) { // 遍历胃口
+            if (index >= 0 && s[index] >= g[i]) { // 遍历饼干
+                result++;
+                index--;
+            }
+        }
+        return result;
+    }
+};
+```
+
+
+
