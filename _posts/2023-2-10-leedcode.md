@@ -1718,6 +1718,47 @@ public:
 };
 ```
 
+
+#### [515. 在每个树行中找最大值](https://leetcode.cn/problems/find-largest-value-in-each-tree-row/)
+
+![](https://camo.githubusercontent.com/1190b0c3834547b748e77d89ad39c2eef7bd4b1db3b5ac454f12a7375d81eb7f/68747470733a2f2f636f64652d7468696e6b696e672d313235333835353039332e66696c652e6d7971636c6f75642e636f6d2f706963732f32303231303230333135313533323135332e706e67)
+
+
+```c++
+class Solution {
+public:
+    vector<int> largestValues(TreeNode* root) {
+        queue<TreeNode*> que;
+        if (root != NULL) que.push(root);
+        vector<int> result;
+        while (!que.empty()) {
+            int size = que.size();
+            int maxValue = INT_MIN; // 取每一层的最大值
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = que.front();
+                que.pop();
+                maxValue = node->val > maxValue ? node->val : maxValue;
+                if (node->left) que.push(node->left);
+                if (node->right) que.push(node->right);
+            }
+            result.push_back(maxValue); // 把最大值放进数组
+        }
+        return result;
+    }
+};
+```
+
+
+
+
+
+
+
+
+
+
+
+
 #### [101. 对称二叉树](https://leetcode.cn/problems/symmetric-tree/)
 
 ![](https://assets.leetcode.com/uploads/2021/02/19/symtree1.jpg)
@@ -1950,23 +1991,37 @@ public:
 class Solution {
 public:
     Node* connect(Node* root) {
-        if (root == NULL) return root;
-        queue<Node*> q;
-        q.push(root);
-
-        while (!q.empty()) {
-            int size = q.size();
-            for (int i = 0; i < size; i++) {
-                auto node = q.front();
-                q.pop();
-                if (i < size - 1) node->next = q.front();
-                if (node->left) q.push(node->left);
-                if (node->right) q.push(node->right);
-            }
-        }
+        if (!root) return nullptr;
+        connect(getnext(root));
         return root;
     }
+
+    // 返回下一个应该被连接的节点
+    Node* getnext(Node* root) {
+        if (!root) return nullptr;
+
+        // 情况1、2：左孩子不为空
+        if (root -> left) {
+            // 情况1：右孩子也不为空
+            if (root -> right) {
+                root -> left  -> next = root -> right;
+                root -> right -> next = getnext(root -> next);
+            }
+            // 情况2：右孩子为空
+            else 
+                root -> left  -> next = getnext(root -> next);
+        }
+        // 情况3：左孩子空，右孩子不空
+        else if (root -> right)
+                root -> right -> next = getnext(root -> next);
+        // 情况4：左右都空
+        else
+            return getnext(root -> next);
+        
+        return root -> left != nullptr ? root -> left : root -> right;
+    }
 };
+
 
 ```
 
