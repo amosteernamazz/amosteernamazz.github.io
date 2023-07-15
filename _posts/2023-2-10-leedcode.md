@@ -2514,7 +2514,82 @@ public:
 
 
 
+#### [450. 删除二叉搜索树中的节点](https://leetcode.cn/problems/delete-node-in-a-bst/)
 
+```c++
+class Solution {
+public:
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        if (root->val > key) {
+            root->left = deleteNode(root->left, key);
+            return root;
+        }
+        if (root->val < key) {
+            root->right = deleteNode(root->right, key);
+            return root;
+        }
+        if (root->val == key) {
+            if (!root->left && !root->right) {
+                return nullptr;
+            }
+            if (!root->right) {
+                return root->left;
+            }
+            if (!root->left) {
+                return root->right;
+            }
+            TreeNode *successor = root->right;
+            while (successor->left) {
+                successor = successor->left;
+            }
+            root->right = deleteNode(root->right, successor->val);
+            successor->right = root->right;
+            successor->left = root->left;
+            return successor;
+        }
+        return root;
+    }
+};
+
+```
+
+#### [701. 二叉搜索树中的插入操作](https://leetcode.cn/problems/insert-into-a-binary-search-tree/)
+
+![](https://assets.leetcode.com/uploads/2020/10/05/bst.jpg)
+
+```c++
+class Solution {
+public:
+    TreeNode* insertIntoBST(TreeNode* root, int val) {
+        if (root == nullptr) {
+            return new TreeNode(val);
+        }
+        TreeNode* pos = root;
+        while (pos != nullptr) {
+            if (val < pos->val) {
+                if (pos->left == nullptr) {
+                    pos->left = new TreeNode(val);
+                    break;
+                } else {
+                    pos = pos->left;
+                }
+            } else {
+                if (pos->right == nullptr) {
+                    pos->right = new TreeNode(val);
+                    break;
+                } else {
+                    pos = pos->right;
+                }
+            }
+        }
+        return root;
+    }
+};
+
+```
 
 ### 算法：贪心算法
 
