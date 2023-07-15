@@ -323,9 +323,6 @@ public:
 ```
 
 
-
-
-
 ### 字符串
 
 #### [344.反转字符串](https://leetcode.cn/problems/reverse-string/)
@@ -911,7 +908,7 @@ public:
         int curNum = 1;
         vector<vector<int>> matrix(n, vector<int>(n));
         int row = 0, column = 0;
-        vector<vector<int>> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};  // 右下左上
+        // 设置方向为右下左上vector<vector<int>> directions = {0,1}等
         int directionIndex = 0;
         while (curNum <= maxNum) {
             matrix[row][column] = curNum;
