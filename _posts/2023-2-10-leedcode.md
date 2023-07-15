@@ -609,7 +609,6 @@ public:
 };
 ```
 
-
 #### [151. 翻转字符串里的单词](https://github.com/youngyangyang04/leetcode-master)
 
 ```c++
@@ -1779,6 +1778,10 @@ public:
 
 ```
 
+#### [110. 平衡二叉树]()
+
+
+
 #### [104. 二叉树的最大深度](https://leetcode.cn/problems/maximum-depth-of-binary-tree/)
 
 ```c++
@@ -1855,6 +1858,78 @@ public:
 };
 ```
 
+
+#### [100. 相同的树](https://leetcode.cn/problems/same-tree/)
+
+```c++
+class Solution {
+public:
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+        if (p == nullptr && q == nullptr) {
+            return true;
+        } else if (p == nullptr || q == nullptr) {
+            return false;
+        } else if (p->val != q->val) {
+            return false;
+        } else {
+            return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
+        }
+    }
+};
+
+```
+
+#### [572. 另一棵树的子树](https://leetcode.cn/problems/subtree-of-another-tree/)
+
+```c++
+class Solution {
+public:
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+        if (p == nullptr && q == nullptr)
+            return true;
+        if (p && q && p->val == q->val)
+            return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
+        else
+            return false;
+    }
+    bool isSubtree(TreeNode* root, TreeNode* subRoot) {
+        if (!root) //root不可能走到空
+            return false;
+        
+        if (isSameTree(root, subRoot))
+            return true;
+
+        return isSubtree(root->left, subRoot) || isSubtree(root->right, subRoot); //左边为真就不用求右边了，所以是或关系
+    }
+};
+
+```
+
+#### [513. 找树左下角的值](https://leetcode.cn/problems/find-bottom-left-tree-value/)
+
+```c++
+class Solution {
+public:
+    int findBottomLeftValue(TreeNode* root) {
+        int ret;
+        queue<TreeNode *> q;
+        q.push(root);
+        while (!q.empty()) {
+            auto p = q.front();
+            q.pop();
+            if (p->right) {
+                q.push(p->right);
+            }
+            if (p->left) {
+                q.push(p->left);
+            }
+            ret = p->val;
+        }
+        return ret;
+    }
+};
+
+```
 
 #### [257. 二叉树的所有路径](https://leetcode.cn/problems/binary-tree-paths/)
 
@@ -2088,6 +2163,39 @@ TreeNode* buildTree(vector<int>& preorder, int preorder_left, int preorder_right
 
 }
 ```
+#### [106. 从中序与后序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
+
+
+```c++
+class Solution {
+public:
+    unordered_map<int, int> pos;
+    TreeNode* buildTree(vector<i,knjm. . nt>& inorder, vector<int>& postorder) {
+        int n = inorder.size();
+        for(int i = 0; i < n; i++){
+            pos[inorder[i]] = i;     //记录中序遍历的根节点位置
+        }
+        return dfs(inorder, postorder, 0, n - 1, 0, n - 1);
+    }
+    TreeNode* dfs(vector<int>& inorder, vector<int>& postorder,int il, int ir, int pl, int pr){
+        if(il > ir) return nullptr;
+        int k = pos[postorder[pr]];   //中序遍历根节点位置
+        TreeNode* root = new TreeNode(postorder[pr]); //创建根节点
+        root->left = dfs(inorder, postorder, il, k - 1, pl, pl + k - 1 - il);
+        root->right = dfs(inorder, postorder, k + 1, ir, pl + k - 1 - il + 1, pr - 1);
+        return root;
+    }
+};
+
+```
+
+
+
+
+
+
+
+
 #### [652. 寻找重复的子树](https://leetcode-cn.com/problems/find-duplicate-subtrees/)
 
 ![](https://assets.leetcode.com/uploads/2020/08/16/e1.jpg)
