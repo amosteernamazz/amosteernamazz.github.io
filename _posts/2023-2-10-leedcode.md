@@ -2782,8 +2782,309 @@ public:
 #### [131. 分割回文串](https://leetcode.cn/problems/palindrome-partitioning/)
 
 ```c++
-
+class Solution {
+private:
+    vector<vector<string>> result;
+    vector<string> path; // 放已经回文的子串
+    void backtracking (const string& s, int startIndex) {
+        // 如果起始位置已经大于s的大小，说明已经找到了一组分割方案了
+        if (startIndex >= s.size()) {
+            result.push_back(path);
+            return;
+        }
+        for (int i = startIndex; i < s.size(); i++) {
+            if (isPalindrome(s, startIndex, i)) {   // 是回文子串
+                // 获取[startIndex,i]在s中的子串
+                string str = s.substr(startIndex, i - startIndex + 1);
+                path.push_back(str);
+            } else {                                // 不是回文，跳过
+                continue;
+            }
+            backtracking(s, i + 1); // 寻找i+1为起始位置的子串
+            path.pop_back(); // 回溯过程，弹出本次已经添加的子串
+        }
+    }
+    bool isPalindrome(const string& s, int start, int end) {
+        for (int i = start, j = end; i < j; i++, j--) {
+            if (s[i] != s[j]) {
+                return false;
+            }
+        }
+        return true;
+    }
+public:
+    vector<vector<string>> partition(string s) {
+        result.clear();
+        path.clear();
+        backtracking(s, 0);
+        return result;
+    }
+};
 ```
+#### [93. 复原 IP 地址](https://leetcode.cn/problems/restore-ip-addresses/)
+
+
+```c++
+class Solution {
+private:
+    vector<string> result;// 记录结果
+    // startIndex: 搜索的起始位置，pointNum:添加逗点的数量
+    void backtracking(string& s, int startIndex, int pointNum) {
+        if (pointNum == 3) { // 逗点数量为3时，分隔结束
+            // 判断第四段子字符串是否合法，如果合法就放进result中
+            if (isValid(s, startIndex, s.size() - 1)) {
+                result.push_back(s);
+            }
+            return;
+        }
+        for (int i = startIndex; i < s.size(); i++) {
+            if (isValid(s, startIndex, i)) { // 判断 [startIndex,i] 这个区间的子串是否合法
+                s.insert(s.begin() + i + 1 , '.');  // 在i的后面插入一个逗点
+                pointNum++;
+                backtracking(s, i + 2, pointNum);   // 插入逗点之后下一个子串的起始位置为i+2
+                pointNum--;                         // 回溯
+                s.erase(s.begin() + i + 1);         // 回溯删掉逗点
+            } else break; // 不合法，直接结束本层循环
+        }
+    }
+    // 判断字符串s在左闭又闭区间[start, end]所组成的数字是否合法
+    bool isValid(const string& s, int start, int end) {
+        if (start > end) {
+            return false;
+        }
+        if (s[start] == '0' && start != end) { // 0开头的数字不合法
+                return false;
+        }
+        int num = 0;
+        for (int i = start; i <= end; i++) {
+            if (s[i] > '9' || s[i] < '0') { // 遇到非数字字符不合法
+                return false;
+            }
+            num = num * 10 + (s[i] - '0');
+            if (num > 255) { // 如果大于255了不合法
+                return false;
+            }
+        }
+        return true;
+    }
+public:
+    vector<string> restoreIpAddresses(string s) {
+        result.clear();
+        if (s.size() < 4 || s.size() > 12) return result; // 算是剪枝了
+        backtracking(s, 0, 0);
+        return result;
+    }
+};
+```
+#### [78. 子集](https://leetcode.cn/problems/subsets/)
+
+```c++
+class Solution {
+private:
+    vector<vector<int>> result;
+    vector<int> path;
+    void backtracking(vector<int>& nums, int startIndex) {
+        result.push_back(path); // 收集子集，要放在终止添加的上面，否则会漏掉自己
+        for (int i = startIndex; i < nums.size(); i++) {
+            path.push_back(nums[i]);
+            backtracking(nums, i + 1);
+            path.pop_back();
+        }
+    }
+public:
+    vector<vector<int>> subsets(vector<int>& nums) {
+        result.clear();
+        path.clear();
+        backtracking(nums, 0);
+        return result;
+    }
+};
+```
+
+#### [90. 子集 II](https://leetcode.cn/problems/subsets-ii/)
+
+```c++
+class Solution {
+private:
+    vector<vector<int>> result;
+    vector<int> path;
+    void backtracking(vector<int>& nums, int startIndex, vector<bool>& used) {
+        result.push_back(path);
+        for (int i = startIndex; i < nums.size(); i++) {
+            // used[i - 1] == true，说明同一树枝candidates[i - 1]使用过
+            // used[i - 1] == false，说明同一树层candidates[i - 1]使用过
+            // 而我们要对同一树层使用过的元素进行跳过
+            if (i > 0 && nums[i] == nums[i - 1] && used[i - 1] == false) {
+                continue;
+            }
+            path.push_back(nums[i]);
+            used[i] = true;
+            backtracking(nums, i + 1, used);
+            used[i] = false;
+            path.pop_back();
+        }
+    }
+
+public:
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        result.clear();
+        path.clear();
+        vector<bool> used(nums.size(), false);
+        sort(nums.begin(), nums.end()); // 去重需要排序
+        backtracking(nums, 0, used);
+        return result;
+    }
+};
+```
+
+
+
+#### [491. 递增子序列](https://leetcode.cn/problems/non-decreasing-subsequences/)
+
+```c++
+class Solution {
+private:
+    vector<vector<int>> result;
+    vector<int> path;
+    void backtracking(vector<int>& nums, int startIndex) {
+        if (path.size() > 1) {
+            result.push_back(path);
+            // 注意这里不要加return，要取树上的节点
+        }
+        unordered_set<int> uset; // 使用set对本层元素进行去重
+        for (int i = startIndex; i < nums.size(); i++) {
+            if ((!path.empty() && nums[i] < path.back())
+                    || uset.find(nums[i]) != uset.end()) {
+                    continue;
+            }
+            uset.insert(nums[i]); // 记录这个元素在本层用过了，本层后面不能再用了
+            path.push_back(nums[i]);
+            backtracking(nums, i + 1);
+            path.pop_back();
+        }
+    }
+public:
+    vector<vector<int>> findSubsequences(vector<int>& nums) {
+        result.clear();
+        path.clear();
+        backtracking(nums, 0);
+        return result;
+    }
+};
+```
+#### [46. 全排列](https://leetcode.cn/problems/permutations/submissions/)
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> result;
+    vector<int> path;
+    void backtracking (vector<int>& nums, vector<bool>& used) {
+        // 此时说明找到了一组
+        if (path.size() == nums.size()) {
+            result.push_back(path);
+            return;
+        }
+        for (int i = 0; i < nums.size(); i++) {
+            if (used[i] == true) continue; // path里已经收录的元素，直接跳过
+            used[i] = true;
+            path.push_back(nums[i]);
+            backtracking(nums, used);
+            path.pop_back();
+            used[i] = false;
+        }
+    }
+    vector<vector<int>> permute(vector<int>& nums) {
+        result.clear();
+        path.clear();
+        vector<bool> used(nums.size(), false);
+        backtracking(nums, used);
+        return result;
+    }
+};
+```
+
+#### [47. 全排列 II](https://leetcode.cn/problems/permutations-ii/)
+
+```c++
+class Solution {
+private:
+    vector<vector<int>> result;
+    vector<int> path;
+    void backtracking (vector<int>& nums, vector<bool>& used) {
+        // 此时说明找到了一组
+        if (path.size() == nums.size()) {
+            result.push_back(path);
+            return;
+        }
+        for (int i = 0; i < nums.size(); i++) {
+            // used[i - 1] == true，说明同一树枝nums[i - 1]使用过
+            // used[i - 1] == false，说明同一树层nums[i - 1]使用过
+            // 如果同一树层nums[i - 1]使用过则直接跳过
+            if (i > 0 && nums[i] == nums[i - 1] && used[i - 1] == false) {
+                continue;
+            }
+            if (used[i] == false) {
+                used[i] = true;
+                path.push_back(nums[i]);
+                backtracking(nums, used);
+                path.pop_back();
+                used[i] = false;
+            }
+        }
+    }
+public:
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        result.clear();
+        path.clear();
+        sort(nums.begin(), nums.end()); // 排序
+        vector<bool> used(nums.size(), false);
+        backtracking(nums, used);
+        return result;
+    }
+};
+```
+#### [332. 重新安排行程](https://leetcode.cn/problems/reconstruct-itinerary/)
+
+
+```c++
+class Solution {
+private:
+// unordered_map<出发机场, map<到达机场, 航班次数>> targets
+unordered_map<string, map<string, int>> targets;
+bool backtracking(int ticketNum, vector<string>& result) {
+    if (result.size() == ticketNum + 1) {
+        return true;
+    }
+    for (pair<const string, int>& target : targets[result[result.size() - 1]]) {
+        if (target.second > 0 ) { // 记录到达机场是否飞过了
+            result.push_back(target.first);
+            target.second--;
+            if (backtracking(ticketNum, result)) return true;
+            result.pop_back();
+            target.second++;
+        }
+    }
+    return false;
+}
+public:
+    vector<string> findItinerary(vector<vector<string>>& tickets) {
+        targets.clear();
+        vector<string> result;
+        for (const vector<string>& vec : tickets) {
+            targets[vec[0]][vec[1]]++; // 记录映射关系
+        }
+        result.push_back("JFK"); // 起始机场
+        backtracking(tickets.size(), result);
+        return result;
+    }
+};
+```
+#### [51. N 皇后](https://leetcode.cn/problems/n-queens/)
+
+
+#### [37. 解数独](https://github.com/youngyangyang04/leetcode-master/blob/master/problems/0037.%E8%A7%A3%E6%95%B0%E7%8B%AC.md)
+
 
 ### 贪心
 
