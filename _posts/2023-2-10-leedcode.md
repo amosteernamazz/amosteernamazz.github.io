@@ -988,36 +988,29 @@ public:
 ```c++
 class Solution {
 public:
-    //思路：雨水面积 = 总面积（雨水 + 陆地）- 陆地面积
-    //总面积 = 每层面积的和
     int trap(vector<int>& height) {
-        int length = height.size();
-        //剪枝，数组长度小于3时不可能接到雨水
-        if(length < 3) return 0;
-        int l = 0, r = length - 1;
+        if (height.size() <= 2) return 0;
+        vector<int> maxLeft(height.size(), 0);
+        vector<int> maxRight(height.size(), 0);
+        int size = maxRight.size();
 
-        //定义前一次计算时的高度
-        int preHeight = 0;
-        //定义雨水 + 陆地的总面积
-        int totalArea = 0;
-        //定义陆地面积
-        int landArea = 0;
-
-        //显然总陆地面积为数组所有数求和
-        landArea = accumulate(height.begin(), height.end(), 0);
-
-        while(l < r) {
-            //跳过小于等于前一次计算的值
-            while(l < r && height[l] <= preHeight) l++;
-            while(l < r && height[r] <= preHeight) r--;
-
-            //计算当前高度的面积 = （当前左右指针中较小的值 - 前一次计算的高度）* 宽度
-            totalArea += (min(height[l], height[r]) - preHeight) * (r - l + 1);
-            //更新前一次的高度
-            preHeight = min(height[l], height[r]);
+        // 记录每个柱子左边柱子最大高度
+        maxLeft[0] = height[0];
+        for (int i = 1; i < size; i++) {
+            maxLeft[i] = max(height[i], maxLeft[i - 1]);
         }
-    
-        return totalArea - landArea;
+        // 记录每个柱子右边柱子最大高度
+        maxRight[size - 1] = height[size - 1];
+        for (int i = size - 2; i >= 0; i--) {
+            maxRight[i] = max(height[i], maxRight[i + 1]);
+        }
+        // 求和
+        int sum = 0;
+        for (int i = 0; i < size; i++) {
+            int count = min(maxLeft[i], maxRight[i]) - height[i];
+            if (count > 0) sum += count;
+        }
+        return sum;
     }
 };
 ```
@@ -3198,6 +3191,114 @@ public:
 
 ### 动态规划
 
+#### [509. 斐波那契数](https://leetcode.cn/problems/fibonacci-number/)
+
+```c++
+class Solution {
+public:
+    int fib(int N) {
+        if (N <= 1) return N;
+        int dp[2];
+        dp[0] = 0;
+        dp[1] = 1;
+        for (int i = 2; i <= N; i++) {
+            int sum = dp[0] + dp[1];
+            dp[0] = dp[1];
+            dp[1] = sum;
+        }
+        return dp[1];
+    }
+};
+```
+
+
+#### [70. 爬楼梯](https://leetcode.cn/problems/climbing-stairs/)
+
+
+
+```c++
+class Solution {
+public:
+    int climbStairs(int n) {
+        if (n <= 1) return n;
+        int dp[3];
+        dp[1] = 1;
+        dp[2] = 2;
+        for (int i = 3; i <= n; i++) {
+            int sum = dp[1] + dp[2];
+            dp[1] = dp[2];
+            dp[2] = sum;
+        }
+        return dp[2];
+    }
+};
+```
+
+#### [746. 使用最小花费爬楼梯](https://leetcode.cn/problems/min-cost-climbing-stairs/)
+
+
+```c++
+class Solution {
+public:
+    int minCostClimbingStairs(vector<int>& cost) {
+        vector<int> dp(cost.size() + 1);
+        dp[0] = 0; // 默认第一步都是不花费体力的
+        dp[1] = 0;
+        for (int i = 2; i <= cost.size(); i++) {
+            dp[i] = min(dp[i - 1] + cost[i - 1], dp[i - 2] + cost[i - 2]);
+        }
+        return dp[cost.size()];
+    }
+};
+```
+
+#### [62. 不同路径](https://leetcode.cn/problems/unique-paths/)
+
+![](https://assets.leetcode.com/uploads/2018/10/22/robot_maze.png)
+
+
+```c++
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        for (int i = 0; i < m; i++) dp[i][0] = 1;
+        for (int j = 0; j < n; j++) dp[0][j] = 1;
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+};
+```
+
+#### [63. 不同路径 II](https://leetcode.cn/problems/unique-paths-ii/)
+
+![](https://assets.leetcode.com/uploads/2020/11/04/robot1.jpg)
+
+```c++
+class Solution {
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        int m = obstacleGrid.size();
+        int n = obstacleGrid[0].size();
+	if (obstacleGrid[m - 1][n - 1] == 1 || obstacleGrid[0][0] == 1) //如果在起点或终点出现了障碍，直接返回0
+            return 0;
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        for (int i = 0; i < m && obstacleGrid[i][0] == 0; i++) dp[i][0] = 1;
+        for (int j = 0; j < n && obstacleGrid[0][j] == 0; j++) dp[0][j] = 1;
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if (obstacleGrid[i][j] == 1) continue;
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+};
+```
 
 
 ### 单调栈
