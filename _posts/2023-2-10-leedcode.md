@@ -3195,7 +3195,7 @@ class Solution {
 public:
     vector<int> nextGreaterElements(vector<int>& nums) {
         // 拼接一个新的nums
-        vector<int> nums1(nums.begin(), nums.end());
+        vector<int> nums1 = nums
         nums.insert(nums.end(), nums1.begin(), nums1.end());
         // 用新的nums大小来初始化result
         vector<int> result(nums.size(), -1);
@@ -3221,6 +3221,8 @@ public:
     }
 };
 ```
+
+
 ### 图论
 
 
