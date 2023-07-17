@@ -3457,7 +3457,7 @@ class Solution {
 
 
 private:
-    vector<vector<int>> dirs = {{0,1},{1,0},{-1,0},{0,-1}};
+    // 建立dirs = {} 内部设置各个方向，例如{0,1}
     void dfs(vector<vector<char>>& grid,int i, int j, vector<vector<bool>>& used){
 
         if (used[i][j] || grid[i][j] == '0') return; 
@@ -3496,9 +3496,24 @@ public:
 ```c++
 class Solution {
 
+private:
+    vector<vector<>> 
+
 public:
     int numIslands(vector<vector<char>>& grid) {
-        
+        int n = grid.size(), m = grid[0].size();
+        vector<vector<bool>> visited = vector<vector<bool>>(n, vector<bool>(m, false));
+
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (!visited[i][j] && grid[i][j] == '1') {
+                    result++; // 遇到没访问过的陆地，+1
+                    bfs(grid, visited, i, j); // 将与其链接的陆地都标记上 true
+                }
+            }
+        }
+        return result;
     }
 };
 
