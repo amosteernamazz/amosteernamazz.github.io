@@ -3215,7 +3215,6 @@ public:
 #### [70. 爬楼梯](https://leetcode.cn/problems/climbing-stairs/)
 
 
-
 ```c++
 class Solution {
 public:
@@ -3304,6 +3303,71 @@ public:
 
 ```c++
 
+```
+
+
+
+
+#### [72. 编辑距离](https://leetcode.cn/problems/edit-distance/)
+
+```c++
+
+```
+
+
+
+#### [647. 回文子串](https://leetcode.cn/problems/palindromic-substrings/)
+
+
+
+```c++
+class Solution {
+public:
+    int countSubstrings(string s) {
+        int res = 0;
+        vector<vector<bool>> dp(s.size(), vector<bool>(s.size(), false));
+        for(int i = s.size() - 1; i >= 0; i--){
+            for(int j = i ;  j <s.size();i++){
+                if(s[i] == s[j]){
+                    if(j - i <= 1){
+                        res++;
+                        dp[i][j] = true;
+                    }else if(dp[i+1][j-1]){
+                        res++;
+                        dp[i][j] = true;
+                    }
+                }
+            }
+        }
+        return res;
+    }
+};
+```
+
+
+
+#### [516. 最长回文子序列](https://leetcode.cn/problems/longest-palindromic-subsequence/)
+
+```c++
+class Solution {
+public:
+    int longestPalindromeSubseq(string s) {
+        vector<vector<int>> dp = vector<vector<int>>(s.size(), vector<int>(s.size(),0));
+        for(int i = 0;  i<s.size(); i++){
+            dp[i][i] = 1;
+        }
+        for(int i = s.size() - 1; i >= 0; i--){
+            for(int j = i+1; j <s.size(); j++){
+                if(s[i] == s[j]){
+                    dp[i][j] = dp[i+1][j-1] + 2;
+                }else{
+                    dp[i][j] = max(dp[i+1][j], dp[i][j-1]);
+                }
+            }
+        }
+        return dp[0][s.size()-1];
+    }
+};
 ```
 
 ### 单调栈
