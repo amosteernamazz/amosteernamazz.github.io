@@ -3495,10 +3495,27 @@ public:
 
 ```c++
 class Solution {
-
 private:
-    vector<vector<>> 
-
+int dir[4][2] = {0, 1, 1, 0, -1, 0, 0, -1}; // 四个方向
+void bfs(vector<vector<char>>& grid, vector<vector<bool>>& visited, int x, int y) {
+    queue<pair<int, int>> que;
+    que.push({x, y});
+    visited[x][y] = true; // 只要加入队列，立刻标记
+    while(!que.empty()) {
+        pair<int ,int> cur = que.front(); que.pop();
+        int curx = cur.first;
+        int cury = cur.second;
+        for (int i = 0; i < 4; i++) {
+            int nextx = curx + dir[i][0];
+            int nexty = cury + dir[i][1];
+            if (nextx < 0 || nextx >= grid.size() || nexty < 0 || nexty >= grid[0].size()) continue;  // 越界了，直接跳过
+            if (!visited[nextx][nexty] && grid[nextx][nexty] == '1') {
+                que.push({nextx, nexty});
+                visited[nextx][nexty] = true; // 只要加入队列立刻标记
+            }
+        }
+    }
+}
 public:
     int numIslands(vector<vector<char>>& grid) {
         int n = grid.size(), m = grid[0].size();
@@ -3521,10 +3538,148 @@ public:
 
 
 
+#### [695. 岛屿的最大面积](https://leetcode.cn/problems/max-area-of-island/)
+
+![](https://assets.leetcode.com/uploads/2021/05/01/maxarea1-grid.jpg)
+
+```c++
+class Solution {
+private:
+    int count;
+    int dir[4][2] = {0, 1, 1, 0, -1, 0, 0, -1}; // 四个方向
+    void dfs(vector<vector<int>>& grid, vector<vector<bool>>& visited, int x, int y) {
+        if (visited[x][y] || grid[x][y] == 0) return; // 终止条件：访问过的节点 或者 遇到海水
+        visited[x][y] = true; // 标记访问过
+        count++;
+        for (int i = 0; i < 4; i++) {
+            int nextx = x + dir[i][0];
+            int nexty = y + dir[i][1];
+            if (nextx < 0 || nextx >= grid.size() || nexty < 0 || nexty >= grid[0].size()) continue;  // 越界了，直接跳过
+            dfs(grid, visited, nextx, nexty);
+        }
+    }
+
+public:
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        int n = grid.size(), m = grid[0].size();
+        vector<vector<bool>> visited = vector<vector<bool>>(n, vector<bool>(m, false));
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (!visited[i][j] && grid[i][j] == 1) {
+                    count = 0; // 因为dfs处理当前节点，所以遇到陆地计数为0，进dfs之后在开始从1计数
+                    dfs(grid, visited, i, j); // 将与其链接的陆地都标记上 true
+                    result = max(result, count);
+                }
+            }
+        }
+        return result;
+    }
+};
+```
+
+
+#### [1020. 飞地的数量](https://leetcode.cn/problems/number-of-enclaves/description/)
+
+
+```c++
+class Solution {
+private:
+    int dir[4][2] = {-1, 0, 0, -1, 1, 0, 0, 1}; // 保存四个方向
+    int count; // 统计符合题目要求的陆地空格数量
+    void dfs(vector<vector<int>>& grid, int x, int y) {
+        grid[x][y] = 0;
+        count++;
+        for (int i = 0; i < 4; i++) { // 向四个方向遍历
+            int nextx = x + dir[i][0];
+            int nexty = y + dir[i][1];
+            // 超过边界
+            if (nextx < 0 || nextx >= grid.size() || nexty < 0 || nexty >= grid[0].size()) continue;
+            // 不符合条件，不继续遍历
+            if (grid[nextx][nexty] == 0) continue;
+
+            dfs (grid, nextx, nexty);
+        }
+        return;
+    }
+
+public:
+    int numEnclaves(vector<vector<int>>& grid) {
+        int n = grid.size(), m = grid[0].size();
+        // 从左侧边，和右侧边 向中间遍历
+        for (int i = 0; i < n; i++) {
+            if (grid[i][0] == 1) dfs(grid, i, 0);
+            if (grid[i][m - 1] == 1) dfs(grid, i, m - 1);
+        }
+        // 从上边和下边 向中间遍历
+        for (int j = 0; j < m; j++) {
+            if (grid[0][j] == 1) dfs(grid, 0, j);
+            if (grid[n - 1][j] == 1) dfs(grid, n - 1, j);
+        }
+        count = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 1) dfs(grid, i, j);
+            }
+        }
+        return count;
+    }
+};
+```
+
+
+#### [130. 被围绕的区域](https://leetcode.cn/problems/surrounded-regions/)
 
 
 
+```c++
+class Solution {
+private:
+    int dir[4][2] = {-1, 0, 0, -1, 1, 0, 0, 1}; // 保存四个方向
+    void dfs(vector<vector<char>>& board, int x, int y) {
+        board[x][y] = 'A';
+        for (int i = 0; i < 4; i++) { // 向四个方向遍历
+            int nextx = x + dir[i][0];
+            int nexty = y + dir[i][1];
+            // 超过边界
+            if (nextx < 0 || nextx >= board.size() || nexty < 0 || nexty >= board[0].size()) continue;
+            // 不符合条件，不继续遍历
+            if (board[nextx][nexty] == 'X' || board[nextx][nexty] == 'A') continue;
+            dfs (board, nextx, nexty);
+        }
+        return;
+    }
+
+public:
+    void solve(vector<vector<char>>& board) {
+        int n = board.size(), m = board[0].size(); 
+        // 步骤一：
+        // 从左侧边，和右侧边 向中间遍历
+        for (int i = 0; i < n; i++) {
+            if (board[i][0] == 'O') dfs(board, i, 0);
+            if (board[i][m - 1] == 'O') dfs(board, i, m - 1);
+        }
+
+        // 从上边和下边 向中间遍历
+        for (int j = 0; j < m; j++) {
+            if (board[0][j] == 'O') dfs(board, 0, j);
+            if (board[n - 1][j] == 'O') dfs(board, n - 1, j);
+        }
+        // 步骤二：
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (board[i][j] == 'O') board[i][j] = 'X';
+                if (board[i][j] == 'A') board[i][j] = 'O';
+            }
+        }
+    }
+};
+```
 
 
 
+#### [417. 太平洋大西洋水流问题](https://leetcode.cn/problems/pacific-atlantic-water-flow/)
 
+
+```c++
+```
