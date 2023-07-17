@@ -3417,3 +3417,99 @@ public:
 ### 图论
 
 
+#### [797. 所有可能的路径](https://leetcode.cn/problems/all-paths-from-source-to-target/)
+
+
+
+```c++
+class Solution {
+
+private:
+    vector<vector<int>> res;
+    vector<int>         path;
+    void dfs(vector<vector<int>>& graph, int i){
+        if( i == graph.size() -1){
+            res.push_back(path);
+            return;
+        }
+        for(int j = 0 ; j < graph[i].size(); j++){
+            path.push_back(graph[i][j]);
+            dfs(graph,graph[i][j]);
+            path.pop_back();
+        }
+    }
+public:
+    vector<vector<int>> allPathsSourceTarget(vector<vector<int>>& graph) {
+        path.push_back(0);
+        dfs(graph, 0);
+        return res;
+    }
+};
+
+```
+
+
+#### [200. 岛屿数量](https://leetcode.cn/problems/number-of-islands/)
+
+
+```c++
+class Solution {
+
+
+private:
+    vector<vector<int>> dirs = {{0,1},{1,0},{-1,0},{0,-1}};
+    void dfs(vector<vector<char>>& grid,int i, int j, vector<vector<bool>>& used){
+
+        if (used[i][j] || grid[i][j] == '0') return; 
+        used[i][j] = true; 
+
+        for(int k = 0 ; k < 4; k++){
+            int next_i = i + dirs[k][0];
+            int next_j = j + dirs[k][1];
+            if(next_i >=0 && next_i < grid.size() && next_j >= 0 && next_j < grid[0].size()) 
+                dfs(grid,next_i,next_j,used);
+        }
+    }
+
+
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        int n = grid.size();
+        int m = grid[0].size();
+        vector<vector<bool>> used = vector<vector<bool>>(n, vector<bool>(m,false));
+        int res = 0;
+        for(int i = 0 ; i <n ; i++){
+            for(int j = 0 ; j <m ; j++){
+                if(!used[i][j] && grid[i][j] == '1'){
+                    res++;
+                    dfs(grid,i,j,used);
+                }
+            }
+        }
+        return res;
+    }
+};
+
+```
+
+
+```c++
+class Solution {
+
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        
+    }
+};
+
+```
+
+
+
+
+
+
+
+
+
+
