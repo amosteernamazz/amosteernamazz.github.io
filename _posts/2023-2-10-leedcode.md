@@ -979,6 +979,91 @@ public:
 };
 ```
 
+#### [42. 接雨水](https://leetcode.cn/problems/trapping-rain-water/)
+
+
+![](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/10/22/rainwatertrap.png)
+
+
+```c++
+class Solution {
+public:
+    //思路：雨水面积 = 总面积（雨水 + 陆地）- 陆地面积
+    //总面积 = 每层面积的和
+    int trap(vector<int>& height) {
+        int length = height.size();
+        //剪枝，数组长度小于3时不可能接到雨水
+        if(length < 3) return 0;
+        int l = 0, r = length - 1;
+
+        //定义前一次计算时的高度
+        int preHeight = 0;
+        //定义雨水 + 陆地的总面积
+        int totalArea = 0;
+        //定义陆地面积
+        int landArea = 0;
+
+        //显然总陆地面积为数组所有数求和
+        landArea = accumulate(height.begin(), height.end(), 0);
+
+        while(l < r) {
+            //跳过小于等于前一次计算的值
+            while(l < r && height[l] <= preHeight) l++;
+            while(l < r && height[r] <= preHeight) r--;
+
+            //计算当前高度的面积 = （当前左右指针中较小的值 - 前一次计算的高度）* 宽度
+            totalArea += (min(height[l], height[r]) - preHeight) * (r - l + 1);
+            //更新前一次的高度
+            preHeight = min(height[l], height[r]);
+        }
+    
+        return totalArea - landArea;
+    }
+};
+```
+
+#### [84. 柱状图中最大的矩形](https://leetcode.cn/problems/largest-rectangle-in-histogram/)
+
+![](https://assets.leetcode.com/uploads/2021/01/04/histogram.jpg)
+
+```c++
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        vector<int> minLeftIndex(heights.size());
+        vector<int> minRightIndex(heights.size());
+        int size = heights.size();
+
+        // 记录每个柱子 左边第一个小于该柱子的下标
+        minLeftIndex[0] = -1; // 注意这里初始化，防止下面while死循环
+        for (int i = 1; i < size; i++) {
+            int t = i - 1;
+            // 这里不是用if，而是不断向左寻找的过程
+            while (t >= 0 && heights[t] >= heights[i]) t = minLeftIndex[t];
+            minLeftIndex[i] = t;
+        }
+        // 记录每个柱子 右边第一个小于该柱子的下标
+        minRightIndex[size - 1] = size; // 注意这里初始化，防止下面while死循环
+        for (int i = size - 2; i >= 0; i--) {
+            int t = i + 1;
+            // 这里不是用if，而是不断向右寻找的过程
+            while (t < size && heights[t] >= heights[i]) t = minRightIndex[t];
+            minRightIndex[i] = t;
+        }
+        // 求和
+        int result = 0;
+        for (int i = 0; i < size; i++) {
+            int sum = heights[i] * (minRightIndex[i] - minLeftIndex[i] - 1);
+            result = max(sum, result);
+        }
+        return result;
+    }
+};
+```
+
+
+
+
 ### 动态规划 
 
 #### [5. 最长回文子串](https://leetcode.cn/problems/longest-palindromic-substring/)
