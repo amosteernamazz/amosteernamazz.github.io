@@ -3186,6 +3186,30 @@ public:
     }
 };
 ```
+
+#### [738. 单调递增的数字](https://leetcode.cn/problems/monotone-increasing-digits/)
+
+```c++
+class Solution{
+    int monotoneIncreasingDigits(int N){
+        string strNum = to_string(N);
+        int size = strNum.size();
+        int position = size;
+        for(int i = strNum.size() - 1; i > 0; i--){
+            if(strNum[i-1] > strNum[i]){
+                position = i;
+                strNum[i-1]--;
+            }
+        }
+        for(int i = position; i<strNum.size(); i++){
+            strNum[i] = '9';
+        }
+        return stoi(strNum);
+    }
+};
+```
+
+
 #### [121. 买卖股票的最佳时机](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/)
 
 ```c++
