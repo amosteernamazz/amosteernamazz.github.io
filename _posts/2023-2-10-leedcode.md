@@ -3188,6 +3188,84 @@ public:
 ```
 
 
+#### [55. 跳跃游戏](https://leetcode.cn/problems/jump-game/)
+
+```c++
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int cover = 0;
+        if (nums.size() == 1) return true; // 只有一个元素，就是能达到
+        for (int i = 0; i <= cover; i++) { // 注意这里是小于等于cover
+            cover = max(i + nums[i], cover);
+            if (cover >= nums.size() - 1) return true; // 说明可以覆盖到终点了
+        }
+        return false;
+    }
+};
+```
+
+
+#### [452. 用最少数量的箭引爆气球](https://leetcode.cn/problems/minimum-number-of-arrows-to-burst-balloons/)
+
+```c++
+class Solution {
+private:
+    static bool cmp(const vector<int>& a, const vector<int>& b) {
+        return a[0] < b[0];
+    }
+public:
+    int findMinArrowShots(vector<vector<int>>& points) {
+        if (points.size() == 0) return 0;
+        sort(points.begin(), points.end(), cmp);
+
+        int result = 1; // points 不为空至少需要一支箭
+        for (int i = 1; i < points.size(); i++) {
+            if (points[i][0] > points[i - 1][1]) {  // 气球i和气球i-1不挨着，注意这里不是>=
+                result++; // 需要一支箭
+            }
+            else {  // 气球i和气球i-1挨着
+                points[i][1] = min(points[i - 1][1], points[i][1]); // 更新重叠气球最小右边界
+            }
+        }
+        return result;
+    }
+};
+```
+
+
+#### [435. 无重叠区间](https://leetcode.cn/problems/non-overlapping-intervals/)
+
+
+
+```c++
+class Solution {
+public:
+    int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+        if(intervals.size() == 0){
+            return 0;
+        }
+        sort(intervals.begin(), intervals.end(),[](const vector<int>& a, const vector<int>& b){ return a[0] < b[0];});
+        
+        int res = 0;
+        int end = intervals[0][1];
+        for(int i = 1; i <intervals.size() ; i++){
+            // 如果重叠，则选择对应段删除
+            if(intervals[i][0] < end){
+                count++;
+                // 因为返回最少数量，则选择保留interval长度最少的那个
+                end = min(end, intervals[i][1]);
+            }else{
+                end = intervals[i][1];
+            }
+
+        }
+    }
+};
+```
+
+
+
 #### [763. 划分字母区间](https://leetcode.cn/problems/partition-labels/)
 
 
