@@ -3187,6 +3187,62 @@ public:
 };
 ```
 
+
+#### [763. 划分字母区间](https://leetcode.cn/problems/partition-labels/)
+
+
+```c++
+class Solution{
+public:
+    vector<int> partitionLabels(string S) {
+        int hash[27] = {};
+        for(int i = 0; i <S.size(); i++){
+            hash[S[i] - 'a'] = i;
+        }
+        vector<int> res;
+        int left = 0;
+        int right = 0;
+        for(int i = 0 ; i < S.size(); i++){
+            right = max(right, hash[S[i] - 'a']);
+            if(i == right){
+                res.push_back(right - left +1);
+                left = right +1;
+            }
+        }
+        return res;
+    }
+};
+```
+
+
+
+
+#### [56. 合并区间](https://leetcode.cn/problems/merge-intervals/)
+
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> merge(vector<vector<int>>& intervals) {
+        vector<vector<int>> res;
+        if(intervals.size() == 0) return res;
+        sort(intervals.begin(), intervals.end(),[](vector<int>& a, vector<int>& b){return a[0] <b[0];});
+
+        res.push_back(intervals[0]);
+
+        for(int i = 1; i< intervals.size(); i++){
+            if(res.back()[1] >= intervals[i][0]){
+                res.back()[1] = max(res.back()[1], intervals[i][1]);
+            }else{
+                res.push_back(intervals[i]);
+            }
+        }
+        return res;
+    }
+};
+```
+
+
 #### [738. 单调递增的数字](https://leetcode.cn/problems/monotone-increasing-digits/)
 
 ```c++
