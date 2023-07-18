@@ -3186,7 +3186,22 @@ public:
     }
 };
 ```
+#### [121. 买卖股票的最佳时机](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/)
 
+```c++
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int low = INT_MAX;
+        int res = 0;
+        for(int i = 0 ; i< prices.size(); i++){
+            low = min(low, prices[i]);
+            res = max(max, prices[i] - low);
+        }
+        return res;
+    }
+};
+```
 
 
 ### 动态规划
@@ -3301,6 +3316,146 @@ public:
 
 #### [343. 整数拆分](https://leetcode.cn/problems/integer-break/)
 
+
+#### [121. 买卖股票的最佳时机](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/)
+
+```c++
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int size = prices.size();
+        if (size ==0){
+            return 0;
+        }
+        vector<vector<int>> dp(size,vector<int>(2,0));
+        dp[0][0] = -prices[0];      // dp[i][0]表示对应的最小投入
+        dp[0][1] = 0;               // dp[i][1]表示对应的最大收益
+
+        for(int i = 1; i <size; i++){
+            dp[i][0] = max(dp[i-1][0], -prices[i]);
+            dp[i][1] = max(dp[i-1][1], dp[i-1][0] + prices[i]);
+        }
+        return dp[size -1][1];
+    }
+};
+```
+
+#### [122.买卖股票的最佳时机II](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/)
+
+```c++
+class Solution{
+public:
+    int maxProfit(vector<int>& prices){
+        int size = prices.size();
+        if (size ==0){
+            return 0;
+        }
+        vector<vector<int>> dp(size,vector<int>(2,0));
+        dp[0][0] = -prices[0];      // dp[i][0]表示对应的最小投入
+        dp[0][1] = 0;               // dp[i][1]表示对应的最大收益
+
+        for(int i = 1; i <size; i++){
+            dp[i][1] = max(dp[i-1][1], dp[i-1][0] + prices[i]);
+            dp[i][0] = max(dp[i-1][0], dp[i][1]-prices[i]);
+
+        }
+        return dp[size -1][1];
+    }
+};
+```
+
+#### [123.买卖股票的最佳时机III](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iii/)
+
+
+
+```c++
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if (prices.size() == 0) return 0;
+        vector<vector<int>> dp(prices.size(), vector<int>(5, 0));
+        dp[0][1] = -prices[0];
+        dp[0][3] = -prices[0];
+        for (int i = 1; i < prices.size(); i++) {
+            dp[i][0] = dp[i - 1][0];
+            dp[i][2] = max(dp[i - 1][2], dp[i - 1][1] + prices[i]);
+            dp[i][1] = max(dp[i - 1][1], dp[i][0] - prices[i]);
+            dp[i][4] = max(dp[i - 1][4], dp[i - 1][3] + prices[i]);
+            dp[i][3] = max(dp[i - 1][3], dp[i][2] - prices[i]);
+
+        }
+        return dp[prices.size() - 1][4];
+    }
+};
+```
+
+
+
+
+
+
+
+#### [300. 最长递增子序列](https://leetcode.cn/problems/longest-increasing-subsequence/)
+
+```c++
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        if (nums.size() <= 1) return nums.size();
+        vector<int> dp(nums.size(), 1);
+        int result = 0;
+        for (int i = 1; i < nums.size(); i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) dp[i] = max(dp[i], dp[j] + 1);
+            }
+            if (dp[i] > result) result = dp[i]; // 取长的子序列
+        }
+        return result;
+    }
+};
+```
+ 
+
+#### [674. 最长连续递增序列](https://leetcode.cn/problems/maximum-length-of-repeated-subarray/submissions/)
+
+```c++
+class Solution {
+public:
+    int findLength(vector<int>& nums1, vector<int>& nums2) {
+        vector<vector<int>> dp (nums1.size() + 1, vector<int>(nums2.size() + 1, 0));
+        int result = 0;
+        for (int i = 1; i <= nums1.size(); i++) {
+            for (int j = 1; j <= nums2.size(); j++) {
+                if (nums1[i - 1] == nums2[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }
+                if (dp[i][j] > result) result = dp[i][j];
+            }
+        }
+        return result;
+    }
+};
+```
+
+#### [718. 最长重复子数组](https://leetcode.cn/problems/maximum-length-of-repeated-subarray/)
+```c++
+class Solution {
+public:
+    int findLength(vector<int>& nums1, vector<int>& nums2) {
+        vector<vector<int>> dp (nums1.size() + 1, vector<int>(nums2.size() + 1, 0));
+        int result = 0;
+        for (int i = 1; i <= nums1.size(); i++) {
+            for (int j = 1; j <= nums2.size(); j++) {
+                if (nums1[i - 1] == nums2[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                }
+                if (dp[i][j] > result) result = dp[i][j];
+            }
+        }
+        return result;
+    }
+};
+```
 
 #### [1035. 不相交的线](https://leetcode.cn/problems/uncrossed-lines/solution/)[1143. 最长公共子序列](https://leetcode.cn/problems/longest-common-subsequence/)
 
