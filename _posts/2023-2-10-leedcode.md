@@ -3301,17 +3301,124 @@ public:
 
 #### [343. 整数拆分](https://leetcode.cn/problems/integer-break/)
 
+
+#### [1035. 不相交的线](https://leetcode.cn/problems/uncrossed-lines/solution/)[1143. 最长公共子序列](https://leetcode.cn/problems/longest-common-subsequence/)
+
+
 ```c++
+class Solution {
+public:
+    int maxUncrossedLines(vector<int>& A, vector<int>& B) {
+        vector<vector<int>> dp(A.size() + 1, vector<int>(B.size() + 1, 0));
+        for (int i = 1; i <= A.size(); i++) {
+            for (int j = 1; j <= B.size(); j++) {
+                if (A[i - 1] == B[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[A.size()][B.size()];
+    }
+};
+```
+
+
+#### [53. 最大子数组和](https://leetcode.cn/problems/maximum-subarray/)
+
+```c++
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        if (nums.size() == 0) return 0;
+        vector<int> dp(nums.size());
+        dp[0] = nums[0];
+        int result = dp[0];
+        for (int i = 1; i < nums.size(); i++) {
+            dp[i] = max(dp[i - 1] + nums[i], nums[i]); // 状态转移公式
+            if (dp[i] > result) result = dp[i]; // result 保存dp[i]的最大值
+        }
+        return result;
+    }
+};
 
 ```
 
 
 
+#### [392. 判断子序列](https://leetcode.cn/problems/is-subsequence/)
+
+```c++
+class Solution {
+public:
+    bool isSubsequence(string s, string t) {
+        vector<vector<int>> dp(s.size()+1, vector<int>(t.size()+1, 0));
+        for(int i = 1 ; i <=s.size(); i++){
+            for(int j = 1; j<=t.size(); j++){
+                if(s[i-1] == t[j-1]){
+                    dp[i][j] = dp[i-1][j-1] +1;
+                }else{
+                    dp[i][j] = dp[i][j-1];
+                }
+            }
+        }
+        return dp[s.size()][t.size()] == s.size();
+    }
+};
+```
+
+#### [115. 不同的子序列](https://leetcode.cn/problems/distinct-subsequences/)
+
+
+#### [583. 两个字符串的删除操作](https://leetcode.cn/problems/delete-operation-for-two-strings/)
+
+```c++
+class Solution {
+public:
+    int minDistance(string word1, string word2) {
+        vector<vector<int>> dp(word1.size() + 1, vector<int>(word2.size() + 1));
+        for (int i = 0; i <= word1.size(); i++) dp[i][0] = i;
+        for (int j = 0; j <= word2.size(); j++) dp[0][j] = j;
+        for (int i = 1; i <= word1.size(); i++) {
+            for (int j = 1; j <= word2.size(); j++) {
+                if (word1[i - 1] == word2[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = min(dp[i - 1][j] + 1, dp[i][j - 1] + 1);
+                }
+            }
+        }
+        return dp[word1.size()][word2.size()];
+    }
+};
+```
 
 #### [72. 编辑距离](https://leetcode.cn/problems/edit-distance/)
 
 ```c++
-
+class Solution {
+public:
+    int minDistance(string word1, string word2) {
+        vector<vector<int>> dp(word1.size()+1,vector<int>(word2.size()+1,0));
+        for(int i = 0 ; i <=word1.size(); i++){
+            dp[i][0] = i;
+        }
+        for(int j = 0; j <=word2.size(); j++){
+            dp[0][j] = j;
+        }
+        for(int i = 1; i <=word1.size(); i++){
+            for(int j = 1; j <=word2.size(); j++){
+                if(word1[i-1] == word2[j-1]){
+                    dp[i][j] = dp[i-1][j-1];
+                }else{
+                    dp[i][j] = min(min(dp[i-1][j-1], dp[i-1][j]), dp[i][j-1]) + 1;
+                }
+            }
+        }
+        return dp[word1.size()][word2.size()];
+    }
+};
 ```
 
 
