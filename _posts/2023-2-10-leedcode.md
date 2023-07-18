@@ -3378,11 +3378,10 @@ public:
         dp[0][3] = -prices[0];
         for (int i = 1; i < prices.size(); i++) {
             dp[i][0] = dp[i - 1][0];
+            dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] - prices[i]);
             dp[i][2] = max(dp[i - 1][2], dp[i - 1][1] + prices[i]);
-            dp[i][1] = max(dp[i - 1][1], dp[i][0] - prices[i]);
+            dp[i][3] = max(dp[i - 1][3], dp[i - 1][2] - prices[i]);
             dp[i][4] = max(dp[i - 1][4], dp[i - 1][3] + prices[i]);
-            dp[i][3] = max(dp[i - 1][3], dp[i][2] - prices[i]);
-
         }
         return dp[prices.size() - 1][4];
     }
@@ -3390,9 +3389,75 @@ public:
 ```
 
 
+#### [188. 买卖股票的最佳时机 IV](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iv/)
 
 
+```c++
+class Solution {
+public:
+    int maxProfit(int k, vector<int>& prices) {
 
+        if (prices.size() == 0) return 0;
+        vector<vector<int>> dp(prices.size(), vector<int>(2 * k + 1, 0));
+        for (int j = 1; j < 2 * k; j += 2) {
+            dp[0][j] = -prices[0];
+        }
+        for (int i = 1;i < prices.size(); i++) {
+            for (int j = 0; j < 2 * k - 1; j += 2) {
+                dp[i][j + 1] = max(dp[i - 1][j + 1], dp[i - 1][j] - prices[i]);
+                dp[i][j + 2] = max(dp[i - 1][j + 2], dp[i - 1][j + 1] + prices[i]);
+            }
+        }
+        return dp[prices.size() - 1][2 * k];
+    }
+};
+```
+
+#### [309. 最佳买卖股票时机含冷冻期](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
+
+
+```c++
+class Solution{
+public:
+    int maxProfit(vector<int>& prices){
+        int size = prices.size();
+        if(size == 0){
+            return 0;
+        }
+        vector<vector<int>> dp(n, vector<int>(4,0));
+        dp[0][0] -= prices[0];
+        for(int i = 1; i <size; i++){
+            // 持有
+            dp[i][0] = max(dp[i-1][0], max(dp[i-1][3] - prices[i], dp[i-1][1] - prices[i]));
+            // 卖出
+            dp[i][1] = max(dp[i-1][1], dp[i-1][3]);
+            // 今天卖出
+            dp[i][2] = dp[i-1][0] + prices[i];
+            // 冻结
+            dp[i][3] = dp[i-1][2];
+        }
+        return max(dp[size-1][3], max(dp[size-1][1], dp[size-1][2]));
+    }
+};
+```
+
+#### [714. 买卖股票的最佳时机含手续费](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
+
+```c++
+class Solution {
+public:
+    int maxProfit(vector<int>& prices, int fee) {
+        int n = prices.size();
+        vector<vector<int>> dp(n, vector<int>(2, 0));
+        dp[0][0] -= prices[0]; // 持股票
+        for (int i = 1; i < n; i++) {
+            dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] - prices[i]);
+            dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] + prices[i] - fee);
+        }
+        return max(dp[n - 1][0], dp[n - 1][1]);
+    }
+};
+```
 
 
 #### [300. 最长递增子序列](https://leetcode.cn/problems/longest-increasing-subsequence/)
