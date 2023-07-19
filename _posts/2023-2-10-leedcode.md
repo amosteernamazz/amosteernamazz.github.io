@@ -3187,6 +3187,11 @@ public:
 };
 ```
 
+#### [376. 摆动序列](https://leetcode.cn/problems/wiggle-subsequence/)
+
+```c++
+
+```
 
 #### [55. 跳跃游戏](https://leetcode.cn/problems/jump-game/)
 
@@ -3204,6 +3209,11 @@ public:
     }
 };
 ```
+#### [45. 跳跃游戏II]()
+
+
+#### [1005. K次取反后最大化的数组和]()
+
 
 #### [134. 加油站](https://leetcode.cn/problems/gas-station/)
 
@@ -3288,7 +3298,24 @@ public:
 };
 ```
 
+#### [406. 根据身高重建队列](https://leetcode.cn/problems/queue-reconstruction-by-height/)
 
+
+
+```c++
+class Solution{
+public:
+    vector<vector<int>> reconstructQueue(vector<vector<int>>& people){
+        sort(people.begin(), people.end(), [](const vector<int>& a, const vector<int>& b){ if(a[0] == b[0]) return a[1] < b[1]; return a[0] > b[0]; });
+        vector<vector<int>> res;
+        for(int i = 0; i <people.size(); i++){
+            int position = people[i][1];
+            res.insert(res.begin() + position, people[i]);
+        }
+        return ans;
+    }
+};
+```
 
 #### [452. 用最少数量的箭引爆气球](https://leetcode.cn/problems/minimum-number-of-arrows-to-burst-balloons/)
 
