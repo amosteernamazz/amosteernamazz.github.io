@@ -3205,6 +3205,90 @@ public:
 };
 ```
 
+#### [134. 加油站](https://leetcode.cn/problems/gas-station/)
+
+```c++
+class Solution{
+public:
+    int canCompleteCircuit(vector<int>& gas, vector<int>& cost){
+        int cursum = 0;
+        int sum = 0;
+        int res = 0;
+        for(int i = 0 ; i <gas.size(); i++){
+            cursum += gas[i] - cost[i];
+            sum += gas[i] - cost[i];
+            if(cursum < 0){
+                res = i+1;
+                cursum = 0;
+            }
+        }
+        if(sum <0){return -1;}
+        return res;
+    }
+};
+```
+
+
+#### [135. 分发糖果](https://leetcode.cn/problems/candy/)
+```c++
+class Solution {
+public:
+    int candy(vector<int>& ratings) {
+        vector<int> candynum(ratings.size(),1);
+        for(int i = 1;  i < ratings.size(); i++){
+            if(ratings[i] > ratings[i-1]){
+                candynum[i] = candynum[i-1] + 1;
+            }
+        }
+        for(int i = ratings.size() -2; i >=0 ;i--){
+            if(ratings[i] > ratings[i+1]){
+                candynum[i] = max(candynum, candynum[i+1] + 1);
+            }
+        }
+        int res = 0;
+        for(auto num: candynum){
+            res += num;
+        }
+        return res;
+    }
+};
+```
+
+#### [860. 柠檬水找零](https://leetcode.cn/problems/lemonade-change/)
+
+```c++
+class Solution {
+public:
+    bool lemonadeChange(vector<int>& bills) {
+        int five = 0, ten = 0, twenty = 0;
+        for (int bill : bills) {
+            // 情况一
+            if (bill == 5) five++;
+            // 情况二
+            if (bill == 10) {
+                if (five <= 0) return false;
+                ten++;
+                five--;
+            }
+            // 情况三
+            if (bill == 20) {
+                // 优先消耗10美元，因为5美元的找零用处更大，能多留着就多留着
+                if (five > 0 && ten > 0) {
+                    five--;
+                    ten--;
+                    twenty++; // 其实这行代码可以删了，因为记录20已经没有意义了，不会用20来找零
+                } else if (five >= 3) {
+                    five -= 3;
+                    twenty++; // 同理，这行代码也可以删了
+                } else return false;
+            }
+        }
+        return true;
+    }
+};
+```
+
+
 
 #### [452. 用最少数量的箭引爆气球](https://leetcode.cn/problems/minimum-number-of-arrows-to-burst-balloons/)
 
