@@ -36,7 +36,7 @@ CPU design for low latency
 ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/70174e01e80f466bbc1de536aa69ac9a~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 
-
+![](../assets/user/GPU/Screen%20Shot%202022-05-21%20at%2011.15.12%20AM.png)
 
 * CPU GPU
 
