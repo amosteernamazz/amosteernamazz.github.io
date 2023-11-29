@@ -20,7 +20,7 @@ default:
     type: webpage
     article_header:
       align: left
-      theme: dark
+      theme: light
     articles:
       show_cover: true
       show_excerpt: false
