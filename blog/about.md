@@ -5,26 +5,19 @@ key: page-about
 ---
 Welcome to my blog! :earth_asia: :earth_africa: :earth_americas:
 
-My Name is Kefan Wang, delited in GPU and operator.
+My Name is Amosteernamazz, delited in EDA.
 
 ## Skills
 - Computer Architectures
+- Algorithms
 - C++
 - CUDA
 - GPU
 
 
 ## Studying
-- all 
+- Computitional Geometry
 
-## Job Required
-- 源对源编码器
-- tensorflow、pytorch、MNVM、TVM、ResNet
-- tracer、player、nsight、ide、qa工具开发
-- 数据结构算法
-- cublass、cufft、cusparse库
-- tensorrt、mlir
-- TVM、GCC、LLVM、Clang
 
 
 <!--more-->
@@ -33,9 +26,7 @@ My Name is Kefan Wang, delited in GPU and operator.
 
 Hi, this is blog.
 
-Welcome to my own website, which is delighted in GPU and concurrent alg.
-
-The reason for this web is offering some ideas and giving some basis elements in GPU design and harware and software co-design.
+Welcome to my own website, which is delighted in EDA.
 
 if you have any questions, please feel free to contact me [amosteernamazz@163.com](mailto:amosteernamazz@163.com)
 
