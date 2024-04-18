@@ -142,7 +142,7 @@ pf(p);                    // 调用
 
 
 
-![](https://img-blog.csdn.net/20180626002635328?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dhbl9zaGlidWdvbmc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/c%2B%2B_1.png)
 
  **默认继承方式**
   * 类 -> private
