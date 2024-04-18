@@ -18,7 +18,7 @@ mermaid: true
 
 ## Memory Hierarchy
 
- ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fd42780ecc814652ae3db95508b152b4~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+ ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_1.png)
 
 
  <font color=red>指针</font>是被用来<font color=red>指向global memory</font> 的数据
@@ -223,7 +223,7 @@ mermaid: true
 #### Bit Line & Select Line
 
 
-![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b437a3d682914a929f5d1397eabb2081~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+ ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_2.png)
 
 
   **原理**
@@ -238,11 +238,13 @@ mermaid: true
 
   * 每个<font color= red>bit电容</font>，需要信号放大器放大
 
-![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ce8a3806169e4a26a84da1a02770dd6b~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+ ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_3.png)
+
 
 
 #### DRAM 的数据传输(Core Array & Burst)
- ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4ce77fdf7d1c48bc8e6d571ba0e77004~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_4.png)
 
 
   **传输过程**
@@ -278,9 +280,11 @@ mermaid: true
 
 #### Multiple Banks
 
-![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/19828fb956904e38aa6c75a78a1a12f4~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_5.png)
 
-![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/26fe0b485c3b41a9b128a935c51081fa~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_6.png)
+
 
 
   **引入原因**
@@ -301,7 +305,8 @@ mermaid: true
 
 #### Multiple Channels
 
- ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dcea6f6180db45128b25cc4cbc94eafc~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_7.png)
+
 
 
   * <font color = red>一般的GPU processor要求带宽达到128GB/s，HBM2要求带宽为898GB/s，在使用multiple bank后仍未满足要求</font>，因此使用multiple channel的方法。
@@ -311,7 +316,8 @@ mermaid: true
 
 #### 数据分布方法Interleaved（交织） 
 
-![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/95a1c7b5eb2a4a239aa533dd5557e5b0~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_8.png)
+
 
 
   **数据交织原因**
@@ -340,7 +346,8 @@ mermaid: true
   **global memory 数据流向**
    * global memory request<font color = red>一定会经过L2</font>，是否经过<font color = red>L1 </font>取决于<font color = red>cc 和code</font>，是否经过read only texture cache取决于<font color = red>cc 和code </font>。
 
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/58d61cd9fdca4555a1eab0b9664fbf4c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_9.png)
+
 
   **GPU 与CPU 对memory 的处理方式**
 
@@ -378,7 +385,8 @@ mermaid: true
 
    padded info叫做 `pitch` 
 
-   ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8b663c3f737346bf99cba00a6a6961b5~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_10.png)
+
 
 
   **CUDA API**
@@ -428,7 +436,8 @@ mermaid: true
 
   **内存读性能：global memory load efficency**
 
-  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/94e7c7c2fe3d4b48a942f1524465523c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_11.png)
+
 
 
    nvprof.gld_efficency metrics衡量了此指标
@@ -474,17 +483,17 @@ mermaid: true
    * <font color = red>request拆分到cache line层面</font>上，解决indenpent 问题
      
      * 当warp的内存请求位于同一个连续对齐的cache line内。 
-     ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/371d913f971f445cbac083a44e78767e~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+     ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_12.png)
 
 
 
 
      * 数据都位于cache line内，但之间的关系无序。只要warp memory request是在128 bytes transaction内，只会进行一个memory transaction。
-      ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b6f5043ba4894392a675e3b512be5643~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+      ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_13.png)
 
 
      * warp连续但是并未对齐，导致产生两个128 bytes transaction
-      ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1670dec5bc1a4f78941ed329c8b3cf54~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+      ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_14.png)
 
 
 
@@ -493,11 +502,11 @@ mermaid: true
      * 所有线程请求同一地址
 
 
-      ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e2bba1c5321f4ea0b10585f69a47756b~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+      ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_15.png)
 
      * warp的线程以32 addresses为单位scatter到global memory的情况。
 
-      ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4e150726ea384b37857330a96f1efd3b~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+      ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_16.png)
 
 
    * 32 bytes transaction
@@ -509,24 +518,24 @@ mermaid: true
 
 
      * 内存请求连续对齐的128 bytes，进行需要进行四次transaction。bus利用率100%
-      ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b1abc9989a424743b9edb85502ff053c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+      ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_17.png)
 
 
 
      * 内存请求非连续，但都在128bytes内，请求四次transaction。
-      ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/95b2fd2869cb4b728dcdebebf7255fc1~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+      ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_18.png)
 
 
 
 
      * 请求相同地址，只需要一次transaction
-      ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/192d74b62c2e4e728285d371ee23e69d~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+      ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_19.png)
 
 
 
 
      * 请求四个32 bytes的scatter分布，相对<font color= red>128 bytes的方式，缓存利用率高</font>。
-      ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3c3971b84b3845abbec0da7c76b60502~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+      ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_20.png)
 
 
 
@@ -587,14 +596,14 @@ mermaid: true
    * 读transaction的例子
 
      * 128 bytes 的连续对齐内存request，需要4个transactions
-      ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e16280d148b642109f546638af9ef7d3~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+      ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_21.png)
 
 
 
 
      * 128 bytes 的request，请求内存大小为64 bytes的连续内存空间，则需要2个transactions
 
-      ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3a96d324395e4cafae139b8e42a8aaaa~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+      ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_22.png)
 
 
 
@@ -602,18 +611,18 @@ mermaid: true
 
   第一次访问，<font color = red>全部4个数据都放到buffer</font>里
 
-  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d699c3abcaca4813bfd57a5902fc540d~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_23.png)
 
 
   第二次访问使用后面两个数据（连续内存访问），<font color = red>直接从buffer里读取数据，不用再去core array</font>
-  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/16e8a1d94ced46f4869874e3ae7bcdc5~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_24.png)
 
 
 
   **burst 原因** 
    * 在从core array -> buffer 的过程需要的时间长，在每一次从core array 到buffer 的过程中，传输burst数据，在每一次读取中，应让数据充分使用。因为<font color = red>两次core array -> buffer 时间远远大于两次 buffer -> bus的时间</font>。
 
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/72a748346cc7408a8c4d7f12155df1d3~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_25.png)
   
 
 
@@ -749,7 +758,7 @@ mermaid: true
    ```
    * 设置可选项
 
-   ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/486202600e694ca6a85219aac41c7d2d~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+   ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_26.png)
    
 
    如果当前kernel的setting与前一个kernel的不一样，可能会导致implicit sync with device
