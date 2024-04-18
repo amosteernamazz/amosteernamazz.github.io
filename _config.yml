@@ -18,9 +18,9 @@
 ##############################
 ## url: https://tianqi.name
 baseurl: /
-title: Amosteernamazz's EDA Site
+title: Kefan Wang's EDA Site
 description: >
-    Amosteernamazz's EDA Site | Kefan Wang的小站
+    Kefan Wang's EDA Site | Kefan Wang的小站
 
 
 ## => Language and Timezone
@@ -32,8 +32,8 @@ timezone: Asia/Shanghai
 ## => Author and Social
 ##############################
 author:
-  name: amosteernamazz
-  email: amosteernamazz@163.com
+  name: Kefan Wang
+  email: wangkf@empyrean.com.cn
   ## twitter: kitian616
   github:  amosteernamazz
   ## googleplus: 101827554735084402671
