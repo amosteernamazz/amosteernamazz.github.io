@@ -317,7 +317,7 @@ int main (int argc, char** argv){
 
 
 ## 运行期virtual
-![](https://img-blog.csdnimg.cn/20201005162842163.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlc2lnag==,size_16,color_FFFFFF,t_70#pic_center)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/cppdy_1.png)
 
  **原理**
   * 对象中有**虚函数的指向的指向**（编译期间**创建对象**或运行时创建对象时创建）和虚函数表（每个**类的虚函数入口地址**，为**编译期**创建）
@@ -338,7 +338,7 @@ int main (int argc, char** argv){
 
   [虚表的写入时机、多态的实现原理、构造析构顺序的原因](https://blog.csdn.net/weixin_43919932/article/details/104356460)
 
- ![](https://img-blog.csdnimg.cn/20200217142930458.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzkxOTkzMg==,size_16,color_FFFFFF,t_70)
+ ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/cppdy_2.png)
 
 
 
