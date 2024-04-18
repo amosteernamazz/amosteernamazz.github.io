@@ -1616,7 +1616,7 @@ mermaid: true
   * atomicOr    或
   * atomicXor   位或
 
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6fc29b6198c2401ca1ee5f52e0da0844~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_39.png)
 
 
 ### CAS(compare and swap)
@@ -1752,7 +1752,7 @@ mermaid: true
    * last level cache -> few tens cycle
 
    * shared memocy -> few cycle
-   ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1787c40233c04f18afff3088c9fcce33~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+   ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_40.png)
 
 
 
@@ -1886,7 +1886,7 @@ mermaid: true
  **atomic大小参考**
 
   atomic次数与bandwidth是log的反向相关。
-  ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5fda906fba8b4669a8b8157e12b7f7a3~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_41.png)
 
 
 
@@ -1950,7 +1950,7 @@ mermaid: true
 
  **支持版本**
   cc 2.0以上版本支持Unified Virtual Address。其host memory和device memory共享一块虚拟内存空间。
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7ce06e8718c746a996f50f9ed913b346~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_42.png)
 
  **使用**
   当有UVA时，就不用获得device的指针或管理两个指向相同地址的指针。
@@ -2172,12 +2172,12 @@ mermaid: true
    * 每个link包含多个lanes
    * 每个lane为1-bit width（由4 wires组成，构成16GB/s）
 
-  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4cc5cdbb33ae47df88286ca5592999d8~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_43.png)
 
 
 
   北桥南桥都是用PCIe来链接
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/814948f2bc874196a28b8aa6d20cfad0~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_44.png)
 
 
 ### DMA
