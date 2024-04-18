@@ -14,13 +14,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kitian616/kitian616.github.io.git"
+    "url": "git+https://github.com/amosteernamazz/amosteernamazz.github.io.git"
   },
   "keywords": [
     "jekyll",
     "jekyll-site"
   ],
-  "author": "Tian Qi",
+  "author": "Kefan Wang",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kitian616/issues"
