@@ -1178,9 +1178,9 @@ L2外
     kernel_4<<<grid, block, 0, streams[i]>>>(); 
    }
    ```
-  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6c30f184ac8545189582023b465122d5~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/db952a3ca1704dc5b0bfc679b36f529b~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_30.png)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_31.png)
 
 
 
@@ -1201,8 +1201,9 @@ L2外
     cudaMemcpyAsync(h_C+i+SegSize, d_C2, SegSize*sizeof(float),.., stream1);
    }
    ```
-   ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/42de2ae93e36426caa6f066258892fdc~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d4a4975dbce645aeadb114babbe5cf75~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_32.png)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_33.png)
 
 
 
@@ -1221,10 +1222,9 @@ L2外
    * 但依旧可能存在false dependency。
      * 如果num stream > num active hardware queue，则会被序列化为一个hardware work queue
 
-  ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8bc9126b13e64d949c0244555aed05a0~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_34.png)
 
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/99f0cbd8ccc04c71beddbdc3626415d9~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_35.png)
 
 
 ##### GMU
@@ -1257,15 +1257,14 @@ L2外
    **配置**
     下图的例子里使用了8个stream，但是只开启了4个hw queue，导致false dependency依旧存在。
 
-  ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/35371d7c77bb4227aa481f2bbc74c7d6~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_36.png)
 
    当开启8个hw queue的时候，就不存在false dependency了
 
    当使用BFS的时候（只有4个hw queue），也可以做到不存在false dependency
 
-  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d7805705995a4959bbe7e6f72009a495~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_37.png)
 
 
 
@@ -1277,8 +1276,7 @@ L2外
    **例子**
     与Fermi depth-first 例子1相同
 
-  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bdd7613ebcf14a4789b336d106709546~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_38.png)
 
 
 
@@ -1383,9 +1381,7 @@ L2外
     kernel_4<<<grid, block, 0, streams[i]>>>();
    }
    ```
-  ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b800d7ac146141b6963252115c369313~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
-
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_39.png)
 
    **non-blocking stream**
 
@@ -1457,8 +1453,7 @@ L2外
    }
    ```
 
-  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a727b052ba494d178f338a6418adbae5~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_40.png)
 
 #### Events
 
@@ -1511,8 +1506,8 @@ L2外
    * 因为pinned内存是有限的资源，分配pinned内存可能会失败，所以一定要检查是否有失败
    * 不要过度使用pinned memory，这会导致系统整体速度变慢
 
-  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c7b2677b01174e3bb814aa93cc1ed69c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_41.png)
 
   **例子**
 
@@ -1589,8 +1584,8 @@ L2外
 
    ```
 
-  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/edebea7e56f0425fb515742101f390bc~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_42.png)
 
 
 
@@ -1608,9 +1603,8 @@ L2外
   * 从Kepler开始，GPU Kernel也可以启动GPU Kernel，从而允许更多的编程flexible
     * 是通过改变GPU hardware和runtime library实现的dynamic parallle的支持
 
-![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/887dfb670d8b422eb01bcc33ff757518~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
-
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_43.png)
 
  **例子**
    * 没有使用动态并行方法
@@ -1649,18 +1643,17 @@ L2外
   * 减少传输次数。减少了CPU GPU之间kernel parameter传输的次数，从而减少等待kernel launch的时间。
   * 由于CPU速度慢，无法在单位时间内启动足够多的kernel给gpu来计算，导致GPU underutilize。
     * 当有了dynamic paralle以后，可以在device code上 call library function，避免了CPU速度慢无法满足GPU工作需要的问题。
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3358e76bb3d24765aba6df1374694366~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_44.png)
 
   
  **wrapper kernel**
 
   负责在device 上启动library kernel的kernel叫做wrapper kernel。
 
-  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b13c5a85dcbb470b8f3cbba73ce4c9e8~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_45.png)
 
-  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9def35bd09d24defbf7bd03dfd933671~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_46.png)
 
 
 
@@ -1820,7 +1813,8 @@ L2外
 
    * 下图当x轴向右，GPU充分被使用，default stream 和 named stream 的差异就不大了
 
-  ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9937e76aeaaf419888e4e2079773fbae~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_47.png)
 
   **null stream与动态并行**
 
@@ -1828,8 +1822,7 @@ L2外
 
    * 图片左边是使用default stream，右边是使用per thread named stream
 
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3ea30b8b174c4ca199830bf74cc3f4fd~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_48.png)
 
   **配置**
 
@@ -1938,8 +1931,9 @@ L2外
 #### Implicit Parent Child Sync
 
   * 如果没有使用显式同步，CUDA runtime会保证隐式同步保证没有parent kernel在child kernel结束之前结束。
-  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/58e65bd02ba94406bbf5e91d89ed6c9b~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4dbe9e46a47f45ef957148b31d789af7~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_49.png)
+
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_50.png)
 
 
 ### 启动配置
@@ -1988,8 +1982,7 @@ L2外
 
    * 可以通过API设定virtualized extended pending launch buffer，将其溢出到software queue中
 
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f81cd7c33efd43f98c8ea7beda772e03~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_51.png)
 
   **API**
 
@@ -2023,7 +2016,7 @@ L2外
 
   * 减少kernel launch开销
 
-  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f3559f12735d4a5e99e653bdbde70d1a~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_52.png)
 
 
  **假设**
@@ -2043,6 +2036,7 @@ L2外
 
   ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dca0ec300eaa4311bf4cbe8997beed3e~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_53.png)
 
  **child kernel内使用**
 
@@ -2053,12 +2047,14 @@ L2外
   使用计算出来的信息，运行kernel
   ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/42236dc343714794b4f14cda47d7e06d~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_54.png)
 
 
 
   parent thread idx 和 parent block idx 可以使用二分法查找
 
-  ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b2f378d7104244d69866bd5a5c64d5ee~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_55.png)
 
 
 
@@ -2075,7 +2071,8 @@ L2外
   * 从CUDA9开始，现在支持自定义thread group，可以是smaller than block，也可以是across block，甚至across gpu。
   * group内的thread可以进行synchonize
 
-![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c6185d93ba8d4459aa1cd01477e59777~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_56.png)
 
  **问题**
 
