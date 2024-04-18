@@ -21,7 +21,7 @@ mermaid: true
    * 有了这个指针，可以用这个指针变量调用函数
    * 除了调用外还可以做函数的参数
 
-![](../assets/images/user/GPU/3_8.png)
+![](https://postimg.cc/Ty6htvKT)
 ![](../assets/images/user/GPU/3_8.png)
 
 ```c++
