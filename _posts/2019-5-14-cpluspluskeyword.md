@@ -22,7 +22,7 @@ mermaid: true
    * 除了调用外还可以做函数的参数
 
 ![](https://postimg.cc/Ty6htvKT)
-![](../assets/images/user/GPU/3_8.png)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/Screen%20Shot%202022-06-05%20at%2010.36.28%20PM.png)
 
 ```c++
 char * fun(char * p) {…}  // 指向char的指针
