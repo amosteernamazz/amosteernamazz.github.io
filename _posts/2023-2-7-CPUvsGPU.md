@@ -16,7 +16,7 @@ mermaid: true
 
 GPU是heterogeneous chip. 有负责不同功能的计算模块
 
-![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/059c4df7de5e4b00bb76f43bf7e5a2b1~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/cpuvsgpu_1.png)
 
 
 
@@ -33,7 +33,7 @@ GPU design for high throughput, don't care about throughput so much
 
 CPU design for low latency
 
-![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/70174e01e80f466bbc1de536aa69ac9a~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/cpuvsgpu_2.png)
 
 
 
@@ -55,7 +55,7 @@ CPU中包含out of order execution, branch predictor, memory prefetch等机制�
 
 GPU去除这些部分。
 
-![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7bb6231977b642f5a066ce9898d22574~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/cpuvsgpu_3.png)
 
 
 
@@ -86,7 +86,7 @@ SIMT 与 SIMD 有一些不一样。SIMT可以平行thread，而SIMD只可以平�
 
 
 
-![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/031601e629bb43ed94c46b6e9ec095e0~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/cpuvsgpu_4.png)
 
 * idea 5：hide latency instead of reduce latency
 
@@ -97,7 +97,7 @@ CPU通过fancy cache + prefetch logic来avoid stall
 GPU通过lots of thread来hide latency。这依赖于fast switch to other threads, 也就需要keep lots of threads alive.
 
 
-![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1e1ba3f0082c45fa8289da551025c400~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/cpuvsgpu_5.png)
 
 
 * GPU Register 特点
