@@ -800,10 +800,10 @@ mermaid: true
    * <font color= red>serial access</font>: 带有bank conflict触发serialized access
    * <font color= red>broadcast access</font>: 现有单个读当前的bank的word，之后进行broadcast到所有warp内的threads中
 
-  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/01c76f7625444f9c9a1e0de137a817cf~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_27.png)
   
 
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6a65d5ed7ea04da08fdca199e423c622~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_28.png)
 
 #### Access Mode 32/64-bit
 
@@ -823,7 +823,7 @@ mermaid: true
    $
 
    * 下图word index 为 bytes address 对应的word index，然后从word index 对应到bank index
-   ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a7f94c5958194dcb8a04d3c0aa586cf6~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+   ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_29.png)
    
 
 
@@ -848,7 +848,7 @@ mermaid: true
      * <font color = red>bank conflict的本质：是bank width小，所以无法传送过多的数据</font>
      * <font color = red>当thread 查询/写入word时，发生boradcast或write undifined</font>
 
-     ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e6691a2448d3426294bc38bab12dc065~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+     ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_30.png)
 
   **bank width对性能的影响**
    bank width提高会带来<font color = red>更大的带宽</font>，但是会有<font color = red>更多的bank conflict</font>
@@ -921,7 +921,7 @@ mermaid: true
 ### Data Layout
 
 #### Square Shared Memory
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a1286c80c94042c4b15d0f11668061ca~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_31.png)
   
 
 
@@ -973,7 +973,7 @@ mermaid: true
   **举例**
    * 配置
 
-![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/20c6c29ec99549a9ab915e24a9cb7838~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_32.png)
 
    * 计算
     word：32 bits，bank 64bits，对列主序来说16*32/64 = 8 bank -> a column are arranged into eight banks.
@@ -1052,7 +1052,7 @@ mermaid: true
 
   同时shared memory使用的是SRAM，不像DRAM有burst的问题，所以读取M的shared memory的时候尽管不是连续读取也没有问题。shared memories are implemented as intrinsically high-speed on-chip memory that does not require coalescing to achieve high data access rate.
 
-![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/06cb7b840d1248fa841390bccbcc68a5~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_33.png)
 
 
 ### Async global memory to shared memory
@@ -1068,7 +1068,7 @@ mermaid: true
   * 避免使用中间寄存器，<font color = red>减少寄存器压力</font>，减少指令流水压力，提高内核占用率
   * 相对于sync，async<font color = red>延迟更少</font>
 
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/794e0e9a908e4601bd85dfd247927e0e~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_34.png)
 
 
 
@@ -1083,7 +1083,7 @@ mermaid: true
 
  **优化参考图**
 
-  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1c86fb3e886a4c7f83f8c56defd256c1~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_35.png)
 
   
   * 对于<font color = red>sync拷贝，num data是multiply of 4 最快</font>
@@ -1408,8 +1408,7 @@ mermaid: true
 
  **例子**
   A100有40M L2 memory，`cudaStreamSetAttribute()`设置用于data <font color=red>persistance的数据大小为30M</font>
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d94878c071dc4634b2a98fbf38fb6556~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+ ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_36.png)
   
   使用<font color=red>10-60M</font>需要persistance的数据进行实验，<font color=red>hitRatio大小设为1</font>
 
@@ -1431,7 +1430,7 @@ mermaid: true
   stream_attribute.accessPolicyWindow.hitRatio  = 1.0;                      //Hint for cache hit ratio. Fixed value 1.0
   ```
 
-  ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/263598932faa4060931bca09b77d5686~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_37.png)
 
   
   得到结果，在没有超过L2 persisting size时，性能提高（在nums_types = 20时，性能提高<font color=red>50%</font>），超过L2 persisting size，则会对性能下降约<font color=red>10%</font>
@@ -1446,7 +1445,7 @@ mermaid: true
   ```
   其中配置num_bytes = 20M, hitRatio大小设置根据输入数据的规模判断，<font color=red>当规模大，设置ratio小，当规模小，设置ratio大</font>。
   此时hitRatio*num_bytes < L2 persisting cache 对应性能如下：
-  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6de68b3e0ec44185936ed21949d6cf93~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_38.png)
 
 
  **hitProp配置**
