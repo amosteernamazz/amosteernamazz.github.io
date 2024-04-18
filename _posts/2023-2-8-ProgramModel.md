@@ -37,8 +37,7 @@ mermaid: true
 
 ### Grid, Block, Warp, Thread
 
-![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5d212c2838bb4a48ac6e48ad0af83e44~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_1.png)
 
 cc 2
 shared/ L1
@@ -208,7 +207,7 @@ L2外
   * 为了确保transparent scalability，<font color = red>不允许block之间synchronize，只在block内部允许synchronize</font>。
 
 
-![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0dc9b628648c487fae1d8c080e6d9740~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_2.jpeg)
 
 
 
@@ -259,8 +258,7 @@ L2外
      c[tid] = a + b; 
    }
    ```
-   ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c3b3bb01a0bb4e888c99e500c20eb2e1~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+   ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_3.png)
 
 
 
@@ -376,7 +374,7 @@ L2外
 
    * pascal版本及之前使用SIMT方式执行。其通过使用reconverge(在SIMT模式下对于分支结构处理后，将线程再次融合)和减少追踪线程状态的资源数量，以最大化并行。
    * 上述方法特点为不确定的reconverge。如果下面的程序没有在Z之前reconverge，可能发生：Z也被分成两个step运行，尽管可以一个step运行
-![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8391f8b92e9b42b0852857cb0b21df2c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_4.png)
 
 
 
@@ -386,8 +384,7 @@ L2外
 
    * volta版本及之后的threads会从分支结构分开然后重写结合，过程仍然是通过一组thread进行，运行相同的指令。
 
-![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1e1e0158b92d494d90971c85c6f1d4ee~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_5.png)
 
    **运行过程**
 
@@ -400,12 +397,14 @@ L2外
 
    * 原先版本：Z运行之前并没有进行融合，因为编译器认为Z可能与X Y有数据依赖。导致SIMT的efficency降低。
 
-![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3ceb423a1aa74ffe8e08fcb17a7dcbb5~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_6.png)
 
 
    * 新版本：可以使用cuda9的syncwarp()来保证线程之间融合，从而实现SIMT高效率。
 
-![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ae984ed855d14063af822711501cc0eb~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_7.png)
 
 
 
@@ -448,8 +447,8 @@ L2外
       * 当srcLane > width的话，会取余数并进行broadcast。
       * 当warp内的thread使用shuf使用同一个srcLane的时候，会发生broadcast。
 
-   ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4ccfb34e327b4b60b5f1721f41ca9c04~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
+   ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_8.png)
 
    * 可以使用`shuf_sync` 实现shift-to-left wrap-around operation
 
@@ -464,8 +463,8 @@ L2外
    test_shfl_wrap<<<1,BDIMX>>>(d_outData, d_inData, 2);
    ```
 
-![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7ed3a230b80241a38612a5f191345f1c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_9.png)
 
 
    **`int __shfl_up_sync(unsigned mask, int var, unsigned int delta, int width=warpSize)`**
@@ -475,8 +474,7 @@ L2外
 
    * 其他数据不变
 
-![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0d638373238147daa6af8d24cb461b58~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_10.png)
 
 
    **`int __shfl_down_sync(unsigned mask, int var, unsigned int delta, int width=warpSize)`** 
@@ -485,8 +483,7 @@ L2外
      * 调用 shfl_down_sync(mask, x, 2, 16); ，则标号为 0 ~13 的线程分别获得标号为 2 ~ 15 的线程中变量 x 的值；标号为 16 ~29 的线程分别获得标号为 18 ~ 31 的线程中变量 x 的值。
    * 其他数据不变
 
-![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4b41e16fbe024dd990d0bbe17aa92e97~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_11.png)
 
 
 
@@ -498,7 +495,7 @@ L2外
 
      * 当  n ≠ 2k 时，先将 n 拆分成若干 2k 之和，分别做这些层次上的变换。这种操作是良定义的（二元轮换满足交换律和结合律）。例如 [0, 1, 2, 3, 4, 5, 6, 7] 做 n = 3 的变换时，先做 n = 2 的变换，得到 [2, 3, 0, 1, 6, 7, 4, 5]，再做 n = 1 的变换，得到 [3, 2, 1, 0, 7, 6, 5, 4] 。
    * 常用于butterfly address pattern
-  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8b5edec07c8d4559b42e39bfdb259c62~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_12.png)
 
 
 
@@ -514,8 +511,7 @@ L2外
    test_shfl_xor<<<1, BDIMX>>>(d_outData, d_inData, 1);
    ```
 
-![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ac654fdc487844608ee37435f1e652cc~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_13.png)
 
 
 
@@ -822,7 +818,8 @@ L2外
 
    * 每个SM有多个warp，保证了hardware resource会被充分利用（通过schedule来hide latency）
 
-![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ee9d3cf7060446ecad65c86d975b3b3c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_14.png)
 
 
 
@@ -863,12 +860,12 @@ L2外
   
    * CPU存在context switch把register保存到memory中的overhead。
 
-  ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b588ca7bc66844a5822e472c4831fda9~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_15.png)
 
 
  #### Understand Scheduling with Example
 
-![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e48319bcf8a64c069cd7ee2027347830~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_16.jpg)
 
 
   **注意**
@@ -905,7 +902,9 @@ L2外
    * 软件：希望更多的warp resident in SM + 独立指令
 
    * 举例：如果在等待全局内存访问完成时如果有独立算术指令，则线程调度程序可以隐藏大部分全局内存延迟。
-![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/38e691dc4977416684d095e9c96ff91b~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_17.png)
+
 
   上图：显示有无足够warp比较，scheduler 0有足够的eligable warp，可以通过运行其余的warp来hide latency。scheduler 1没有足够的eligable warp，只能通过stall来hide latency。
 
@@ -914,7 +913,8 @@ L2外
   从里特尔法则，可以知道下面的公式
   $number \ of \ required \ warps = latency \ * \ throughput$
 
-![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c288d3d1d16f4158926c0c7800fba2a2~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_18.png)
 
 
 
@@ -977,8 +977,8 @@ L2外
 
   从host到device发送的request形成的queue。cuda runtime保证stream运行的顺序性。
 
-![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ce8d360e4c4147d39739048c99cdb2d8~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_19.png)
 
 
  **stream资源删除**
@@ -1009,13 +1009,13 @@ L2外
 
    * 下面的例子里，尽管使用了3个stream，但是host到device的数据传输不能被concurrent运行。因为他们公用PCIe总线。所以他们的执行只能被序列化。
 
-![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a8d64bfa7dc44bb092a170da0eb20859~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_20.png)
 
 
    * 如果device PCIe支持duplex PCIe bus, 那么使用针对不同方向的stream，可以使用PCIe总线传输，memory move是可以overlap的。下图里从device到host与从host到device就是使用了两个stream，同时数据传输是双向的，所以并发。
 
-  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f2a47d8420e149b79d8e2d7e2f9bc445~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_21.png)
 
 
   **resource constrain**
@@ -1026,7 +1026,8 @@ L2外
 
    * 下图是开启过多kernel，导致gpu resource不够，所以无法实现stream并发。
 
-  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/932d0dc05e144990a136ab864aeb2d00~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_22.png)
 
 
 
@@ -1050,9 +1051,10 @@ L2外
   * Engine 将任务分发给PCIe
     * 任务将并行运行
 
-![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/119bb816cd1a44a987567af80b90482a~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
-   
+
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_23.png)
+
 
 
 
@@ -1081,10 +1083,10 @@ L2外
    *  这里在A schedule以后，本来可以scheduleP，但是因为stream是serialize的放到single hardware queue中，所以无法schedule P，所以产生了false dependency。
       * 虽然kernel engine同时可以管理16个grid,但由于A B C 存在dependency且task queue只有一个，没有运行到C的时候scheduler是看不到还有P这个可以分开执行的task。
 
-  ![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/10c574bb92f84ead96b9a86c9187abbe~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
-  ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3fa5aa9092db448e8e8fd6781572c258~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_24.png)
 
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_25.png)
 
 
 
@@ -1121,8 +1123,11 @@ L2外
     kernel_4<<<grid, block, 0, streams[i]>>>();
    ```
 
-   ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d7b4391f180c4d36b5a69fb6cf122aa1~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fd3844eb8ff5471fbcfe577fc18a90d5~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+   ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_26.png)
+
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_27.png)
+
 
    
 
@@ -1146,9 +1151,10 @@ L2外
 
    * 启用两层处理方式用以解决循环之间的false dependecy。其中上述代码进行了reorder，依旧保证stream内部的顺序，但是把copy A.1 B.2放到copy C.0之前，从而避免了A.1 B.1需要等待C.0 & kernel 0。其中for-loop对应为i，其对应到h_A+i当i=0 为A.0
 
-  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/42de2ae93e36426caa6f066258892fdc~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-  ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/93c9ab2cc385499aaf6f55ddaed230f4~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_28.png)
+
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpuprogram_29.png)
 
 
 
