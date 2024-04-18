@@ -21,8 +21,6 @@ mermaid: true
    * 有了这个指针，可以用这个指针变量调用函数
    * 除了调用外还可以做函数的参数
 
-![](https://postimg.cc/Ty6htvKT)
-![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/Screen%20Shot%202022-06-05%20at%2010.36.28%20PM.png)
 
 ```c++
 char * fun(char * p) {…}  // 指向char的指针
