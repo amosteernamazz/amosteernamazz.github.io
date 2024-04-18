@@ -14,38 +14,41 @@ mermaid: true
 
 * 什么是GPU
 
-GPU是heterogeneous chip. 有负责不同功能的计算模块
+GPU有负责不同功能的计算模块
 
 ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/cpuvsgpu_1.png)
 
+Shader Core（渲染核/着色器核心）：并行处理多个任务，如着色、贴图处理、几何计算等
+
+Texture Unit（纹理单元/tex）：负责纹理映射和处理。在渲染过程中，Texture Unit会对图形应用纹理，使得物体看起来更真实和细致。
+
+Input Assembly（输入组装）：GPU从内存中读取顶点和索引缓冲区；确定如何连接顶点以形成三角形；将这些数据传递给管线的后续阶段，为进一步的图形处理做准备。
+
+Rasterizer（光栅化器）：将图形从几何描述（如顶点数据）转换为像素数据；确定最终图像中哪些像素应该被涂上颜色，以及这些颜色是什么。
+
+Output Blend（输出混合）：负责将渲染的像素与帧缓冲区中的现有像素进行混合；它可以产生透明、半透明和其他的视觉效果。
+
+Video Decode（视频解码）：负责解码视频数据，以便在GPU上进行进一步的处理或显示；这使得GPU能够支持视频播放和视频游戏等功能。
+
+Work Distributor（工作分配器）：负责将图形处理任务分配给GPU上的不同处理单元；确保任务能够高效、并行地执行，从而提高整体性能。
+
+SMs: GPU中的核心处理单元。每个SM包含多个处理核心，这些核心能够并行执行指令，从而加速图形渲染和计算密集型任务。SMs通常有自己的寄存器文件、指令缓存和共享内存，这使得它们可以独立地执行任务，同时与其他SMs协同工作。
+
+SPs: SMs中的基本处理单元。每个SM包含多个SPs，这些SPs共享控制逻辑和指令缓存。这意味着当SM从指令缓存中取出一条指令时，所有SPs都可以同时执行这条指令。这种设计使得GPU能够并行处理大量数据，从而大大提高了处理速度。
 
 
 
-SMs: streaming multiprocessors
+* 为了什么设计
 
-SPs: streaming processors : each SM have multiple SP that share control logic and instruction cache
+GPU的设计主要是为了实现高吞吐量
 
-
-
-* 为了设么设计
-
-GPU design for high throughput, don't care about throughput so much
-
-CPU design for low latency
+CPU的设计则更注重低延迟。CPU需要处理各种不同的数据类型，进行逻辑判断，以及处理分支跳转和中断等复杂情况，这些都需要消耗一定的时间。因此，CPU在设计上需要优化指令的执行流程，减少等待时间，从而实现低延迟。
 
 ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/cpuvsgpu_2.png)
 
 
 
-* CPU GPU
-
-CPU : multicore system : latency oriented 
-
-GPU : manycore / many-thread system : throughput oriented
-
-
-
-## Idea to design throuput oriented GPU
+## Ideas to design throuput oriented GPU
 
 * Idea 1 ： 去除CPU中让CPU serialize code运行更快的
 
