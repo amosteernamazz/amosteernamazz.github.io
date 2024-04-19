@@ -1,7 +1,7 @@
 ---
 layout: article
 title: C++基础与关键字
-key: 100001
+key: 100032
 tags: C++
 category: blog
 date: 2019-05-14 00:00:00 +08:00
