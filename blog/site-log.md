@@ -1,4 +1,4 @@
----
+<!-- ---
 layout: article
 title: Site Log
 picture-frame: shadow
@@ -51,4 +51,4 @@ Home page
 
 Article page
 
-It is my old blog site. You can now find it at [kitian616.gitcafe.io](http://kitian616.gitcafe.io). **I won't update it anymore**, but it will remain for some time.
+It is my old blog site. You can now find it at [kitian616.gitcafe.io](http://kitian616.gitcafe.io). **I won't update it anymore**, but it will remain for some time. -->

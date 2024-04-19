@@ -23,9 +23,9 @@
   "author": "Kefan Wang",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kitian616/issues"
+    "url": "https://github.com/amosteernamazz/issues"
   },
-  "homepage": "https://github.com/kitian616#readme",
+  "homepage": "https://github.com/amosteernamazz#readme",
   "devDependencies": {
     "eslint": "^5.4.0",
     "stylelint": "^9.5.0",
