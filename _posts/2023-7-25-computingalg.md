@@ -1,7 +1,7 @@
 ---
 layout: article
 title: computional alg
-key: 100001
+key: 1000321
 tags: 
 category: blog
 date: 2023-07-25 00:00:00 +08:00

@@ -53,19 +53,6 @@ pf(p);                    // 调用
 
 
 
-## enum
-
-  ```c++
-  enum class B: unsigned char /** 每个枚举都是unsigned char类型的 */
-  {
-      my_enum3 = 0,
-  }
-  ```
- **特点**
-  * 与整型之间不会发生隐式类型转换，除非用static_cast强制转换
-  * 可以指定底层的数据类型，默认是int
-  * 需要通过域运算符来访问枚举成员
-
 ## arr & arr[0]、&arr区别
 
  **print**
@@ -484,10 +471,6 @@ A b = {1,2};
 
 可以在构造函数中调用同一个类的其他构造函数
 
-## final 和override
-
-final用来禁止虚函数被重写/禁止类被继承
-override用来显示地重写虚函数，这样可以提供更多有用错误和警告
 
 ## default 和delete
 
@@ -500,49 +483,6 @@ struct classA {
 };
 ```
 
-## assert断言
-
-一般用于debug程序的逻辑，不用于release版本
- * assert宏
-   * `assert(x >0)`
- * #error方法
-
-```c++
-#if defined(DEBUG)
-    // 在调试模式下执行某些操作
-#else
-    #error "DEBUG macro is not defined. Please define DEBUG for release builds."
-#endif
-```
-
-
- * 模板的assert
-
-```c++
-template< class T >
-struct Check {
- static_assert( sizeof(int) <= sizeof(T), "T is not big enough!" ) ;
-} ;
-
-```
-
-
-## 正则表达式
-
-```c++
-const char *reg_esp = "[ ,.\\t\\n;:]";
-std::regex rgx(reg_esp) ;
-std::cmatch match ; 
-const char *target = "Polytechnic University of Turin " ;
-if( regex_search( target, match, rgx ) ) {
- const size_t n = match.size();
- for( size_t a = 0 ; a < n ; a++ ) {
- string str( match[a].first, match[a].second ) ;
- cout << str << "\n" ;
- }
-}
-```
-
 ## 元组
 
 ```c++
@@ -552,15 +492,3 @@ typedef std::tuple< char, short , const char * > tuple_2 t2 ('X', 2,
 t1 = t2 ; // 隐式类型转换
 
 ```
-
-## 哈希表
-
- * map , multimap , set , multiset 使⽤红⿊树实现， 插⼊和查询都是 O(lgn) 的复杂度
- * C++11 为这四种模板类提供了（底层哈希实现）以达到 O(1) 的复杂度
- * unordered_map：无序，搜索效率高，额外空间大
- * unordered_multimap：速度快，无序，空间大，kv可以重复
- * unordered_set：值单个，无序，速度快，空间大
- * unordered_multiset：值可以有多个，无序，速度快，空间大
-
-## 
-
