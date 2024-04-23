@@ -95,88 +95,6 @@ pf(p);                    // 调用
  * 全局常量：编译期不分配内存，放在符号表
  * 字面值常量： 字符串放在常量区
 
-## static
-
-### static与局部变量
-
- **特点**
-  * 存储位置data区
-  * 生命周期保持不变
-  * 局部作用域退出时，数据仍然暂存data区
-
-
-### static与全局变量
-
- **特点**
-  * 加入static后，源程序的其他源文件不能再使用该变量（不使用static可以用extern扩展）
-
-
-### static与函数
-
- **特点**
-  * 跟全局变量相同，限制作用域，只能在该文件中使用（与全局变量用法也相同）
-
-
-### static与类对象成员变量
-
- **特点**
-  * 变量会变成类的全局变量，只能在类外初始化
-    * 但如果加入const修饰，则可以在类内初始化
-
-
-### static与类对象成员函数
-
- **特点**
-  * 类只存在一份函数，所有对象共享，不含this指针，无需创建实例即可访问
-    * 不可同时用const和static修饰对象的成员函数
-
-
-
-
-
-## const
-
-### const与变量
-
- **特点**
-  * 限定不可更改
-
-
-### const与指针
-
- **特点**
-  * `int const * a`与`int * const a`
-
-
- **指向常量的指针**
-  * `const int * a`
-  * `int const * a`
-
-
- **指针常量**
-  * `int * const a`
-
-
-### const与函数
-  * `const int& func(int& a)`：修饰返回值为const
-  * `int& func(const int& a)`：修饰形参
-  * `int& func(int& a) const{}`：const成员函数
-    * 不允许修改类的成员的值
-
-
-### const与类
-  **const修饰类成员变量**
-   * 在对象的声明周期内是常量，对整个类而言是可以改变的。
-   * 不能在类内初始化const成员变量，在初始化列表中初始化。
-
-
-  **const类对象成员函数**
-   * 不允许修改类的成员的值
-
-
-  **const对象**
-   * 只能调用const函数
-
 
 ## static与const总结
 
@@ -226,84 +144,6 @@ static和const不可同时修饰成员函数
  **sizeof()的不同**
   * 指针常量 -> 指针的大小
   * 引用 -> 得到指向对象的大小
-
-## const -> #define
- **不同**
-  * 类型
-    * 宏定义是字符替换，没有数据类型的区别
-    * const常量是常量的声明，有类型区别
-  * 安全检查
-    * 可能产生边际效应等错误
-    * 在编译阶段进行类型检查
-  * 编译器处理
-    * 宏定义是一个"编译时"概念
-    * const常量是一个"运行时"概念
-  * 存储方式
-    * 宏定义：代码段
-    * const常量：data区
-  * 是否可以做函数参数
-    * 可以在函数的参数列表中出现
-
-## #define -> typedef
-
- **不同**
-  * 编译器处理
-    * typedef在编译阶段，有类型检查的功能
-    * define则是宏定义，发生在预处理阶段
-  * 作用域的限制
-    * define没有作用域的限制
-    * typedef有自己的作用域
-  * 指针操作不同
-    * typedef int * pint; const pint p1 = &i1;  指针常量
-    * #define PINT int * const PINT p2 = &i2; 常量指针
-
-
-
-## this指针
-
- **作用**
-  * 指向非静态成员函数所作用的对象
-
- **什么时候创建**
-  * 调用非静态函数时才会使用的
-
- **delete this**
-  * 为将被释放的内存调用一个或多个析构函数（因此不能在析构中调用delete this），类对象的内存空间被释放，之后不能涉及this指针，如操作数据成员，调用虚函数等
-
-
-## volatile 和extern
- * voltile：不可优化（保证一定执行）、顺序性（不会进行乱序优化）、易变性（下一个语句不会直接使用上一个语句volatile变量的寄存器内容，选择从内存中重新读取）
- * extern：说明是在别处定义的，在此处引用，相对于#include方法，加速编译过程
-   * 用于支持c或c++函数调用规范，当在c++程序中调用c的库，需要extern c的声明引用，主要因为c++和c编译完成后，目标代码的命名规则不同，用来解决名字匹配
-
-
-## 强制类型转换
- **static_cast**
- 派生->基类安全，反向不安全
-  * 基本数据类型之间的转换
-    * void*和其他类型指针之间的转换
-    * 子类对象的指针转换成父类对象指针
-  * 最好所有隐式转换都用static_cast代替
-
- **dynamic_cast**
-  * 用于安全的向下转型
-    * 转换成功会返回引用或者指针，失败返回null，否则会抛出一个`bad_cast`的异常类型
-
- **const_cast**
-  * 用于**移除指针和引用的常量性**，但是不能改变原来常量的常量性
-    * 指向常量的指针被转化成非常量指针
-    * 常量引用被转换成非常量引用
-    * 常量对象被转换成非常量对象
-
- **reinterpret_cast**
-  **高危险性操作**
-  `reinpreter_cast<type-id> (expression)`
-  * 可以将任意类型指针转换为其他类型的指针。所以他的type-id必须是一个指针、引用、算术类型。
-  * 能够在非相关的类型之间转换。它可以把一个指针转换成一个整数，也可以把一个整数转换成一个指针。
-
- **应用**
-  * 一般不要使用dynamic_cast、reinterpret_cast
-
 
 ## fork、wait和exec函数
 
@@ -358,64 +198,6 @@ int main(int argc, char *argv[])
 
 
 
-## lambda 表达式
-
-提供了一种**匿名函数**的特性，可以编写内嵌的匿名函数，用于替换独立函数，而且更可读
-本质上来讲， lambda 表达式只是**一种语法糖**，因为所有其能完成的⼯作都可以⽤其它稍微复杂的代码来实现。
-
-
-
-从[]开始，结束于{}，{}内定义的是lambda表达式体
-
-```c++
-auto basicLambda = [] { cout << "Hello, world!" << endl; };
-basicLambda(); 
-```
-
-带返回值类型的
-```c++
-auto add[](int a, int b) -> int{return a+b;};
-
-auto multiply = [](int a, int b)-> {return a*b;};
-
-int sum = add(2,3);
-int product = multiply(2, 5);
-```
-[]闭包：
-实现原理是每次定义lambda表达式后，都会自动生成匿名类，称为**闭包类型**。运行时候，lambda表达式会返回一个匿名闭包实例，实际是右值。其可以通过**传值或引用**的方式捕捉封装作用域的变量
-
-
-```c++
-int main() {
- int x = 10;
- 
- auto add_x = [x](int a) { return a + x; }; 
- auto multiply_x = [&x](int a) { return a * x; }; 
- 
- cout << add_x(10) << " " << multiply_x(10) << endl;
- // 输出：20 100
- return 0;
-}
-```
-[]：默认不捕获任何变量
-[=]：默认以值捕获所有变量；
-[&]：默认以引⽤捕获所有变量；
-[x]：仅以值捕获x，其它变量不捕获；
-[&x]：仅以引⽤捕获x，其它变量不捕获；
-[=, &x]：默认以值捕获所有变量，但是x是例外，通过引⽤捕获；
-[&, x]：默认以引⽤捕获所有变量，但是x是例外，通过值捕获；
-[this]：通过引⽤捕获当前对象（其实是复制指针）；
-[*this]：通过传值⽅式捕获当前对象
-
-应用于函数的参数，实现回调
-
-```c++
-int val = 3;
-vector<int> v{1,8,3,4,7,3};
-int count = std::count_if(v.begin(), v.end(), [val](int x) {return x >3;});
-```
-
-
 ## 右值引用
 
 ```c++
@@ -436,17 +218,6 @@ public:
 };
 ```
 
-## 泛化常数 constexpr
-
-```c++
-// 告诉编译器这是编译期常量
-constexpr int N = 5;
-int arr[N];
-
-// 也可以为常量表达式
-constexpr int getFive(){ return 5; }
-int arr[getFive() + 1];
-```
 
 
 ## 初始化列表 std::initializer_list
@@ -471,17 +242,6 @@ A b = {1,2};
 
 可以在构造函数中调用同一个类的其他构造函数
 
-
-## default 和delete
-
-用于显式指定和禁止某些行为
-```c++
-struct classA {
- classA() = defauult; // 声明⼀个⾃动⽣成的函数
- classA(T value);
- void *operator new(size_t) = delete; // 禁⽌⽣成new运算符
-};
-```
 
 ## 元组
 
