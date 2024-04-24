@@ -5,7 +5,7 @@ key: page-about
 ---
 Welcome to my blog! :earth_asia: :earth_africa: :earth_americas:
 
-My Name is Kefan Wang, delited in EDA.
+My name is Kefan Wang. I have been working at Empyrean in Beijing, China since 2024. I am proficient in EDA.
 
 ## Skills
 - Computer Architectures
