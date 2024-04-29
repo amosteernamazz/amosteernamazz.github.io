@@ -1,7 +1,7 @@
 ---
 layout: article
 title: C++ philosophy
-key: 100001
+key: 100008
 tags: C++ philosophy
 category: blog
 date: 2024-04-22 14:43:03 +08:00
