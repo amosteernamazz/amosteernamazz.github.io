@@ -49,378 +49,6 @@ mermaid: true
 
 
 
-
-
-## main函数执行前运行的函数
-
-```c++
-// gcc 扩展，标记在main执行前执行
-// __attibute((constructor)) 标记为main执行之后执行
-__attibute((constructor))void before(){
-
-}
-
-
-// 全局static变量初始化在程序初始阶段，先于main的执行
-static int i = test();
-
-int test(){
-
-}
-
-// 利用lambda表达式在变量初始化的时候执行
-a=[]{
-  // doing
-
-  //
-  return 0;
-}
-
-int main (int argc, char** argv){
-  cout << "main function" << endl;
-  return 0;
-}
-```
-
-
-# **c++运行时特征**
-
-## helloworld程序开始到打印到屏幕的过程
- * ⽤户告诉操作系统执⾏ HelloWorld 程序（通过键盘输⼊等）；
- * 操作系统：找到 HelloWorld 程序的相关信息，检查其类型是否是可执⾏⽂件；并通过程序⾸部信息，确定代码和数据在可执⾏⽂件中的位置并计算出对应的磁盘块地址；
- * 操作系统：创建⼀个新进程，将 HelloWorld 可执⾏⽂件映射到该进程结构，表示由该进程执⾏ HelloWorld程序；
- * 操作系统：为 HelloWorld 程序设置 cpu 上下⽂环境，并跳到程序开始处；
- * 执⾏ HelloWorld 程序的第⼀条指令，发⽣缺⻚异常；
- * 操作系统：分配⼀⻚物理内存，并将代码从磁盘读⼊内存，然后继续执⾏ HelloWorld 程序;
- * HelloWorld 程序执⾏ puts 函数（系统调⽤），在显示器上写⼀字符串;
- * 操作系统：找到要将字符串送往的显示设备，通常设备是由⼀个进程控制的，所以，操作
- * 系统将要写的字符串送给该进程;
- * 操作系统：控制设备的进程告诉设备的窗⼝系统，它要显示该字符串，窗⼝系统确定这是⼀个合法的操作，然后将字符串转换成像素，将像素写⼊设备的存储映像区;
- * 视频硬件将像素转换成显示器可接收和⼀组控制数据信号;
- * 显示器解释信号，激发液晶屏;
-
-
-
-## 重载和重写的区别
-
- * 重载：同一可访问区内被声明的几个具有不同参数列表的同名函数，参数类型、个数、顺序可以不同
- * 重写：重新定义父类中除函数体外完全相同的虚函数，访问修饰符可以不同，virtual中是private，派生类可以是public
- * 重定义：派生类重新定义父类相同名字的非virtual函数，参数列表和返回类型可以不同。此时，父类函数被隐藏，如果不想被隐藏，需要将其定义为virtual并且完全同名
-
-## 预处理，编译，汇编，链接程序的区别
-
- * 步骤：预处理器→编译器→汇编器→链接器
- * 预处理阶段：写好的⾼级语⾔的程序⽂本⽐如 hello.c，预处理器根据 #开头的命令，修改原始的程序，如#include<stdio.h> 将把系统中的头⽂件插⼊到程序⽂本中，通常是以 .i 结尾的⽂件。
- * 编译阶段：编译器将 hello.i ⽂件翻译成⽂本⽂件 hello.s，这个是汇编语⾔程序。⾼级语言是源程序。所以注意概念之间的区别。汇编语⾔程序是⼲嘛的？每条语句都以标准的⽂本格式确切描述⼀条低级机器语⾔指令。不同的⾼级语⾔翻译的汇编语⾔相同。
- * 汇编阶段：汇编器将 hello.s 翻译成机器语⾔指令。把这些指令打包成可重定位⽬标程序，即.o⽂件。hello.o是⼀个⼆进制⽂件，它的字节码是机器语⾔指令，不再是字符。前⾯两个阶段都还有字符。
- * 链接阶段：⽐如 hello 程序调⽤printf 程序，它是每个 C 编译器都会提供的标准库 C 的函数。这个函数存在于⼀个名叫 printf.o 的单独编译好的⽬标⽂件中，这个⽂件将以某种⽅式合并到 hello.o 中。链接器就负责这种合并。得到的是可执⾏⽬标⽂件。
-
-## 动态链接和静态链接
-
- * 静态连接库就是把 (lib) ⽂件中⽤到的函数代码直接链接进目标程序，程序运行的时候不再需要其它的库文件。动态链接就是把调⽤的函数所在⽂件模块（DLL）和调⽤函数在⽂件中的位置等信息链接进⽬标程序，程序运⾏的时候再从 DLL 中寻找相应函数代码，因此需要相应DLL ⽂件的⽀持。
- * 静态链接库与动态链接库都是共享代码的⽅式，如果采⽤静态链接库，则⽆论你愿不愿意，lib中的指令都全部被直接包含在最终生成的 EXE ⽂件中了。但是若使⽤ DLL，该 DLL 不必被包含在最终 EXE ⽂件中，EXE ⽂件执⾏时可以“动态”地引⽤和卸载这个与 EXE 独立的 DLL ⽂件。
- * 静态链接库和动态链接库的另外⼀个区别在于静态链接库中不能再包含其他的动态链接库或者
- 静态库，⽽在动态链接库中还可以再包含其他的动态或静态链接库。
- * 动态库就是在需要调⽤其中的函数时，根据函数映射表找到该函数然后调⼊堆栈执行。如果在当前工程中有多处对dll⽂件中同⼀个函数的调⽤，那么执⾏时，这个函数只会留下⼀份拷贝。但如果有多处对 lib ⽂件中同⼀个函数的调用，那么执⾏时该函数将在当前程序的执⾏空间⾥留下多份拷⻉，⽽且是⼀处调⽤就产⽣⼀份拷贝。
-
-## 何时需要初始化
-
- * 引用成员变量
- * const
- * 基类构造有一组参数
- * 成员构造有一组参数
- * 初始化顺序：按照成员声明顺序决定
-
-
-## 阶段
-
- * 预编译
-   * #define、#if、#ifdef、#ifndef、#undef、#endif、#else
- * 编译期
-   * enum、struct、union、auto、decltype、friend、声明、全局static、constexpr、inline、全局变量、vtable
-   * 第二步：编译期创建的对象
-     * 需要使用动态初始化
-     * 执行顺序：基类局部static -> 子类局部static -> 非静态代码 -> 派生类的基类构造(执行基类普通成员的初始化，按照基类对象声明顺序执行) -> 派生类的成员构造(按照成员声明顺序) -> 派生类构造(派生类普通成员初始化)（包括vptr）
-   * 编译期析构
-     * 执行顺序：派生类析构 -> 派生类成员类对象析构 -> 基类析构
- * 运行期
-   * 运行期创建的对象
-     * 执行顺序：基类局部static -> 子类局部static -> 非静态代码 -> 派生类的基类构造(执行基类普通成员的初始化，按照基类对象声明顺序执行) -> 派生类的成员构造(按照成员声明顺序) -> 派生类构造(派生类普通成员初始化)（包括vptr）
-   * 运行期析构
-     * 执行顺序：派生类析构 -> 派生类成员类对象析构 -> 基类析构
-   * 运行期virtual
-
-## 静态绑定和动态绑定
-
- 静态绑定：发生在编译期间，程序声明时所采用的类型
-  * 非虚函数、缺省参数值。重定义，重载
- 动态绑定：发生在运行期间，目前所指对象的实际类型
-  * virtual
-
-<!--more-->
-
-
-## 动态联编和静态联编
-
- * 指计算机程序不同部分彼此关联，分为静态和动态
- * 静态联编是指联编⼯作在编译阶段完成的，这种联编过程是在程序运⾏之前完成的，⼜称为早期联编。要实现静态联编，在编译阶段就必须确定程序中的操作调⽤（如函数调⽤）与执⾏该操作代码间的关系，确定这种关系称为束定，在编译时的束定称为静态束定。静态联编对函数的选择是基于指向对象的指针或者引⽤的类型。其优点是效率⾼，但灵活性差
- * 动态联编指联编在程序运⾏时动态地进⾏，根据当时的情况来确定调⽤哪个同名函数，实际上是在运⾏时虚函数的实现。这种联编⼜称为晚期联编，或动态束定。动态联编对成员函数的选择是基于对象的类型，针对不同的对象类型将做出不同的编译结果
- * C++中⼀般情况下的联编是静态联编，但是当涉及到多态性和虚函数时应该使⽤动态联编。动态联编的优点是灵活性强，但效率低。动态联编规定，只能通过指向基类的指针或基类对象的引⽤来调⽤虚函数，其格式为：指向基类的指针变量名->虚函数名（实参表）或基类对象的引⽤名.虚函数名（实参表）
-
- **实现的条件**
-  * 必须把动态联编的⾏为定义为类的虚函数；
-  * 类之间应满⾜⼦类型关系，通常表现为⼀个类从另⼀个类公有派⽣⽽来；
-  * 必须先使⽤基类指针指向⼦类型的对象，然后直接或间接使⽤基类指针调⽤虚函数；
-
-## C++初始化
-
- **类型**
-  * 编译初始化
-  * 动态初始化
-
-### 编译初始化
-
- * 静态初始化在程序加载的过程中完成
- * 包括全局变量初始化和constexpr类型的初始化
-   * zero initialization 的变量会被保存在 bss 段
-   * constexpr initialization 的变量则放在 data 段内
-   * 其次全局类对象也是在编译器初始化。
-
-### 动态初始化
- 出现时机：出现在编译期和运行期的局部位置初始化
- * 动态初始化也叫运行时初始化
- * 需要经过函数调用才能完成的初始化、类初始化
-   * 局部静态类对象的初始化
-   * 局部静态变量的初始化
- * 动态初始化一般出现在
-
-## 动态初始化中静态局部变量2个问题
-
-### 线程安全问题
-
- **实现方法**
-  * 一个线程在初始化 m 的时候，其他线程执行到 m 的初始化这一行的时候，就会挂起而不是跳过
-    * 局部静态变量在编译时，编译器的实现是和全局变量类似的，均存储在bss段中。
-    * 然后编译器会生成一个保证线程安全和一次性初始化的整型变量，是编译器生成的，存储在 bss 段。
-      * 它的最低的一个字节被用作相应静态变量是否已被初始化的标志
-        * 若为 0 表示还未被初始化，否则表示已被初始化(if ((guard_for_bar & 0xff) == 0)判断)。 
-      * __cxa_guard_acquire 实际上是一个加锁的过程，
-        *  相应的 __cxa_guard_abort 和__cxa_guard_release 释放锁。
-
-### 内存泄漏问题
-
- **原因**
-  * 在局部作用域消失时，data区仍然保存其内存空间
-  * 执行路径不明
-    * 对于局部静态变量，构造和析构都取决于程序的执行顺序。程序的实际执行路径不可预知的
-  * 关系不明
-    * 局部静态变量分布在程序代码各处，彼此直接没有明显的关联，很容易让开发者忽略它们之间的这种关系
-
- **建议**
-  * 减少使用局部静态变量
-
-
-
-## 对象构建顺序
-
-  1. 先执行base的static，再执行派生类static（按出现顺序）
-  2. 非静态代码（成员方法，成员变量，成员代码块等）如果有类对象则按照顺序构建
-  3. 构造函数
-     1. 基类普通成员初始化、基类构造（按照基类在派生类中出现的顺序，而不是成员初始化顺序），如果对象有vptr，vptr不断被重定义
-     2. 成员类对象构造函数（如果有多个成员类构造函数，调用顺序是对象在类中被声明的顺序）
-     3. 派生类普通成员初始化、派生类构造
-
-## 析构顺序
-
-  1. 派生类析构
-  2. 成员类对象析构
-  3. 基类析构
-
-
-## 类大小
-
-  ```c++
-  class A{}; sizeof(A) = 1; 
-  class A{virtual Fun(){} }; sizeof(A) = 4(32bit)/8(64bit) 
-  class A{static int a; }; sizeof(A) = 1;
-  class A{int a; }; sizeof(A) = 4;
-  class A{static int a; int b; }; sizeof(A) = 4;
-  ```
-
-
-
-
-
-## 构造函数
-
-
-### 构造类型
-
- **默认构造**
-  * 无参构造
-
-
- **一般构造**
-  * 包含各种参数，参数顺序个数不同，可以有不同构造
-
-
- **拷贝构造**
- 出现环境：对象以值传递方式进入函数体、以值传递的方式从函数返回、一个对象需要另外对象初始化
-  * 函数参数必须为引用
-    * 如果是值传递，作为参数需要构造生成副本，再次调用拷贝构造，形成无限递归
-  * 浅拷贝，存在问题（当有指针的时候，会有两个指针指向相同的位置），进行重写（申请空间存储数据）
-
-
- **移动构造**
-  * 避免分配新空间，将原来的对象直接拿过来使用
-
-
- **赋值运算符的重载**
-  * 类似构造函数，将右边的对象赋值给左边的对象，但不属于构造函数
-    * 要求两边对象创建
-
- **类型转换构造**
-  * 根据指定类型的对象，构造一个本类的对象。
-    * 如果不想默认转换，需要使用explicit阻止隐式转换
- 
-### 构造中构造与析构函数是否可抛出异常
- 
- **构造函数**
-  * C++ 只会析构已经完成的对象，对象只有在其构造函数执⾏完毕才算是完全构造妥当。在构造函数中发⽣异常，控制权转出构造函数之外。
-  * 因此，在对象 b 的构造函数中发⽣异常，对象b的析构函数不会被调⽤。因此会造成**内存泄漏**
-  * ⽤ auto_ptr 对象来取代指针类成员，便对构造函数做了强化，免除了抛出异常时发⽣资源泄漏的危机，不再需要在析构函数中⼿动释放资源；
-
-
- **析构函数**
-  * 如果控制权基于异常的因素离开析构函数，⽽此时正有另⼀个异常处于作⽤状态，C++ 会调⽤ terminate 函数让**程序结束**；
-  * 如果异常从析构函数抛出，⽽且没有在当地进⾏捕捉，那个析构函数便是执⾏不全的。如果析构函数执⾏不全，就是**没有完成他应该执⾏的每⼀件事情**。
-
-
-### 构造中的问题
- 
- **构造中的内存泄漏问题**
-  * 原因：c++只会析构已经完成的对象。
-  * 出现：如果构造函数中发生异常，不会调用析构函数。如果在构造函数中申请了内存操作，则会造成内存泄漏。
-  * 派生类有问题：如果有继承关系，派生类中的构造函数抛出异常，那么基类的构造函数和析构函数可以照常执行的。
-  * 解决办法：用智能指针来管理内存
-
-### 拷贝构造中的浅拷贝和深拷贝
-
- **使用深拷贝的场景**
- * 在copy构造中，copy的对象是否存在指针，如果有需要重写copy构造，因为浅拷贝不会存储数据，相同指针指向同一对象，**当数据成员中有指针时，必须要用深拷贝。**
-
- **系统默认**
-
-  系统默认的拷贝函数——即浅拷贝。当数据成员中没有指针时，浅拷贝是可行的；
-
- **原因**
-  如果没有自定义拷贝构造函数，会调用默认拷贝构造函数，这样就会调用两次析构函数。**第一次析构函数delete了内存，第二次的就指针悬挂了。**所以，此时，必须采用深拷贝。
-
- **操作**
-  * 深拷贝在堆内存中另外申请空间来储存数据，从而也就解决了指针悬挂的问题。
-  简而言之，**当数据成员中有指针时，必须要用深拷贝**。
-
-## 析构函数
- 析构与构造不同的是，构造只用于初始化参数，析构除了撤销对象外，一般还用于**解决对象分配的内存空间**等。
- **析构中的问题**
-  * 析构函数不能、也不应该抛出异常
-    * 析构函数抛出异常，则异常点之后的程序不会执行，造成资源泄露
-    * 异常发生时，异的传播过程中会进行栈展开。调用已经在栈构造好的对象的析构函数来释放资源，此时若其他析构函数本身也抛出异常，则前一个异常尚未处理，又有新的异常，会造成程序崩溃。
-      * 解决办法：把异常完全封装在析构函数内部，决不让异常抛出函数之外
-
-
-## 实例化
-
- **过程**
-  * 分配内存空间
-  * 执行构造
-
- **不可实例化的类**
-  * 抽象类（本身是抽象）
-  * 工具类（直接通过static调用函数）
-
- **如何阻止实例化**
-  * 包含纯虚函数
-  * 构造函数私有
-
-### 实例化中的变量初始化时机与顺序
-
- **时机**
- * 类中const初始化必须在构造函数初始化列表中初始化
- * 类中static初始化必须在类外初始化
- * 成员变量初始化顺序按照类中声明顺序，而构造函数初始化顺序按照成员变量在构造函数中位置决定
-
- **顺序**
- * 初始化base类中的static部分（按程序出现顺序初始化）
- * 初始化派生类中的static部分（按程序出现顺序初始化）
- * 初始化base类的普通成员变量和代码块，再执行父类的构造方法；
- * 初始化派生的普通成员变量和代码块，在执行子类的构造方法；
-
-
-
-
-## 运行期virtual
-![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/cppdy_1.png)
-
- **原理**
-  * 对象中有**虚函数的指向的指向**（编译期间**创建对象**或运行时创建对象时创建）和虚函数表（每个**类的虚函数入口地址**，为**编译期**创建）
-
-  * 管理对象的空间中有vptr地址（随对象创建而创建），vptr指针对应的vtable（在编译期确定，是针对类的）中保存该对象的虚函数成员，其保存函数的入口地址
-
-
- **多继承**
-  * 在多继承中，vtable会有多个vptr地址，对应不同基函数的vptr
-
-
- **运行时virtual**
-  * 为了多态，编译器会给每个包含虚函数或继承了虚函数的类自动建立一个虚函数表，当子类继承父类的虚函数时，子类会有自己的vtable
-    * 如果存在**大量的子类继承**，且重写父类的虚函数接口只占总数的一小部分的情况下，会造成大量地址空间浪费
-
-
- **多态的实现原理（为什么构造和析构需要按顺序）**
-
-  [虚表的写入时机、多态的实现原理、构造析构顺序的原因](https://blog.csdn.net/weixin_43919932/article/details/104356460)
-
- ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/cppdy_2.png)
-
-
-
- **构造函数与virtual**
-
-  构造函数是否可以为virtual
-  * 不能
-  * 虚函数调用需要对象构建得到虚表调用，而对象还没有构造。
-
-  构造函数中调用virtual
-  * 首先创建派生类的基类部分，执行基类构造，由于派生类没有初始化，所以c++当作不存在，仅仅将其认为是基类的对象。
-
-
- **析构函数与virtual**
- 
-  析构函数的子类应该声明为virtual
-  * 为了确保析构的时候，释放派生类对象，需要基类析构函数声明为虚函数，否则只会析构对应的父类对象，而不会析构子类对象。
-  析构函数中调用virtual
-  * 仅仅将其认为是基类的对象。
-
-
- **哪些函数不能是虚函数**
-  * 构造函数
-  * 某些析构函数
-  * 友元函数（原因不是类成员）
-  * 静态成员函数（原因：不属于任何对象或实例）
-  * 内联函数（原因：需要在编译期间展开，同时需要类对象有vptr，但没有地址）
-  * 成员函数模板（原因：成员模板函数需要在调用的时候才能确定，而虚函数需要解析时候确定vtable大小）
-
-
-## 纯虚函数
- **区别**
-  * 纯虚函数用于如果生成基类对象则不合理的场景
-  * 其使得纯虚函数的类为抽象基类，本身成为了接口
-
-
- **使用**
-  `virtual void exit()=0`=0表示为纯虚函数
-
 ## 堆上（动态分配）和栈上（静态分配）的对象
  
  **区别**
@@ -464,3 +92,480 @@ int main (int argc, char** argv){
   };
   ```
 
+
+
+
+## 大端模式和小端模式
+ * ⼤端模式：是指数据的⾼字节保存在内存的低地址中，⽽数据的低字节保存在内存的⾼地址端。
+ * ⼩端模式，是指数据的⾼字节保存在内存的⾼地址中，低位字节保存在在内存的低地址端。
+ * 判断方法，直接读取十六进制的值 or 使用共同体来判断
+
+
+```c++
+
+#include <stdio.h>
+int main() {
+ 
+ union {
+  int a; //4 bytes
+  char b; //1 byte
+ } data;
+
+
+ data.a = 1; //占4 bytes，⼗六进制可表示为 0x 00 00 00 01
+ 
+ //b因为是char型只占1Byte，a因为是int型占4Byte
+ //所以，在联合体data所占内存中，b所占内存等于a所占内存的低地址部分
+ if(1 == data.b) {
+ //⾛到这⾥意味着说明a的低字节，被取给到了b
+ //即a的低字节存在了联合体所占内存的(起始)低地址，符合⼩端模式特征
+ printf("Little_Endian\n");
+ } else {
+ printf("Big_Endian\n");
+ }
+ return 0;
+
+}```
+
+## 手写实现智能指针
+
+```c++
+template<typename T>
+class SharedPtr {
+private:
+ size_t* m_count_;
+ T* m_ptr_;
+public:
+ // 无参构造
+ SharedPtr(): m_ptr_(nullptr),m_count_(new size_t) {}
+ // 原生指针
+ SharedPtr(T* ptr): m_ptr_(ptr),m_count_(new size_t) { m_count_ = 1;}
+ //析构函数
+ ~SharedPtr() {
+ -- (*m_count_);
+ if (*m_count_ == 0) {
+ delete m_ptr_;
+ delete m_count_;
+ m_ptr_ = nullptr;
+ m_count_ = nullptr;
+ }
+ }
+ //拷⻉构造函数
+ SharedPtr(const SharedPtr& ptr) {
+ m_count_ = ptr.m_count_;
+ m_ptr_ = ptr.m_ptr_;
+ ++(*m_count_);
+ }
+ //拷⻉赋值运算
+ void operator=(const SharedPtr& ptr) { SharedPtr(std::move(ptr)); }
+ //移动构造函数
+ SharedPtr(SharedPtr&& ptr) : m_ptr_(ptr.m_ptr_),
+m_count_(ptr.m_count_) { ++(*m_count_); }
+//移动赋值运算
+ void operator=(SharedPtr&& ptr) { SharedPtr(std::move(ptr)); }
+ //解引⽤
+ T& operator*() { return *m_ptr_; }
+ //箭头运算
+ T* operator->() { return m_ptr_; }
+ //᯿载bool操作符
+ operator bool() {return m_ptr_ == nullptr;}
+ T* get() { return m_ptr_;}
+ size_t use_count() { return *m_count_;}
+ bool unique() { return *m_count_ == 1; }
+ void swap(SharedPtr& ptr) { std::swap(*this, ptr); }
+};
+```
+
+
+## new/delete与malloc/free
+ **相同**
+  * 申请动态内存和释放动态内存
+
+
+ **不同**
+ new/delete带构造析构部分
+  * 返回类型安全性 （new返回安全，malloc返回`void *`）
+  * 返回失败后返回值 （new失败后要捕获异常`bad_alloc`，malloc返回nullptr）
+  * 是否指定内存大小（new不，malloc需要）
+  * 后续内存分配（new 没有配备，malloc如果不够，使用realloc进行扩充）
+
+
+ **应用上共存**
+  * 对于需要初始化的场景，使用new更合适
+  * 对于c程序需要使用malloc/free管理内存
+
+
+ **配对**
+ new和delete、malloc和free、new[]和delete[]要配对使用
+
+## free原理
+ * glibc中的free，空间的大小记录在参数指针指向地址的前面，free的时候通过这个记录即可知道要释放的内存有多大。
+ * 同时free(p)表示释放p对应的空间，但p这个pointer仍然存在，只是不能操作
+ * free后的内存会使用双链表保存，供下次使用，避免频繁系统调用，同时有合并功能，避免内存碎片
+
+
+<!--more-->
+
+ **使用**
+  * `char* p = (char*) malloc(10);`
+  * `free(p);`
+  * `p = NULL;`
+
+## 栈上分配内存
+ **alloca**
+  * 不需要手动释放，超出作用域自动释放
+
+
+ **问题**
+  * 会爆栈
+
+## 野指针和悬空指针
+
+ * 野指针：没有初始化的指针
+ * 悬空指针：指向内存已经被释放了
+
+## 内存泄漏
+ 
+ 申请了一块内存，使用完毕后没有释放。程序运⾏时间越⻓，占⽤内存越多，最终⽤尽全部内存，整个系统崩溃。
+ 
+ 由程序申请的⼀块内存，且没有任何⼀个指针指向它，那么这块内存就泄漏了。
+ 
+ **原因**
+  * malloc/new和delete/free没有匹配
+  * new[] 和 delete[]没有匹配
+  * 没有将父类的析构函数定义为虚函数
+
+
+ **监测手段**
+  * 把new封装在构造函数中，将delete封装到析构函数中
+  * 智能指针
+  * valgrind ，这个可以打印出发生内存泄露的部分代码
+  * linux使用swap命令观察还有多少可以用的交换空间，两分钟内执行三四次，肉眼看看交换区是不是变小了
+  * 使用/usr/bin/stat工具如netstat、vmstat等。如果发现有内存被分配且没有释放，有可能进程出现了内存泄漏。
+
+## 智能指针种类
+  
+ * unique_ptr（独占式）、shared_ptr（共享式、强引用）、weak_ptr（弱引用，只提供访问，但不管理）
+
+
+ ```c++
+ T* get();  // 获得原生指针
+ T& operator*();  // 重写*
+ T* operator->(); // 重写->
+ T& operator=(const T& val);  // 重写=
+ T* release();  // 释放智能指针，返回原生指针
+ void reset (T* ptr = nullptr); // 释放原先的对象，将智能指针管理新指针的对象
+ ```
+
+### 智能指针 shared_ptr
+
+ * 是RAII类模型，用来动态分配内存
+   * 将指针用类封装，然后实例化为对象，当对象过期，让析构函数删除指向的内存
+
+
+ **shared_ptr**
+  * 多个指针可以指向一个相同的对象，当最后一个shared_ptr离开作用域的时候才会释放掉内存。
+
+
+ **实现原理**
+   * 在shared_ptr内部有一个共享引用计数器来自动管理，计数器实际上就是指向该资源指针的个数
+   * 每当复制一个 shared_ptr引用计数会 + 1
+     * `shared_ptr<A> sp2(sp1);`
+     * `shared_ptr <A> sp3; sp3 = sp2;`
+   * 当一个 shared_ptr 离开作用域时，引用计数会 - 1
+     * `sp3.reset(new A(3));`
+   * 当引用计数为 0 的时候，则delete 内存。
+   * 这样相比auto来说就好很多，当计数器为0的时候指针才会彻底释放掉这个资源。
+   * 注意**不能**将两个shared_ptr托管同一个指针
+     * `shared_ptr <A> sp1(p), sp2(p); //error!!!`
+
+
+ **线程安全**
+  * 同一个shared_ptr，多个线程读是安全的
+  * 同一个shared_ptr，多个线程写是不安全的
+    * 线程在指向修改到计数器变化两个过程中并非原子操作，中间可能被打断
+    * 方法：加锁
+  * 不同的shared_ptr，多个线程写是安全的
+  * shared_ptr管理数据的安全性不明
+
+ **线程不安全例子**
+
+  ```c++
+  shared_ptr<foo> o1;
+  shared_ptr<foo> p2(new foo);
+  shared_ptr<foo> p3(new foo);
+  p1 = p2;
+  p2 = p3; // 可能出现p1悬空指针
+  ```
+  ![](https://img-blog.csdnimg.cn/20200525124202197.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MDQ3NA==,size_16,color_FFFFFF,t_70)
+
+  ![](https://img-blog.csdnimg.cn/20200525124656242.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MDQ3NA==,size_16,color_FFFFFF,t_70)
+
+  ![](https://img-blog.csdnimg.cn/2020052513010518.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MDQ3NA==,size_16,color_FFFFFF,t_70)
+
+  ![](https://img-blog.csdnimg.cn/20200525130206633.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MDQ3NA==,size_16,color_FFFFFF,t_70)
+
+
+ **方法**
+
+ ![](https://www.cnblogs.com/JCpeng/p/15031742.html)
+
+
+  * 构造函数
+  ```c++
+  std::shared_ptr<int> p1;  // p1.use_count() = 0
+  std::shared_ptr<int> p2(nullptr);  // p1.use_count() = 0
+  std::shared_ptr<int> p3(new int);
+  std::shared_ptr<int> p4(new int, std::default_delete<int>());
+  ```
+
+  * reset
+    * reset()会释放并摧毁原生指针
+    * reset(param)会管理这个新指针
+  * make_shared()
+    * 缺点
+      * 构造函数为protected或private时，无法使用make_shared
+      * 对象的内存可能无法及时回收
+  * swap方法
+    * 交换两个shared_ptr所拥有的对象，即指向的对象交换
+  * shared_from_this
+    * 如果当前对象需要交给某个对象来管理，则当前对象生命周期需要晚于某个对象，为实现上述目标，类继承`std::enable_sharded_from_this<T>`
+  
+  ```c++
+    class Widget: public std::enable_shared_from_this<Widget>{
+      public:
+        void do_something(A& a){
+          a.widget = shared_from_this();
+        }
+    }
+  ```
+
+ **shared_ptr和make_shared区别**
+
+  性能
+   * shared_ptr初始化需要分配两次内存
+   * make_shared初始化只需要分配一次内存
+
+
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8xNDM2ODIwMS0xNzlhNWU3ZWZlYzM0ZWIyLnBuZz9pbWFnZU1vZ3IyL2F1dG8tb3JpZW50L3N0cmlwJTdDaW1hZ2VWaWV3Mi8yL3cvNDgwL2Zvcm1hdC93ZWJw?x-oss-process=image/format,png)
+
+![](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8xNDM2ODIwMS0zNDRhOWY3N2E0MGU3ZDQ0LnBuZz9pbWFnZU1vZ3IyL2F1dG8tb3JpZW50L3N0cmlwJTdDaW1hZ2VWaWV3Mi8yL3cvNDgwL2Zvcm1hdC93ZWJw?x-oss-process=image/format,png)
+
+  内存泄漏问题
+
+   * shared_ptr可能会产生异常问题，而maked_shared可以避免问题
+  ```c++
+  processWidget(std::shared_ptr<Widget>(new Widget), computePriority());
+  ```
+   * 上述代码可能会有资源泄露，如果先执行`new Widget`、执行`computePriority()`、执行`std::shared_ptr`的构造，因此如果`computeProirity()`中如果产生异常，则Widget会泄漏
+
+
+  ```c++
+  processWidget(std::make_shared<Widget>(),computePriority());
+  ```
+   * 不存在内存泄漏问题
+
+### 智能指针 weak_ptr
+
+ **目的**
+  * 解决shared_ptr指针循环引用出现内存泄漏问题
+
+ **方法**
+  * `ptr.expired()`判断是否被释放
+  * `ptr.use_count()`返回原生指针引用次数
+  * `std::shared_ptr<CTxxx>ptr2 = ptr.lock()`返回为空的shared_ptr或转化为强指针`shared_ptr`
+  * `reset()`将本身置为空
+
+ **应用场景**
+  * 观察者功能
+
+  ```c++
+  class CTxxx{
+  public:
+    CTxxx(){printf("CTxxx cst\n");}
+    ~CTxxx(){printf("CTxxx dst\n");}
+
+  };
+  int main(){
+    std::shared_ptr<CTxxx> sp_ct(new CTxxx);
+    std::weak_ptr<CTxxx> wk_ct = sp_ct;
+    std::weak_ptr<CTxxx> wka1;
+    {
+      std::cout << "wk_ct.expired()=" << wk_ct.expired() << std::endl;
+      std::shared_ptr<CTxxx> tmpP = wk_ct.lock();
+      if (tmpP) {
+        std::cout << "tmpP usecount=" << tmpP.use_count() << std::endl;
+      } else {
+        std::cout << "tmpP invalid" << std::endl;
+      }
+      std::shared_ptr<CTxxx> a1(new CTxxx);
+      wka1 = (a1);
+    }
+    std::cout << "wka1.expired()=" << wka1.expired() << std::endl;
+      std::cout << "wka1.lock()=" << wka1.lock() << std::endl;
+  
+      std::shared_ptr<CTxxx> cpySp = wka1.lock();
+      if (cpySp) std::cout << "cpySp is ok" << std::endl;
+      else std::cout << "cpySp is destroyed" << std::endl;
+      return 1;
+  }
+  ```
+
+  * 解决循环引用
+
+![](https://img-blog.csdnimg.cn/583726c18d114a8aafaa2bff06b96fe5.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAT2NlYW5TdGFy55qE5a2m5Lmg56yU6K6w,size_14,color_FFFFFF,t_70,g_se,x_16)
+
+  * A、B、C三个对象的数据结构中，A和C共享B的所有权，因此各持有一个指向B的std::shared_ptr
+  * 假设有一个指针从B指回A（即上图中的红色箭头），则该指针的类型应为weak_ptr，而不能是裸指针或shared_ptr
+    * 裸指针，当A被析构时，由于C仍指向B，所以B会被保留。但B中保存着指向A的空悬指针（野指针），而B却检测不出来，但解引用该指针时会产生未定义行为
+    * shared_ptr时。由于A和B相互保存着指向对方的shared_ptr，此时会形成循环引用，从而阻止了A和B的析构。
+    * weak_ptr，这可以避免循环引用。假设A被析构，那么B的回指指针会空悬，但B可以检测到这一点，同时由于该指针是weak_ptr，不会影响A的强引用计数，因此当shared_ptr不再指向A时，不会阻止A的析构
+
+  ```c++
+  #include <iostream>
+  #include <memory>
+  using namespace std;
+  class A {
+  public:
+    std::weak_ptr<B> bptr; // 修改为weak_ptr
+    ~A() {
+      cout << "A is deleted" << endl;
+    }
+  };
+  class B {
+  public:
+    std::shared_ptr<A> aptr;
+    ~B() {
+      cout << "B is deleted" << endl;
+    }
+  };
+  int main()
+  {
+    {//设定一个作用域
+      std::shared_ptr<A> ap(new A);
+      std::shared_ptr<B> bp(new B);
+      ap->bptr = bp;
+      bp->aptr = ap;
+    }
+    cout<< "main leave" << endl; 
+    return 0;
+  }
+
+  ```
+
+  * 缓存对象
+    * 对工厂函数loadWidget（基于唯一ID来创建一些指向**只读对象**的智能指针）
+      * 只读对象需要频繁使用
+      * 需要从文件或数据库中加载
+      * 可以考虑将对象缓存。当不再使用时，则将该对象删除。
+    * 由于除了工厂函数还有缓存管理，unique_ptr不合适
+    * 当用户用完工厂函数的对象后，对象会析构，缓存条目悬空。
+      * 考虑将工厂函数的返回值设定为shared_ptr类型
+      * 缓存类型为weak_ptr类型
+  * 线程安全的对象回调与析构 —— 弱回调
+    * 如果对象还在，则调用其成员函数，否则忽略
+    * 线程A和线程B访问一个共享的对象，如果线程A正在析构这个对象的时候，线程B又要调用该共享对象的成员方法，此时可能线程A已经把对象析构完了，线程B再去访问该对象，就会发生不可预期的错误。
+  * 做法：在开启新线程时，传入共享对象的弱指针
+
+  ```c++
+  class Test
+  {
+  public:
+    // 构造Test对象，_ptr指向一块int堆内存，初始值是20
+    Test() :_ptr(new int(20)) 
+    {
+      cout << "Test()" << endl;
+    }
+    // 析构Test对象，释放_ptr指向的堆内存
+    ~Test()
+    {
+      delete _ptr;
+      _ptr = nullptr;
+      cout << "~Test()" << endl;
+    }
+    // 该show会在另外一个线程中被执行
+    void show()
+    {
+      cout << *_ptr << endl;
+    }
+  private:
+    int *volatile _ptr;
+  };
+  void threadProc(weak_ptr<Test> pw) // 通过弱智能指针观察强智能指针
+  {
+    // 睡眠两秒
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    /* 
+    如果想访问对象的方法，先通过pw的lock方法进行提升操作，把weak_ptr提升
+    为shared_ptr强智能指针，提升过程中，是通过检测它所观察的强智能指针保存
+    的Test对象的引用计数，来判定Test对象是否存活，ps如果为nullptr，说明Test对象
+    已经析构，不能再访问；如果ps!=nullptr，则可以正常访问Test对象的方法。
+    */
+    shared_ptr<Test> ps = pw.lock();
+    if (ps != nullptr)
+    {
+      ps->show();
+    }
+  }
+  int main()
+  {
+    // 在堆上定义共享对象
+    shared_ptr<Test> p(new Test);
+    // 使用C++11的线程，开启一个新线程，并传入共享对象的弱智能指针
+    std::thread t1(threadProc, weak_ptr<Test>(p));
+    // 在main线程中析构Test共享对象
+    // 等待子线程运行结束
+    t1.join();
+
+    return 0;
+  }
+  ```
+  
+  * 当将`t1.join()`换为`t1.detach()`时候，让`main`主线程结束，`p`智能指针析构，`Test`对象析构，此时`show()`不会被调用
+    * threadProc方法中，`pw`提升到`ps`时，`lock`方法判定`Test`对象已经析构，提升失败
+
+
+
+### unique_ptr
+
+ 拥有对持有对象的唯一所有权，两个`unique_ptr`不能同时指向同一个对象
+
+ **特点**
+  * 不能复制
+  * 只能通过转移语义将所有权转移到另外一个
+
+
+  ```c++
+  std::unique_ptr<A> a1(new A());
+  std::unique_ptr<A> a2 = a1;//编译报错，不允许复制
+  std::unique_ptr<A> a3 = std::move(a1);//可以转移所有权，所有权转义后a1不再拥有任何指针
+  ```
+
+
+ **方法**
+  * `get()` 获取其保存的原生指针
+  * `bool()` 判断是否拥有指针
+  * `release()` 释放所管理指针的所有权，返回原生指针。但并不销毁原生指针。
+  * `reset()`释放并销毁原生指针。如果参数为一个新指针，将管理这个新指针
+
+  ```c++
+  std::unique_ptr<A> a1(new A());
+  A *origin_a = a1.get();//尽量不要暴露原生指针
+  std::unique_ptr<A> a2(a1.release());//常见用法，转义拥有权
+  a2.reset(new A());//释放并销毁原有对象，持有一个新对象
+  a2.reset();//释放并销毁原有对象，等同于下面的写法
+  a2 = nullptr;//释放并销毁原有对象
+  ```
+
+
+### 内存泄漏问题
+
+ **原因**
+  * 在局部作用域消失时，data区仍然保存其内存空间
+  * 执行路径不明
+    * 对于局部静态变量，构造和析构都取决于程序的执行顺序。程序的实际执行路径不可预知的
+  * 关系不明
+    * 局部静态变量分布在程序代码各处，彼此直接没有明显的关联，很容易让开发者忽略它们之间的这种关系
+
+ **建议**
+  * 减少使用局部静态变量
