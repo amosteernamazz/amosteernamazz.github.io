@@ -8,66 +8,74 @@ date: 2024-04-23 17:47:33 +08:00
 mermaid: true
 ---
 
-  | 关键词 |
-  |---|
-  | 编译顺序 |
-  | 编译注意 |
-  | #include<> 和 #include "" |
-  | #define #undef |
-  | #ifdef, #ifndef, #if, #elif, #else, #endif |
-  | #pragma once |
-  | #error |
-  | #defined |
-  | #warning |
+# C++ 预编译
 
-### 编译顺序
+本部分主要介绍两部分：**C++文件预编译处理策略**与**常用预编译命令**。在C++预编译文件处理策略中，将介绍**文件处理的策略**和**对C++预编译的循环依赖产生问题的解决方案**。在常用预编译命令中，将介绍**常用的预编译命令**。
 
-**编译顺序**
+<!--more-->
+  | field | 关键词 |
+  |---|---|
+  | C++预编译文件处理策略与循环依赖注意事项 | 预编译顺序 |
+  | C++预编译文件处理策略与循环依赖注意事项 | 循环依赖注意事项 |
+  | 常用预编译命令 | #include<> 和 #include "" |
+  | 常用预编译命令 | #define #undef |
+  | 常用预编译命令 | #ifdef, #ifndef, #if, #elif, #else, #endif |
+  | 常用预编译命令 | #pragma once |
+  | 常用预编译命令 | #error |
+  | 常用预编译命令 | #defined |
+  | 常用预编译命令 | #warning |
+
+## C++预编译文件处理策略与循环依赖注意事项
+
+### C++预编译文件处理策略
 
  * 文件内：按照行顺序自上而下
  * 文件间：这主要涉及到头文件（.h 或 .hpp）和源文件（.cpp）的包含关系。一般现代的集成开发环境（IDE）和构建系统（如Make、CMake、GNU Autotools等）会自动为你处理这些步骤。
    * 首先处理所有被引用的头文件（递归处理）。
    * 然后处理源文件，用头文件内容替换#include指令
-<!--more-->
-**编译注意**
+
+
+### 循环依赖注意事项
 
  * 应该确保头文件是自包含的，并且尽量避免循环依赖
 
   ```c++
-  // my_class.h  
-  #ifndef MY_CLASS_H  
-  #define MY_CLASS_H  
-    
-  // 如果MyClass类依赖于其他类型或函数，确保它们在这里被定义或声明  
-  // 例如，如果MyClass有一个成员变量是另一个类型AnotherType，  
-  // 那么AnotherType应该在这个头文件中被定义或至少被前向声明  
+  // my_class.h
+  #ifndef MY_CLASS_H
+  #define MY_CLASS_H
+
+  // 如果MyClass类依赖于其他类型或函数，确保它们在这里被定义或声明
+  // 例如，如果MyClass有一个成员变量是另一个类型AnotherType，
+  // 那么AnotherType应该在这个头文件中被定义或至少被前向声明
   class AnotherType; // 前向声明：只是告诉编译器某个名称（如变量、函数或类型）的存在，但并未提供其完整的实现或内存布局。
-    
-  class MyClass {  
-  public:  
-      MyClass();  
-      ~MyClass();  
-      void doSomething();  
-    
-  private:  
-      AnotherType* myMember; // 使用前向声明的类型  
-  };  
-    
-  // 如果MyClass的成员函数实现在这个头文件中，它们也应该被包含  
-  inline MyClass::MyClass() {  
-      // 初始化代码  
-  }  
-    
-  inline MyClass::~MyClass() {  
-      // 析构代码  
-  }  
-    
-  inline void MyClass::doSomething() {  
-      // 功能实现  
-  }  
-    
+
+  class MyClass {
+  public:
+      MyClass();
+      ~MyClass();
+      void doSomething();
+
+  private:
+      AnotherType* myMember; // 使用前向声明的类型
+  };
+
+  // 如果MyClass的成员函数实现在这个头文件中，它们也应该被包含
+  inline MyClass::MyClass() {
+      // 初始化代码
+  }
+
+  inline MyClass::~MyClass() {
+      // 析构代码
+  }
+
+  inline void MyClass::doSomething() {
+      // 功能实现
+  }
+
   #endif // MY_CLASS_H
   ```
+
+## 常用预编译命令
 
 ### #include<> 和 #include ""
 
@@ -75,6 +83,7 @@ mermaid: true
   * ""特点：先从当前源文件所在目录找，找不到再去标准库目录找，因此可以设置与标准库同名的函数
 
 ### #define #undef
+
  #define：定义一个宏。宏可以是无参数的（称为对象式宏）或带参数的（称为函数式宏）
 
  ```c++
@@ -100,32 +109,32 @@ mermaid: true
  #endif
  ```
 
- ### #pragma once 
+### #pragma once 
 
   确保包含#progma once的文件只会被包含一次
 
   并不是c++标准的一部分。因此，如果需要在所有编译器上都能正确编译，需要确保可移植性，那么使用传统的 #ifndef/#define/#endif 方法更稳妥
 
 ```c++
-// my_class.h  
-  
-#pragma once  
-  
-class MyClass {  
-public:  
-    MyClass();  
-    ~MyClass();  
-    void doSomething();  
+// my_class.h
+
+#pragma once
+
+class MyClass {
+public:
+    MyClass();
+    ~MyClass();
+    void doSomething();
 };
 
-// main.cpp  
-  
-#include "my_class.h" // 无论包含my_class.h多少次，只会包含一次 
-  
-int main() {  
-    MyClass obj;  
-    obj.doSomething();  
-    return 0;  
+// main.cpp
+
+#include "my_class.h" // 无论包含my_class.h多少次，只会包含一次
+
+int main() {
+    MyClass obj;
+    obj.doSomething();
+    return 0;
 }
 ```
 
@@ -135,8 +144,8 @@ int main() {
 生成一个编译时错误，通常用于在编译时检查某些条件是否满足。
 
 ```c++
-#if !defined(SOME_FEATURE)  
-#error "SOME_FEATURE is not defined!"  
+#if !defined(SOME_FEATURE)
+#error "SOME_FEATURE is not defined!"
 #endif
 ```
 
@@ -146,8 +155,8 @@ int main() {
 
 ```c++
 
-#if defined(MY_MACRO)  
-    // 代码块仅当MY_MACRO被定义时执行  
+#if defined(MY_MACRO)
+    // 代码块仅当MY_MACRO被定义时执行
 #endif
 ```
 
