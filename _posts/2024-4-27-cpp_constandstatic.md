@@ -1,7 +1,7 @@
 ---
 layout: article
 title: C++ const & static
-key: 100006
+key: 100005
 tags: C++ 
 category: blog
 date: 2024-04-27 15:20:13 +08:00

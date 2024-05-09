@@ -1,7 +1,7 @@
 ---
 layout: article
 title: GPU Shared Memory Model
-key: 100024
+key: 100013
 tags: GPU SharedMemory
 category: blog
 date: 2023-02-08 00:00:00 +08:00

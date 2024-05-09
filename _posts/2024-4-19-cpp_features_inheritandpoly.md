@@ -1,7 +1,7 @@
 ---
 layout: article
 title: C++封装继承与多态
-key: 100001
+key: 100009
 tags: C++ 封装 继承 多态
 category: blog
 date: 2024-04-19 15:20:13 +08:00

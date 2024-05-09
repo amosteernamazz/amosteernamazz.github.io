@@ -1,7 +1,7 @@
 ---
 layout: article
 title: C++ 流程
-key: 100008
+key: 100006
 tags: C++ 流程
 category: blog
 date: 2019-09-07 00:00:00 +08:00
