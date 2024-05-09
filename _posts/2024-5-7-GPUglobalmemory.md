@@ -1,7 +1,7 @@
 ---
 layout: article
 title: GPU global memory内存合并和内存对齐
-key: 100024
+key: 100013
 tags: GPU GlobalMemory 软件优化
 category: blog
 date: 2023-02-08 00:00:00 +08:00
