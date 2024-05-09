@@ -1,6 +1,6 @@
 ---
 layout: article
-title: GPU DRAM与优化
+title: GPU中的DRAM技术
 key: 100024
 tags: GPU DRAM 硬件优化
 category: blog
