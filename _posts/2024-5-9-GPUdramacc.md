@@ -1,10 +1,10 @@
 ---
 layout: article
-title: GPU global memory 
+title: GPU DRAM与优化
 key: 100024
-tags: GPU GlobalMemory
+tags: GPU DRAM 硬件优化
 category: blog
-date: 2023-02-08 00:00:00 +08:00
+date: 2024-05-09 14:31:05 +08:00
 mermaid: true
 ---
 

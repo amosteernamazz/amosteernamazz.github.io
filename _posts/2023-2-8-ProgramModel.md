@@ -13,12 +13,11 @@ mermaid: true
 # Program Model
 
 
-
-
 ## Program Hierarchy
 
 
 **GPU硬件模型与软件模型的关系**
+
  * GPU的硬件依托于SMs、warp机制（warp的划分、调度）
  * 软件依托于Grid、block、thread的模型结构
  * GPU的SMs与block对应（一个sm对应多个block）
@@ -73,6 +72,7 @@ L2外
    * CPU call GPU kernel function 是 <font color = red>asynchronize</font> 的
 
   **grid层面的kernel function限制**
+
    * 仅仅只能得到<font color = red>device memory数据</font>
    * 返回值类型为<font color = red>void</font>
    * 不支持<font color = red>可变数量</font>参数
@@ -80,7 +80,7 @@ L2外
    * 不支持<font color = red>函数指针</font>
    * 行为为<font color = red>异步</font>行为
 
-  **Block** 
+  **Block**
 
   1. 每个block运行在一个<font color = red>sm</font> (GPU Core上)
   2. threads in same block 通过<font color = red>shared memory + sync</font>进行交流
