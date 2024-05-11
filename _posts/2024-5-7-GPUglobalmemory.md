@@ -9,22 +9,25 @@ mermaid: true
 ---
 
 
-# Global Memory
+# global memory 内存合并、内存对齐及优化方法
 
-## global memory 内存合并和内存对齐及其优化方法
+## global memory 内存合并
 
-### global memory 内存合并
+  **global memory内存合并硬件原因**
 
-  **global memory 内存合并原因**
+   * global memory内存合并的硬件原因是buffer缓存的加入。
+   * DRAM物理实现中，从core array -> column latches / buffer 耗时久，但由于buffer加入，从buffer -> mux pin interface 的耗时相对较小。
 
-   * 在GPU中对于内存数据的请求是以wrap 为单位，而不是以thread 为单位。**<font color = purple >- - - - ->** *warp 内thread 请求的内存地址会合并为一个warp memory request，然后这个request 由一个或多个memory transaction 组成*。
+  **global memory内存合并软件原因**
+
+   * 在GPU中对于内存数据的请求是以wrap为单位，而不是以thread为单位。warp内thread请求的内存地址会合并为一个warp memory request，然后这个request由一个或多个memory transaction组成。
    * 具体使用几个transaction 取决于request 的个数和transaction 的大小。
 
   **global memory 数据流向**
+
    * global memory request一定会经过L2，是否经过L1 取决于cc 和code，是否经过read only texture cache取决于cc 和code 。
 
   ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_9.png)
-
 
   **GPU 与CPU 对memory 的处理方式**
 
@@ -48,9 +51,7 @@ mermaid: true
 
 
 
-
-
-### 内存对齐优化方法
+## 内存对齐优化方法
 
  L1 cache line = 128 bytes, L2 cache line 32 bytes，warp的内存请求起始位置位于cache line的偶数倍，为了保证对global memory 的读写不会被拆为多个操作，应保证存储对齐。
 
@@ -105,7 +106,7 @@ mermaid: true
 
 
 
-### Global Memory 读流程
+## Global Memory 读流程
 
   注意： GPU L1 cache is designed for spatial but not temporal locality. Frequent access to a cached L1 memory location does not increase the probability that the data will stay in cache. L1 cache是用于spatial（连续读取array）而不是temporal（读取同一个位置的），因为cache line很容易被其余的thread evict。
 
@@ -127,7 +128,7 @@ mermaid: true
 
 
 
-#### Read-only texture cache
+### Read-only texture cache
 
    * 使用条件：CC 3.5+ 可以使用read only texture cache
 
@@ -135,7 +136,7 @@ mermaid: true
 
 
 
-#### CC 2.x Fermi 
+### CC 2.x Fermi 
 
    * 2.x default 使用 L1 + L2 cache
 
@@ -217,7 +218,7 @@ mermaid: true
 
 
 
-#### CC 3.x Kepler cache line大小
+### CC 3.x Kepler cache line大小
 
    * 3.x default 使用 L2 cache，不使用L1 cache
 
@@ -239,7 +240,7 @@ mermaid: true
 
 
 
-#### CC 5.x Maxwell
+### CC 5.x Maxwell
 
    * 5.x default使用L2 cache，32 bytes transaction
 
@@ -248,11 +249,11 @@ mermaid: true
    * 5.x 可以config使用L1 cache（default不使用）
 
 
-#### CC 6.x Pascal
+### CC 6.x Pascal
 
 
 
-### Global Memory 写流程
+## Global Memory 写流程
 
   **与读的区别**
    * 读可以用L1，写只能用L2，写只能用32 bytes
@@ -284,7 +285,7 @@ mermaid: true
 
 
 
-### global memory操作与硬件的关系
+## global memory操作与硬件的关系
 
   第一次访问，全部4个数据都放到buffer里
 
