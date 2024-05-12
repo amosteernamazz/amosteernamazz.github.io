@@ -58,6 +58,11 @@ mermaid: true
   * burst：当访问一个内存位置的时候，select line选择的bit line的数据会全部从core array传输到column latches/ buffer中。使用数据根据mux来确定传输给bus哪些数据，这样可以加速
   * burst size/ line size：读取一次memory address，会有多少个数据从core array被放到buffer中
 
+  **DRAM 设计思想（局部性原理）**
+
+   * 在DRAM硬件实现中，为了提高DRAM的速度，充分利用局部性思想，通过添加buffer缓存，将core array -> column latches / buffer的时间转换为buffer -> mux pin interface时间，极大地提高速度
+     * 该方法从数据存储->数据读取中利用局部性思想
+
 
 ## Multiple Banks技术
 

@@ -35,105 +35,7 @@ mermaid: true
 **139**
 **115**
 
-#### [6. N 字形变换](https://leetcode.cn/problems/zigzag-conversion/)
-
-```c++
-class Solution {
-public:
-	string convert(string s, int numRows) {
-
-		if (numRows == 1) return s;
-
-		vector<string> rows(min(numRows, int(s.size()))); // 防止s的长度小于行数
-		int curRow = 0;
-		bool goingDown = false;
-
-		for (char c : s) {
-			rows[curRow] += c;
-			if (curRow == 0 || curRow == numRows - 1) {// 当前行curRow为0或numRows -1时，箭头发生反向转折
-				goingDown = !goingDown;
-			}
-			curRow += goingDown ? 1 : -1;
-		}
-
-		string ret;
-		for (string row : rows) {// 从上到下遍历行
-			ret += row;
-		}
-
-		return ret;
-	}
-};
-```
-
-
-#### [7. 整数反转](https://leetcode.cn/problems/reverse-integer/)
-
-```c++
-class Solution {
-public:
-    int reverse(int x) {
-        int rev = 0;
-        while (x != 0) {
-            if (rev < INT_MIN / 10 || rev > INT_MAX / 10) {
-                return 0;
-            }
-            int digit = x % 10;
-            x /= 10;
-            rev = rev * 10 + digit;
-        }
-        return rev;
-    }
-};
-```
-
-### 哈希表
-
-#### [1. 两数之和](https://leetcode.cn/problems/two-sum/)
-
-```c++
-class Solution {
-public:
-    vector<int> twoSum(vector<int>& nums, int target) {
-        unordered_map <int,int> map;
-        for(int i = 0 ; i < nums.size(); i++){
-            auto num = map.find(target - nums[i]);
-            if(num != map.end()){
-                return {i, num->second};
-            }
-            map[nums[i]] = i;
-        }
-        return {};
-    }
-};
-```
-
-#### [242. 有效的字母异位词](https://leetcode.cn/problems/valid-anagram/)
-
-```c++
-class Solution {
-public:
-    bool isAnagram(string s, string t) {
-        if (s.length() != t.length()) {
-            return false;
-        }
-        vector<int> table(26, 0);
-        for (auto& ch: s) {
-            table[ch - 'a']++;
-        }
-        for (auto& ch: t) {
-            table[ch - 'a']--;
-            if (table[ch - 'a'] < 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-};
-
-```
-
-#### [1002. 查找常用字符](https://leetcode.cn/problems/find-common-characters/)
+### [1002. 查找常用字符](https://leetcode.cn/problems/find-common-characters/)
 
 ```c++
 class Solution {
@@ -342,9 +244,112 @@ public:
 ```
 
 
-### 字符串
 
-#### [344.反转字符串](https://leetcode.cn/problems/reverse-string/)
+
+
+## 数学
+
+### [6. N 字形变换](https://leetcode.cn/problems/zigzag-conversion/)
+
+```c++
+class Solution {
+public:
+	string convert(string s, int numRows) {
+
+		if (numRows == 1) return s;
+
+		vector<string> rows(min(numRows, int(s.size()))); // 防止s的长度小于行数
+		int curRow = 0;
+		bool goingDown = false;
+
+		for (char c : s) {
+			rows[curRow] += c;
+			if (curRow == 0 || curRow == numRows - 1) {// 当前行curRow为0或numRows -1时，箭头发生反向转折
+				goingDown = !goingDown;
+			}
+			curRow += goingDown ? 1 : -1;
+		}
+
+		string ret;
+		for (string row : rows) {// 从上到下遍历行
+			ret += row;
+		}
+
+		return ret;
+	}
+};
+```
+
+
+### [7. 整数反转](https://leetcode.cn/problems/reverse-integer/)
+
+```c++
+class Solution {
+public:
+    int reverse(int x) {
+        int rev = 0;
+        while (x != 0) {
+            if (rev < INT_MIN / 10 || rev > INT_MAX / 10) {
+                return 0;
+            }
+            int digit = x % 10;
+            x /= 10;
+            rev = rev * 10 + digit;
+        }
+        return rev;
+    }
+};
+```
+
+## 哈希表
+
+### [1. 两数之和](https://leetcode.cn/problems/two-sum/)
+
+```c++
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map <int,int> map;
+        for(int i = 0 ; i < nums.size(); i++){
+            auto num = map.find(target - nums[i]);
+            if(num != map.end()){
+                return {i, num->second};
+            }
+            map[nums[i]] = i;
+        }
+        return {};
+    }
+};
+```
+
+### [242. 有效的字母异位词](https://leetcode.cn/problems/valid-anagram/)
+
+```c++
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+        if (s.length() != t.length()) {
+            return false;
+        }
+        vector<int> table(26, 0);
+        for (auto& ch: s) {
+            table[ch - 'a']++;
+        }
+        for (auto& ch: t) {
+            table[ch - 'a']--;
+            if (table[ch - 'a'] < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+```
+
+## 字符串
+
+### [344.反转字符串](https://leetcode.cn/problems/reverse-string/)
 
 ```c++
 class Solution {
@@ -539,9 +544,9 @@ public:
 
 ```
 
-### 栈与队列
+## 栈与队列
 
-#### [232. 用栈实现队列](https://leetcode.cn/problems/implement-queue-using-stacks/)
+### [232. 用栈实现队列](https://leetcode.cn/problems/implement-queue-using-stacks/)
 
 ```c++
 class MyQueue {
@@ -585,7 +590,7 @@ public:
 
 ```
 
-#### [225. 用队列实现栈]
+### [225. 用队列实现栈]
 
 ```c++
 class MyStack {
@@ -628,7 +633,7 @@ public:
 };
 ```
 
-#### [151. 翻转字符串里的单词](https://github.com/youngyangyang04/leetcode-master)
+### [151. 翻转字符串里的单词](https://leetcode.cn/problems/reverse-words-in-a-string/description/)
 
 ```c++
 class Solution {
@@ -648,7 +653,7 @@ public:
             char c = s[left];
             if (word.size() && c == ' ') {
                 // 将单词 push 到队列的头部
-                d.push(move(word));
+                d.push(word);
                 word = "";
             }
             else if (c != ' ') {
@@ -656,7 +661,7 @@ public:
             }
             ++left;
         }
-        d.push(move(word));
+        d.push(word);
         
         string ans;
         while (!d.empty()) {
@@ -824,9 +829,9 @@ public:
 
 
 
-### 数组
+## 数组
 
-#### [704. 二分查找](https://leetcode.cn/problems/binary-search/)
+### [704. 二分查找](https://leetcode.cn/problems/binary-search/)
 
 ```c++
 class Solution {
@@ -849,7 +854,7 @@ public:
 };
 ```
 
-#### [27. 移除元素](https://leetcode.cn/problems/remove-element/)
+### [27. 移除元素](https://leetcode.cn/problems/remove-element/)
 
 ```c++
 class Solution {
@@ -867,7 +872,8 @@ public:
     }
 };
 ```
-#### [977. 有序数组的平方](https://leetcode.cn/problems/squares-of-a-sorted-array/)
+
+### [977. 有序数组的平方](https://leetcode.cn/problems/squares-of-a-sorted-array/)
 
 
 ```c++
@@ -885,7 +891,7 @@ public:
 
 ```
 
-#### [209. 长度最小的子数组](https://leetcode.cn/problems/minimum-size-subarray-sum/)
+### [209. 长度最小的子数组](https://leetcode.cn/problems/minimum-size-subarray-sum/)
 
 
 ```c++
@@ -914,7 +920,7 @@ public:
 
 ```
 
-#### [59. 螺旋矩阵II](https://leetcode.cn/problems/spiral-matrix-ii/)
+### [59. 螺旋矩阵II](https://leetcode.cn/problems/spiral-matrix-ii/)
 
 ![](https://assets.leetcode.com/uploads/2020/11/13/spiraln.jpg)
 
@@ -945,7 +951,7 @@ public:
 ```
 
 
-### 滑动窗口
+## 滑动窗口
 
 #### [3. 无重复最长子串](https://leetcode.cn/problems/longest-substring-without-repeating-characters/)
 
@@ -1076,7 +1082,7 @@ public:
 
 
 
-### 动态规划 
+## 动态规划 
 
 #### [5. 最长回文子串](https://leetcode.cn/problems/longest-palindromic-substring/)
 
@@ -1131,7 +1137,7 @@ public:
 };
 ```
 
-### 链表
+## 链表
 
 #### [707. 设计链表](https://leetcode.cn/problems/design-linked-list/)
 
@@ -1646,7 +1652,7 @@ public:
   ```
 
 
-### 二叉树
+## 二叉树
 
 
 #### [前序遍历、中序遍历、后序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/)
@@ -2697,7 +2703,7 @@ public:
 
 
 
-### 回溯
+## 回溯
 
 #### [77. 组合](https://leetcode.cn/problems/combinations/submissions/)
 
@@ -3186,7 +3192,7 @@ public:
 #### [37. 解数独](https://github.com/youngyangyang04/leetcode-master/blob/master/problems/0037.%E8%A7%A3%E6%95%B0%E7%8B%AC.md)
 
 
-### 贪心
+## 贪心
 
 #### [455. 分发饼干](https://leetcode.cn/problems/assign-cookies/)
 
@@ -3496,7 +3502,7 @@ public:
 ```
 
 
-### 动态规划
+## 动态规划
 
 #### [509. 斐波那契数](https://leetcode.cn/problems/fibonacci-number/)
 
@@ -4098,7 +4104,7 @@ public:
 };
 ```
 
-### 单调栈
+## 单调栈
 
 #### [739. 每日温度](https://leetcode.cn/problems/daily-temperatures/)
 
@@ -4206,7 +4212,7 @@ public:
 ```
 
 
-### 图论
+## 图论
 
 
 #### [797. 所有可能的路径](https://leetcode.cn/problems/all-paths-from-source-to-target/)

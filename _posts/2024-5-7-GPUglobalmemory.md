@@ -13,19 +13,15 @@ mermaid: true
 
 ## global memory 内存合并
 
-  **global memory内存合并硬件原因**
+  **global memory 内存合并思想（局部性原理）**
 
-   * global memory内存合并的硬件原因是buffer缓存的加入。
-   * DRAM物理实现中，从core array -> column latches / buffer 耗时久，但由于buffer加入，从buffer -> mux pin interface 的耗时相对较小。
-
-  **global memory内存合并软件原因**
-
-   * 在GPU中对于内存数据的请求是以wrap为单位，而不是以thread为单位。warp内thread请求的内存地址会合并为一个warp memory request，然后这个request由一个或多个memory transaction组成。
-   * 具体使用几个transaction 取决于request 的个数和transaction 的大小。
+   * GPU对于内存数据的请求是以wrap为单位，而不是以thread为单位。如果数据请求的内存空间连续，请求的内存地址会合并为一个warp memory request，然后这个request由一个或多个memory transaction组成。具体使用几个transaction 取决于request 的个数和transaction 的大小。
+     * 该方法从数据存取->数据利用中利用局部性思想，与DRAM硬件实现中在数据存储->数据读取中利用局部性思想同理
 
   **global memory 数据流向**
 
-   * global memory request一定会经过L2，是否经过L1 取决于cc 和code，是否经过read only texture cache取决于cc 和code 。
+   * global memory作为所有单元可以直接获取的数据源，其速度在所有的GPU内存结构中处于最慢。因此数据流向到GPU处理单元需要其他缓存结构。
+   * 下图为早期GPU结构，其中global memory request经过L2，然后再往计算单元靠近经过shared memory、local memory、L1、read only && constant memory，在往上为registers
 
   ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_9.png)
 
@@ -45,9 +41,9 @@ mermaid: true
   **GPU常用优化方法**
 
    * 使用内存对齐和内存合并来提高带宽利用率
-   * ***<font color = purple> sufficent concurrent memory operation 从而确保可以hide latency***
-     * ***<font color = purple> loop unroll 从而增加independent memory access per warp, 减少hide latency所需要的active warp per sm***
-     * ***<font color = purple>modify execution configuration 从而确保每个SM都有足够的active warp。***
+   * sufficent concurrent memory operation 从而确保可以hide latency
+     * loop unroll 从而增加independent memory access per warp, 减少hide latency所需要的active warp per sm
+     * modify execution configuration 从而确保每个SM都有足够的active warp。
 
 
 
@@ -130,8 +126,7 @@ mermaid: true
 
 ### Read-only texture cache
 
-   * 使用条件：CC 3.5+ 可以使用read only texture cache
-
+   * 使用条件：CC 3.5+ 可以使用read only texture cach
    * cache line大小：The granularity of loads through the read-only cache is 32 bytes. 
 
 
@@ -139,7 +134,6 @@ mermaid: true
 ### CC 2.x Fermi 
 
    * 2.x default 使用 L1 + L2 cache
-
    * 2.x 可以通过config disable L1 cache
 
    ```shell
@@ -155,12 +149,12 @@ mermaid: true
    **128 bytes transaction**
 
    * 每个thread的大小对request的影响
-     * 如果每个thread请求的数据大于4 bytes（32 * 4 = 128)，则会被切分为多个128 bytes memory request来进行。
+     * 如果每个thread请求的数据大于4 bytes(32 * 4 = 128)，则会被切分为多个128 bytes memory request来进行。
      * 如果每个thread请求8 bytes，这样保证了每个传送的128 bytes数据都被充分利用(16 threads * 8 bytes each)
      * 如果每个thread请求16 bytes，four 128-bytes memory request,这样保证了传送的128 bytes数据被充分利用
    * request拆分到cache line层面上，解决indenpent 问题
-     
-     * 当warp的内存请求位于同一个连续对齐的cache line内。 
+     * 当warp的内存请求位于同一个连续对齐的cache line内。
+
      ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_12.png)
 
 
@@ -230,7 +224,7 @@ mermaid: true
 
    * L2 cache line size 32 bytes
 
-   为什么L2 cache 需要以1、2、4倍数传输：为了避免DMA fetch ***<font color= purple>DMA FETCH: The DMA supports an AXI bus width of 128/64 bits. In the case where the source descriptor payload ends at a non-128/64 bit aligned boundary, the DMA channel fetches the last beat as the full-128/64 bit wide bus. This is considered an over fetch.***
+   为什么L2 cache 需要以1、2、4倍数传输：为了避免DMA fetch DMA FETCH: The DMA supports an AXI bus width of 128/64 bits. In the case where the source descriptor payload ends at a non-128/64 bit aligned boundary, the DMA channel fetches the last beat as the full-128/64 bit wide bus. This is considered an over fetch.
    当使用L2 cache only的时候，memory transaction是32 bytes. Each memory transaction may be conducted by one, two, or four 32 bytes segments。可以减少over-fetch
 
   **L1/L2读取顺序**
