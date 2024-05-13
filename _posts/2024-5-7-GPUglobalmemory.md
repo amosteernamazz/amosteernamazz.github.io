@@ -1,6 +1,6 @@
 ---
 layout: article
-title: GPU global memory内存合并和内存对齐
+title: GPU global memory内存合并
 key: 100013
 tags: GPU GlobalMemory 软件优化
 category: blog
@@ -9,96 +9,176 @@ mermaid: true
 ---
 
 
-# global memory 内存合并、内存对齐及优化方法
 
-## global memory 内存合并
+# global memory 内存合并与优化
 
-  **global memory 内存合并思想（局部性原理）**
+## global memory 内存合并思想
+
+  **DRAM局部性思想与 global memory 的局部性原理**
 
    * GPU对于内存数据的请求是以wrap为单位，而不是以thread为单位。如果数据请求的内存空间连续，请求的内存地址会合并为一个warp memory request，然后这个request由一个或多个memory transaction组成。具体使用几个transaction 取决于request 的个数和transaction 的大小。
      * 该方法从数据存取->数据利用中利用局部性思想，与DRAM硬件实现中在数据存储->数据读取中利用局部性思想同理
 
-  **global memory 数据流向**
+  **GPU与CPU在局部性原理的不同**
 
-   * global memory作为所有单元可以直接获取的数据源，其速度在所有的GPU内存结构中处于最慢。因此数据流向到GPU处理单元需要其他缓存结构。
-   * 下图为早期GPU结构，其中global memory request经过L2，然后再往计算单元靠近经过shared memory、local memory、L1、read only && constant memory，在往上为registers
-
-  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_9.png)
-
-  **GPU 与CPU 对memory 的处理方式**
-
-   * CPU
-     * 片上有很大的cache，CPU thread访问连续的内存会被缓存。不同thread 由于不同core，数据相互不影响。
-     * 充分利用内存的方法：每个core负责一段连续的内存。（e.g. thread 1 : array 0-99; thread 2 : array 100-199; thread 3 : array 200-299.）
-
-   * GPU 
-     * GPU 的线程以warp为单位，一个SM上有多个warp运行，warp线程操作内存通过L1/shared memory进行。
-     * 使用warp操作内存，不同thread 对cache的结果会产生不同影响。thread0读取数据产生的cache会对thread1读取数据产生的cache产生影响。
-     * 为充分发挥带宽，应当在warp的每个iteration中保证花费全部cache line。因为有很多warp同时在sm上运行，等下一个iteration的时候 cache line/DRAM buffer已经被清空了。
-  
-  
-
-  **GPU常用优化方法**
-
-   * 使用内存对齐和内存合并来提高带宽利用率
-   * sufficent concurrent memory operation 从而确保可以hide latency
-     * loop unroll 从而增加independent memory access per warp, 减少hide latency所需要的active warp per sm
-     * modify execution configuration 从而确保每个SM都有足够的active warp。
+   * cache大小：CPU的片上有很大的cache，相对于CPU，GPU相对较少。
+   * thread对于cache的处理：
+     * 组织形式：CPU中的不同thread访问连续的内存会被缓存（局部性），GPU的thread通过warp进行封装，warp访问内存通过L1/shared memory等进行
+     * 数据影响性：CPU的不同thread之间数据相互不影响，GPU的thread之间的数据会存在互相影响的问题
+   * 充分利用内存方法：
+     * CPU：由于thread相对稀缺，为充分利用core性能，每个core负责一段连续的内存。（e.g. thread 1 : array 0-99; thread 2 : array 100-199; thread 3 : array 200-299.）
+     * GPU：由于cache相对稀缺，为充分发挥带宽，应当在warp的每个iteration中保证花费全部cache line。
 
 
 
-## 内存对齐优化方法
+## 内存合并的优化方法
 
- L1 cache line = 128 bytes, L2 cache line 32 bytes，warp的内存请求起始位置位于cache line的偶数倍，为了保证对global memory 的读写不会被拆为多个操作，应保证存储对齐。
+### 数据分布和内存对齐
 
+ * GPU对于内存数据的请求是以wrap为单位，而不是以thread为单位。如果数据请求的内存空间连续，请求的内存地址会合并为一个warp memory request，然后这个request由一个或多个memory transaction组成。具体使用几个transaction 取决于request 的个数和transaction 的大小。（前文所述）
+ * 其中从一个request得到多个memory transactions时，时间消耗集中于多次的memory transactions流程中，因此有必要针对数据的分布和对齐方式进行优化
 
+#### 内存对齐优化
 
-  **image cache line**
+ * 内存对齐优化主要针对在内存读取中对某结构化数据让其尽量在同一个memory transaction完成数据的传输，以防止对后续数据需要多个不必要的memory transactions
 
-   为了防止对不同row下的读写产生多个memory segment，导致速度变慢，在每一行末尾加入padding
+ **内存对齐API**
 
-   padded info叫做 `pitch` 
+  * 分配的数据均对齐
 
-  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_10.png)
+```cpp
+// 1d, aligned to 256 bytes or 512 bytes
+cudaMalloc();
+cudaMemcpy();
+cudaFree();
 
+// 2d, aligned to 256 bytes or 512 bytes
+cudaMallocPitch(); // with pitch
+cudaMemcpy2D();
 
+// 3d, aligned to 256 bytes or 512 bytes
+cudaMalloc3D(); // with pitch
+cudaMemcpy3D();
+```
 
-  **CUDA API**
-
-   align to 256 bytes
-
-   ```cpp
-   // 1d, aligned to 256 bytes
-   cudaMalloc();
-   cudaMemcpy();
-   cudaFree();
-
-   // 2d 分配, aligned to 256 bytes
-   cudaMallocPitch();
-   cudaMemcpy2D();
-
-   // 3d, aligned to 256 bytes
-   cudaMalloc3D();
-   cudaMemcpy3D();
-   ```
-   
+  * 其中，为防止对同一个row下的读写产生多个memory segment，导致速度变慢，在每一行末尾加入padding，让其大小与memory transaction大小一致
+  * padded info叫做 `pitch`
 
 
-  **结构体大小对内存对齐的影响**
+![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_10.jpeg)
 
-   * 结构体大小应保证为 1, 2, 4, 8, or 16 bytes，如果不是这些大小，则会产生多个transaction。
-  
-   * 如果一个struct是7 bytes，那么padding成8 bytes会用coarlesed access。但是如果不paddig的话则会是多个transaction。
 
-   * 下面的marcro可以align struct从而确保coarlesed access
 
-   ```cpp
-   struct __align__(16) {
-   float x;
-   float y;
-   float z; 
-   };
-   ```
+  **结构体与内存对齐**
+
+   * 结构体大小应保证为 1, 2, 4, 8, or 16 bytes等倍数，如果不是这些大小，可能会产生多个transactions，同时需要考虑包括cache line等因素的影响。
+   * 如果一个struct是7 bytes，那么padding成8 bytes。但是如果不padding的话则会是多个transactions。
+
+```cpp
+struct __align__(16) {
+float x; // 4 bytes
+float y;
+float z;
+};
+```
+
+#### 数据分布优化
+
+ **结构体的AoS结构与SoA结构**
+
+  * 为了充分利用burst，GPU创建struct的时候，使用DA(discrete array)的结构
+  * 图中Array of structures对应AoS结构，Structure of array对应DA方法（也可以是SoA结构）
+
+  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0cb24edf605946a7b4fb0e957e27627e~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+```c++
+// 假设有一个结构体表示3D点
+struct Point3D {
+    float x;
+    float y;
+    float z;
+};
+
+// 使用AoS方式存储多个点
+Point3D pointsAoS[N]; // N个点
+
+// 访问某个点的x坐标。在GPU上，如果我们要对所有的x坐标进行某种操作，我们需要遍历整个数组，并且每次都要从一个不同的结构体中读取x字段。这可能导致内存访问的不连续，从而降低性能。
+float xCoord = pointsAoS[i].x;
+
+
+// 使用SoA方式存储多个点的x、y、z坐标
+struct Points{
+  float xCoords[N];
+  float yCoords[N];
+  float zCoords[N]; // N个点
+}
+
+// 访问某个点的x坐标。在GPU上，如果我们要对所有的x坐标进行某种操作，我们可以直接对整个xCoords数组进行操作，而不需要跳转到不同的内存位置。这种连续的内存访问模式可以显著提高性能。
+float xCoord = Points.xCoords[i];
+```
+
+ **广义DA方法**
+
+  * 更广义上的SoA结构：ASTA(Array of Structures of Tiled Arrays)是一种 SoA的变体。相当于AoS of mini-SoA
+
+
+```cpp
+  struct foo{
+    float bar;
+    int baz;
+  };
+  // AoS方法
+  __kernel void AoS(__global foo* f){
+    f[get_global_id(0)].bar *= 2.0;
+  }
+  // DA方法
+  __kernel void DA(__global float* bar, __global int* baz){
+    bar[get_global_id(0)] *=2.0;
+  }
+// ASTA方法
+struct foo_tile {
+    float bar[4]; // 每个tile包含4个float值
+};
+
+// ASTA方法
+__kernel void ASTA(__global foo_tile* tiles){
+    int gid0 = get_global_id(0);
+    int tile_id = gid0 / 4; // 计算tile的索引
+    int elem_id = gid0 % 4; // 计算tile内部元素的索引
+    tiles[tile_id].bar[elem_id] *= 2.0; // 修改对应tile中的bar值
+}
+```
+
+
+ **ASTA应用举例**
+
+  * 解决OpenCL需要对不同height、width有不同数据结构的kernel的问题
+  * 解决`partition camping`问题：也就是数据集中在某一个bank/channel上，没有充分利用DRAM aggregate bandwidth
+
+ **AoS、SoA和ASTA性能对比**
+
+   * 在NVIDIA的arch下，DA（SoA）与ASTA的性能相似
+
+![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2495dce06e9748248a3cb3a6c1ce9cba~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+
+
+
+
+### 访问模式
+
+#### 访问合并
+
+
+#### 模式优化
+
+
+
+#### 内存分块
+
+
+### 线程映射和索引
+
+### 数据重用和缓存
 
 
 
@@ -316,4 +396,16 @@ mermaid: true
 ### Fully utilize transfer
 
   * 尽量将传输次数减少，如果GPU计算并不方便，也使用，减少数据传输次数。
+
+
+
+
+### global memory 内存合并的具体内容
+
+  **global memory 数据流向**
+
+   * global memory作为所有单元可以直接获取的数据源，其速度在所有的GPU内存结构中处于最慢。因此数据流向到GPU处理单元需要其他缓存结构。
+   * 下图为早期GPU结构，其中global memory request经过L2，然后再往计算单元靠近经过shared memory、local memory、L1、read only && constant memory，在往上为registers
+
+  ![](https://github.com/amosteernamazz/amosteernamazz.github.io/raw/master/pictures/gpumemory_9.png)
 

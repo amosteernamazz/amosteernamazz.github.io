@@ -54,51 +54,6 @@ mermaid: true
   * 对于GPU来说，data layout对程序的影响很显著。
     * 因为GPU的cache比较小。GPU的cache主要适用于memory coalesing，而不是locality
 
- **结构体优化方法**
-  * <font color = red>为了充分利用burst，GPU创建struct的时候，使用**DA(discrete array)的结构**（如下struct of arrays的结构）</font>
-
-  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0cb24edf605946a7b4fb0e957e27627e~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
-  上图中Array of structures对应SoA结构，Structure of array对应DA方法
-
- **广义的DA方法**
-  * <font color = red>更广义上的SoA结构：**ASTA**(Array of Structures of Tiled Arrays)是一种 SoA的变体。相当于AoS of mini-SoA(of size coarsening factor)</font>
-  **解决问题**
-    * 解决OpenCL需要对不同height、width有不同数据结构的kernel的问题
-    * 解决`partition camping`问题：也就是数据集中在某一个bank/channel上，没有充分利用DRAM aggregate bandwidth
-
- **数据分布优化实例**
-  * 通常`coarsening factor` (下面eg是4) **至少设置为block内的threads个数**。
-  ```cpp
-   struct foo{
-      float bar;
-      int baz;
-   };
-   // AoS方法
-   __kernel void AoS(__global foo* f){
-      f[get_global_id(0)].bar *=2.0;
-   }
-   // DA方法
-   __kernel void DA(__global float* bar, __global int* baz){
-      bar[get_global_id(0)] *=2.0;
-   }
-   // ASTA方法
-   struct foo_2{
-      float bar[4];
-      int baz[4];
-   }
-   __kernel void ASTA(__global foo_2* f){
-      int gid0 = get_global_id(0);
-      f[gid0/4].bar[gid0%4] *=2.0;
-   }
-   ```
-
-  * 结果
-   在NVIDIA的arch下，DA与ASTA的性能相似
-  
-  ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2495dce06e9748248a3cb3a6c1ce9cba~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
-
 
 
 ### 将数据Scatter转变为Gather以提高性能
