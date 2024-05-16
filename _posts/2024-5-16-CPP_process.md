@@ -1,10 +1,10 @@
 ---
 layout: article
-title: C++ 流程
+title: C++ 运行前处理
 key: 100006
 tags: C++
 category: blog
-date: 2019-09-07 00:00:00 +08:00
+date: 2024-05-16 14:18:07 +08:00
 mermaid: true
 ---
 
