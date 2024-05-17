@@ -1,6 +1,6 @@
 ---
 layout: article
-title: C++ 内存布局
+title: C++ 运行时处理
 key: 100007
 tags: C++ 内存布局
 category: blog
@@ -9,214 +9,76 @@ mermaid: true
 ---
 
 
-## C++内存布局
+## 运行时的堆与栈上的对象
 
+### 堆对象与栈对象的区别
 
-### 栈
- **特点**
-  * 向下生长（形参在入栈是从后往前入栈，为了保证在可变参数数量时候能够快速解析）
-  * 保存函数的局部变量，参数以及返回值
-
-
-### 堆
- **特点**
-  * 向上生长
-  * 用户分配的动态内存区域，存在内存泄漏问题，需要及时释放内存，否则需要等程序退出
-  * 不连续空间，实际上有一个空闲链表，当有程序申请的时候，遍历第一个大于等于申请空间给程序。分配程序的时候，会写入空间大小，方便回收，如果有剩余，会将剩余插入到空闲链表中，会产生内存碎片
-
-
-### bss区
- **特点**
-  <!-- * global 初始化在此区，初始化后的非0放在data
-  * 未初始化的static全局/局部变量 -->
-  * 编译时：对程序全局变量载入时，由内核置为0
-  * 运行时：未初始化的static全局/局部变量
-
-
-### data区
- **特点**
-  <!-- * const初始化在此区
-  * 初始化后非0的global、初始化后的static全局/局部变量 -->
-  * 初始化后的全局变量
-  * 初始化后的static全局/局部变量
-  * 编译时：const初始化后的const
-
-
-### text段
- **特点**
-  * 只读，一般为二进制文件
-
-
-
-
-## 堆上（动态分配）和栈上（静态分配）的对象
- 
- **区别**
-  * 声明周期
-    * 需要生命周期比上下文长的生命周期，则只能在堆上创建
-      * 只要能在栈上创建对象，就在栈上创建；否则的话，如果你不得不需要更长的生命周期，只能选择堆上创建
-    * 某些情况如果是在栈上创建，但数据仍然在堆上`std::vector v`对象v创建在栈，但其数据在栈上
-  * 性能
+  * 对象生命周期区别
+    * 栈对象生命周期只能在作用域内，堆生命周期可以在动态地分配和释放内存的过程中随时变化。
+  * 对象的性能
     * 栈性能更快，栈有专门的寄存器，压栈出栈指令效率更高，堆是由OS动态调度，堆内存可能被OS调度在非物理内存中，或是申请内存不连续，造成碎片过多等问题；
     * 堆都是动态分配的，栈是编译器完成的。栈的分配和堆是不同的，他的动态分配是由编译器进行释放，无需我们手工实现
+  * 某些情况如果是在栈上创建，但数据仍然在堆上，如`std::vector v`，对象v创建在栈，但其数据在堆上，只是指针指向堆，堆上的数据由std负责维护
 
 ### 只在堆上生成对象的类
 
-  ```c++
-  class A {
+```c++
+class A {
     // A a; 创建对象是利用编译器确定，需要public的构造和析构，因此使用private或protected构造和析构可以取消静态创建，但针对需要继承的类型有进一步限制为protected
-  protected:
-    A(){}
-    ~A(){}
-  public:
-    static A* create(){
-      return new A();
+protected:
+    A() {} 
+    ~A() {}
+public:
+    static A* create() {
+        return new A();
     }
     // 在析构中因为无法调用，使用单独的delete()函数
-    void delete(){
-      delete this;
+    void destroy() {
+        delete this;
     }
 
-  };
-  ```
+};
+
+int main() {
+    A* object = A::create();
+
+    object->destroy();
+    object = nullptr;
+
+    return 0;
+}
+```
 
 ### 只在栈上生成对象的类
-  ```c++
-  class A{
-  private:
-    void operator delete(void* ptr){}
-    void * operator new (size_t t){}
-  public:
-    A(){}
-    ~A(){}
-  };
-  ```
-
-
-
-
-## 大端模式和小端模式
- * ⼤端模式：是指数据的⾼字节保存在内存的低地址中，⽽数据的低字节保存在内存的⾼地址端。
- * ⼩端模式，是指数据的⾼字节保存在内存的⾼地址中，低位字节保存在在内存的低地址端。
- * 判断方法，直接读取十六进制的值 or 使用共同体来判断
 
 
 ```c++
-
-#include <stdio.h>
-int main() {
- 
- union {
-  int a; //4 bytes
-  char b; //1 byte
- } data;
-
-
- data.a = 1; //占4 bytes，⼗六进制可表示为 0x 00 00 00 01
- 
- //b因为是char型只占1Byte，a因为是int型占4Byte
- //所以，在联合体data所占内存中，b所占内存等于a所占内存的低地址部分
- if(1 == data.b) {
- //⾛到这⾥意味着说明a的低字节，被取给到了b
- //即a的低字节存在了联合体所占内存的(起始)低地址，符合⼩端模式特征
- printf("Little_Endian\n");
- } else {
- printf("Big_Endian\n");
- }
- return 0;
-
-}```
-
-## 手写实现智能指针
-
-```c++
-template<typename T>
-class SharedPtr {
+class A {
 private:
- size_t* m_count_;
- T* m_ptr_;
+    void operator delete(void* ptr) {}
+    void* operator new (size_t t) {}
 public:
- // 无参构造
- SharedPtr(): m_ptr_(nullptr),m_count_(new size_t) {}
- // 原生指针
- SharedPtr(T* ptr): m_ptr_(ptr),m_count_(new size_t) { m_count_ = 1;}
- //析构函数
- ~SharedPtr() {
- -- (*m_count_);
- if (*m_count_ == 0) {
- delete m_ptr_;
- delete m_count_;
- m_ptr_ = nullptr;
- m_count_ = nullptr;
- }
- }
- //拷⻉构造函数
- SharedPtr(const SharedPtr& ptr) {
- m_count_ = ptr.m_count_;
- m_ptr_ = ptr.m_ptr_;
- ++(*m_count_);
- }
- //拷⻉赋值运算
- void operator=(const SharedPtr& ptr) { SharedPtr(std::move(ptr)); }
- //移动构造函数
- SharedPtr(SharedPtr&& ptr) : m_ptr_(ptr.m_ptr_),
-m_count_(ptr.m_count_) { ++(*m_count_); }
-//移动赋值运算
- void operator=(SharedPtr&& ptr) { SharedPtr(std::move(ptr)); }
- //解引⽤
- T& operator*() { return *m_ptr_; }
- //箭头运算
- T* operator->() { return m_ptr_; }
- //᯿载bool操作符
- operator bool() {return m_ptr_ == nullptr;}
- T* get() { return m_ptr_;}
- size_t use_count() { return *m_count_;}
- bool unique() { return *m_count_ == 1; }
- void swap(SharedPtr& ptr) { std::swap(*this, ptr); }
+    A() {}
+    ~A() {}
 };
+
+int main() {
+    A a;
+    return 0;
+}
+
 ```
 
 
-## new/delete与malloc/free
- **相同**
-  * 申请动态内存和释放动态内存
-
-
- **不同**
- new/delete带构造析构部分
-  * 返回类型安全性 （new返回安全，malloc返回`void *`）
-  * 返回失败后返回值 （new失败后要捕获异常`bad_alloc`，malloc返回nullptr）
-  * 是否指定内存大小（new不，malloc需要）
-  * 后续内存分配（new 没有配备，malloc如果不够，使用realloc进行扩充）
-
-
- **应用上共存**
-  * 对于需要初始化的场景，使用new更合适
-  * 对于c程序需要使用malloc/free管理内存
-
-
- **配对**
- new和delete、malloc和free、new[]和delete[]要配对使用
-
-## free原理
- * glibc中的free，空间的大小记录在参数指针指向地址的前面，free的时候通过这个记录即可知道要释放的内存有多大。
- * 同时free(p)表示释放p对应的空间，但p这个pointer仍然存在，只是不能操作
- * free后的内存会使用双链表保存，供下次使用，避免频繁系统调用，同时有合并功能，避免内存碎片
-
-
-<!--more-->
-
- **使用**
-  * `char* p = (char*) malloc(10);`
-  * `free(p);`
-  * `p = NULL;`
-
 ## 栈上分配内存
+
  **alloca**
+
   * 不需要手动释放，超出作用域自动释放
 
 
  **问题**
+
   * 会爆栈
 
 ## 野指针和悬空指针

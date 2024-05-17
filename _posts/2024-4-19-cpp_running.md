@@ -380,3 +380,41 @@ int count = std::count_if(v.begin(), v.end(), [val](int x) {return x >3;});
  **应用**
   * 一般不要使用dynamic_cast、reinterpret_cast
 
+
+
+
+
+
+
+## new/delete与malloc/free
+ **相同**
+  * 申请动态内存和释放动态内存
+
+
+ **不同**
+ new/delete带构造析构部分
+  * 返回类型安全性 （new返回安全，malloc返回`void *`）
+  * 返回失败后返回值 （new失败后要捕获异常`bad_alloc`，malloc返回nullptr）
+  * 是否指定内存大小（new不，malloc需要）
+  * 后续内存分配（new 没有配备，malloc如果不够，使用realloc进行扩充）
+
+
+ **应用上共存**
+  * 对于需要初始化的场景，使用new更合适
+  * 对于c程序需要使用malloc/free管理内存
+
+
+ **配对**
+ new和delete、malloc和free、new[]和delete[]要配对使用
+
+## free原理
+ * glibc中的free，空间的大小记录在参数指针指向地址的前面，free的时候通过这个记录即可知道要释放的内存有多大。
+ * 同时free(p)表示释放p对应的空间，但p这个pointer仍然存在，只是不能操作
+ * free后的内存会使用双链表保存，供下次使用，避免频繁系统调用，同时有合并功能，避免内存碎片
+
+
+
+ **使用**
+  * `char* p = (char*) malloc(10);`
+  * `free(p);`
+  * `p = NULL;`
