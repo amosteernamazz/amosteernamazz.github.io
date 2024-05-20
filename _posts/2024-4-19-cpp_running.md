@@ -9,25 +9,8 @@ mermaid: true
 ---
 
 
-  | 类别 | 问题 | 
-  |---|---|
-  | ++i与i++ | ++i |
-  | ++i与i++ | i++ |
-  | C++关键字 | include<> 和 include ""的不同 |
-  | C++关键字 | inline的优缺点 |
-  | C++关键字 | 虚函数是否可以是inline |
-  | C++关键字 | class与struct的默认继承方式 |
-  | C++关键字 | 不能继承的类或函数 |
-  | C++关键字 | 类与类之间关系 |
-  | C++关键字 | 继承控制方式对属性的影响 |
-  | C++关键字 | 组合 |
-  | C++关键字 | 多态原因 |
-  | C++关键字 | 多态类型 |
-  | C++关键字 | 多态实现 |
 
-
-
-### ++i与i++
+## ++i与i++
 
  **++i**
 
@@ -55,7 +38,7 @@ mermaid: true
 
 
 
-### 正则表达式
+## 正则表达式
 
  **常用的C++正则表达式特殊字符与含义**
 
@@ -250,7 +233,7 @@ int main() {
 
 
 
-### assert断言
+## assert断言
 
 一般用于debug程序的逻辑，不用于release版本
  * assert宏
@@ -279,7 +262,7 @@ struct Check {
 
 
 
-### this指针使用
+## this指针使用
 
  **作用**
   * 指向非静态成员函数所作用的对象
@@ -353,7 +336,7 @@ int count = std::count_if(v.begin(), v.end(), [val](int x) {return x >3;});
 ```
 
 
-## 强制类型转换
+## 类型转换
  **static_cast**
  派生->基类安全，反向不安全
   * 基本数据类型之间的转换
@@ -383,10 +366,20 @@ int count = std::count_if(v.begin(), v.end(), [val](int x) {return x >3;});
 
 
 
+## 类型检查
 
+用于检查变量或表达式的类型。例如：
 
+```c++
+int n = 10;
+if (typeid(n) == typeid(int)) {
+  // n 是 int 类型
+}
+```
 
-## new/delete与malloc/free
+## 动态分配和释放内存
+
+### new/delete与malloc/free
  **相同**
   * 申请动态内存和释放动态内存
 
@@ -407,7 +400,7 @@ int count = std::count_if(v.begin(), v.end(), [val](int x) {return x >3;});
  **配对**
  new和delete、malloc和free、new[]和delete[]要配对使用
 
-## free原理
+### free原理
  * glibc中的free，空间的大小记录在参数指针指向地址的前面，free的时候通过这个记录即可知道要释放的内存有多大。
  * 同时free(p)表示释放p对应的空间，但p这个pointer仍然存在，只是不能操作
  * free后的内存会使用双链表保存，供下次使用，避免频繁系统调用，同时有合并功能，避免内存碎片
@@ -418,3 +411,9 @@ int count = std::count_if(v.begin(), v.end(), [val](int x) {return x >3;});
   * `char* p = (char*) malloc(10);`
   * `free(p);`
   * `p = NULL;`
+
+## 非静态this指针的处理
+
+见编译中的静态thie指针的处理
+
+##  

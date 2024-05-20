@@ -39,11 +39,11 @@ mermaid: true
   | union | union注意事项 |
   | union | union使用场景 |
   | typedef | union使用场景 |
-  | this指针的存在和处理 | this指针的处理逻辑 |
-  | this指针的存在和处理 | this用途 |
-  | this指针的存在和处理 | this优点 |
-  | this指针的存在和处理 | 谨慎使用delete this |
-  | this指针的存在和处理 | 什么情况可以使用delete this |
+  | 静态this指针的存在和处理 | this指针的处理逻辑 |
+  | 静态this指针的存在和处理 | this用途 |
+  | 静态this指针的存在和处理 | this优点 |
+  | 静态this指针的存在和处理 | 谨慎使用delete this |
+  | 静态this指针的存在和处理 | 什么情况可以使用delete this |
   | 泛化常数constexpr | constexpr注意事项 |
   | decltype | decltype可以应用的类型 |
   | decltype | decltype不可引用的类型 |
@@ -712,7 +712,7 @@ int main() {
 
 
 
-### this指针的存在和处理
+### 静态this指针的存在和处理
 
  **this指针的处理逻辑**
   * 在编译期间，编译器处理类的定义和成员函数的声明。

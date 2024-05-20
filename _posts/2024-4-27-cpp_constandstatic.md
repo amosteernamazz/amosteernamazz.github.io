@@ -7,6 +7,9 @@ category: blog
 date: 2024-04-27 15:20:13 +08:00
 mermaid: true
 ---
+
+## const
+
 ### const编译时特性
 
  **const变量**
