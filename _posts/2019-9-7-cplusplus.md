@@ -87,57 +87,6 @@ mermaid: true
   * 指针常量 -> 指针的大小
   * 引用 -> 得到指向对象的大小
 
-## fork、wait和exec函数
-
-在早期unix系统中，当调⽤ fork 时，内核会把所有的内部数据结构复制⼀份，复制进程的⻚表项，然后把⽗进程的地址空间中的内容逐⻚的复制到⼦进程的地址空间中。但从内核⻆度来说，逐⻚的复制⽅式是⼗分耗时的。现代的 Unix 系统采取了更多的优化，例如 Linux，采⽤了写时复制的⽅法，⽽不是对⽗进程空间进程整体复制。
-
- * ⽗进程产⽣⼦进程使⽤ fork 拷⻉出来⼀个⽗进程的副本，此时只拷⻉了⽗进程的⻚表，两个进程都读同⼀块内存。
- * 当有进程写的时候使⽤写实拷⻉机制分配内存，exec 函数可以加载⼀个 elf ⽂件去替换⽗进程，从此⽗进程和⼦进程就可以运⾏不同的程序了。
- * fork 从⽗进程返回⼦进程的 pid，从⼦进程返回 0，调⽤了 wait 的⽗进程将会发⽣阻塞，直到有⼦进程状态改变，执⾏成功返回 0，错误返回 -1。
- * exec 执⾏成功则⼦进程从新的程序开始运⾏，⽆返回值，执⾏失败返回 -1。
-
-```c++
-int main(int argc, char *argv[])
-{
-    printf("hello world (pid:%d)\n", (int) getpid());
-    
-    // fork以后子进程pid=0，父进程pid=子进程
-    int rc = fork();
-    if (rc < 0) {
-        // fork failed; exit
-        fprintf(stderr, "fork failed\n");
-        exit(1);
-    } else if (rc == 0) {
-        // child (new process)
-        printf("hello, I am child (pid:%d)\n", (int) getpid());
-
-        // 子进程程序执行为execvp的命令
-        char *myargs[3];
-        myargs[0] = strdup("wc");   // program: "wc" (word count)
-        myargs[1] = strdup("exec.c"); // argument: file to count
-        myargs[2] = NULL;           // marks end of array
-        execvp(myargs[0], myargs);  // runs word count
-
-        // 子进程已经执行了wc程序，因此不会返回此处执行
-        printf("this shouldn't print out");
-    } else {
-        // 父进程等待子进程结束，如果为多个的话等待其中一个结束
-        // parent goes down this path (original process)
-        int wc = wait(NULL);
-        printf("hello, I am parent of %d (wc:%d) (pid:%d)\n",
-	       rc, wc, (int) getpid());
-    }
-    return 0;
-}
-```
-
-
-## 回调函数
-
-当发⽣某种事件时，系统或其他函数将会⾃动调⽤你定义的⼀段函数，相当于**中断处理函数**，当系统在符合条件的时候自动调用，其通过函数指针调用的函数，如果将某函数的指针作为参数给另外一个函数，当另外的这个函数在满足一定条件后通过函数指针完成函数的调用，那么称这个被调用的函数为回调函数
-
-步骤：声明，定义，设置触发条件
-
 
 
 ## 右值引用

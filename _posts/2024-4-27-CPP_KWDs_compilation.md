@@ -10,6 +10,8 @@ mermaid: true
 
   | 类别 | 问题 | 
   |---|---|
+  | ++i与i++ | ++i |
+  | ++i与i++ | i++ |
   | NULL和nullptr | NULL定义 |
   | NULL和nullptr | nullptr定义 |
   | inline | inline优缺点 |
@@ -50,6 +52,34 @@ mermaid: true
   | decltype | decltype与左值右值 |
   | extern定义 | extern处理逻辑 |
   | extern定义 | extern举例 |
+
+
+### ++i与i++
+
+ **++i**
+
+  ++i 不会产生临时对象
+
+  ```c++
+  int& int::operator++ (){
+  *this +=1;
+  return *this;
+  }
+  ```
+
+ **i++**
+  
+  i++ 产生临时对象，会导致效率降低
+
+  ```c++
+  const int int::operator(int){
+  int oldValue = *this;
+  ++(*this);
+  return oldValue;
+  }
+
+  ```
+
 
 
 ### NULL和nullptr
