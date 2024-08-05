@@ -10,7 +10,7 @@ mermaid: true
 
 
 
-## 正则表达式
+## 正则表达式的应用
 
  **常用的C++正则表达式特殊字符与含义**
 
@@ -48,158 +48,158 @@ mermaid: true
 
 ```c++
 // 验证电子邮箱格式
-#include <iostream>  
-#include <regex>  
-#include <string>  
-  
-bool isValidEmail(const std::string& email) {  
-    std::regex e ("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");  
-    return std::regex_match(email, e);  
-}  
-  
-int main() {  
-    std::string email = "example@example.com";  
-    if (isValidEmail(email)) {  
-        std::cout << email << " is a valid email address." << std::endl;  
-    } else {  
-        std::cout << email << " is not a valid email address." << std::endl;  
-    }  
-    return 0;  
+#include <iostream>
+#include <regex>
+#include <string>
+
+bool isValidEmail(const std::string& email) {
+    std::regex e ("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+    return std::regex_match(email, e);
+}
+
+int main() {
+    std::string email = "example@example.com";
+    if (isValidEmail(email)) {
+        std::cout << email << " is a valid email address." << std::endl;
+    } else {
+        std::cout << email << " is not a valid email address." << std::endl;
+    }
+    return 0;
 }
 
 // 文本替换
-#include <iostream>  
-#include <regex>  
-#include <string>  
-  
-std::string replaceNumbersWithStars(const std::string& text) {  
-    std::regex e ("\\d+"); // 匹配一个或多个数字  
-    return std::regex_replace(text, e, "*");  
-}  
-  
-int main() {  
-    std::string text = "There are 123 apples and 456 oranges.";  
-    std::string result = replaceNumbersWithStars(text);  
-    std::cout << result << std::endl; // 输出: There are *** apples and *** oranges.  
-    return 0;  
+#include <iostream>
+#include <regex>
+#include <string>
+
+std::string replaceNumbersWithStars(const std::string& text) {
+    std::regex e ("\\d+"); // 匹配一个或多个数字
+    return std::regex_replace(text, e, "*");
 }
 
-// 词法分析，识别文本种的数字
-#include <iostream>  
-#include <regex>  
-#include <string>  
-#include <vector>  
-  
-std::vector<std::string> tokenizeNumbers(const std::string& text) {  
-    std::regex e ("\\d+"); // 匹配一个或多个数字  
-    std::sregex_token_iterator iter(text.begin(), text.end(), e);  
-    std::sregex_token_iterator end;  
-    std::vector<std::string> tokens(iter, end);  
-    return tokens;  
-}  
-  
-int main() {  
-    std::string text = "The price is 123 dollars.";  
-    auto tokens = tokenizeNumbers(text);  
-    for (const auto& token : tokens) {  
-        std::cout << token << std::endl; // 输出: 123  
-    }  
-    return 0;  
+int main() {
+    std::string text = "There are 123 apples and 456 oranges.";
+    std::string result = replaceNumbersWithStars(text);
+    std::cout << result << std::endl; // 输出: There are *** apples and *** oranges.
+    return 0;
+}
+
+// 词法分析，识别文本中的数字
+#include <iostream>
+#include <regex>
+#include <string>
+#include <vector>
+
+std::vector<std::string> tokenizeNumbers(const std::string& text) {
+    std::regex e ("\\d+"); // 匹配一个或多个数字
+    std::sregex_token_iterator iter(text.begin(), text.end(), e);
+    std::sregex_token_iterator end;
+    std::vector<std::string> tokens(iter, end);
+    return tokens;
+}
+
+int main() {
+    std::string text = "The price is 123 dollars.";
+    auto tokens = tokenizeNumbers(text);
+    for (const auto& token : tokens) {
+        std::cout << token << std::endl; // 输出: 123
+    }
+    return 0;
 }
 
 // 分割字符串
-#include <iostream>  
-#include <regex>  
-#include <string>  
-#include <vector>  
+#include <iostream>
+#include <regex>
+#include <string>
+#include <vector>
   
-std::vector<std::string> splitString(const std::string& text, const std::string& delimiter) {  
-    std::regex e (delimiter);  
-    std::sregex_token_iterator iter(text.begin(), text.end(), e, -1);  
-    std::sregex_token_iterator end;  
-    std::vector<std::string> tokens(iter, end);  
-    return tokens;  
-}  
-  
-int main() {  
-    std::string text = "apple,banana,cherry";  
-    auto tokens = splitString(text, ",");  
-    for (const auto& token : tokens) {  
-        std::cout << token << std::endl; // 输出: apple, banana, cherry  
-    }  
-    return 0;  
+std::vector<std::string> splitString(const std::string& text, const std::string& delimiter) {
+    std::regex e (delimiter);
+    std::sregex_token_iterator iter(text.begin(), text.end(), e, -1);
+    std::sregex_token_iterator end;
+    std::vector<std::string> tokens(iter, end);
+    return tokens;
+}
+
+int main() {
+    std::string text = "apple,banana,cherry";
+    auto tokens = splitString(text, ",");
+    for (const auto& token : tokens) {
+        std::cout << token << std::endl; // 输出: apple, banana, cherry
+    }
+    return 0;
 }
 
 // 数据清洗，清除HTML标签
-#include <iostream>  
-#include <regex>  
-#include <string>  
-  
-std::string removeHtmlTags(const std::string& html) {  
-    std::regex e ("<[^>]*>"); // 匹配所有HTML标签  
-    return std::regex_replace(html, e, "");  
-}  
-  
-int main() {  
-    std::string html = "<p>Hello, <b>world</b>!</p>";  
-    std::string text = removeHtmlTags(html);  
-    std::cout << text << std::endl; // 输出: Hello, world!  
-    return 0;  
+#include <iostream>
+#include <regex>
+#include <string>
+
+std::string removeHtmlTags(const std::string& html) {
+    std::regex e ("<[^>]*>"); // 匹配所有HTML标签
+    return std::regex_replace(html, e, "");
+}
+
+int main() {
+    std::string html = "<p>Hello, <b>world</b>!</p>";
+    std::string text = removeHtmlTags(html);
+    std::cout << text << std::endl; // 输出: Hello, world!
+    return 0;
 }
 
 // 模式匹配
-#include <iostream>  
-#include <regex>  
-#include <string>  
-  
-int main() {  
-    // 假设我们有一些可能包含恶意内容的文本  
-    std::string text = "This is a normal text. However, it contains some BAD_STUFF that we need to detect.";  
-  
-    // 定义一个正则表达式来匹配恶意内容  
-    // 这个例子中，我们简单地查找"BAD_STUFF"这个字符串  
-    std::regex pattern("BAD_STUFF");  
-  
-    // 使用std::sregex_search来搜索匹配项  
-    if (std::sregex_search(text, pattern)) {  
-        std::cout << "Malicious content detected!" << std::endl;  
-    } else {  
-        std::cout << "No malicious content found." << std::endl;  
-    }  
-  
-    return 0;  
+#include <iostream>
+#include <regex>
+#include <string>
+
+int main() {
+    // 假设我们有一些可能包含恶意内容的文本
+    std::string text = "This is a normal text. However, it contains some BAD_STUFF that we need to detect.";
+
+    // 定义一个正则表达式来匹配恶意内容
+    // 这个例子中，我们简单地查找"BAD_STUFF"这个字符串
+    std::regex pattern("BAD_STUFF");
+
+    // 使用std::sregex_search来搜索匹配项
+    if (std::sregex_search(text, pattern)) {
+        std::cout << "Malicious content detected!" << std::endl;
+    } else {
+        std::cout << "No malicious content found." << std::endl;
+    }
+
+    return 0;
 }
 
 // 提取信息
-#include <iostream>  
-#include <regex>  
-#include <string>  
-#include <sstream>  
-  
-int main() {  
+#include <iostream>
+#include <regex>
+#include <string>
+#include <sstream>
+
+int main() {
     // 假设我们有一个包含姓名和年龄的字符串  
-    std::string input = "John Doe, 30 years old";  
-  
-    // 定义一个正则表达式来匹配姓名和年龄  
-    std::regex pattern(R"((\w+)\s+(\w+),\s+(\d+)\s+years\s+old)");  
-  
-    // 创建一个smatch对象来保存匹配结果  
-    std::smatch match;  
-  
-    // 尝试匹配字符串  
-    if (std::regex_search(input, match, pattern)) {  
-        // 提取姓名和年龄  
-        std::string name = match[1].str() + " " + match[2].str();  
-        int age = std::stoi(match[3].str());  
-  
-        // 输出提取的信息  
-        std::cout << "Name: " << name << std::endl;  
-        std::cout << "Age: " << age << std::endl;  
-    } else {  
-        std::cout << "No match found." << std::endl;  
-    }  
-  
-    return 0;  
+    std::string input = "John Doe, 30 years old";
+
+    // 定义一个正则表达式来匹配姓名和年龄
+    std::regex pattern(R"((\w+)\s+(\w+),\s+(\d+)\s+years\s+old)");
+
+    // 创建一个smatch对象来保存匹配结果
+    std::smatch match;
+
+    // 尝试匹配字符串
+    if (std::regex_search(input, match, pattern)) {
+        // 提取姓名和年龄
+        std::string name = match[1].str() + " " + match[2].str();
+        int age = std::stoi(match[3].str());
+
+        // 输出提取的信息
+        std::cout << "Name: " << name << std::endl;
+        std::cout << "Age: " << age << std::endl;
+    } else {
+        std::cout << "No match found." << std::endl;
+    }
+
+    return 0;
 }
 ```
 
@@ -209,7 +209,30 @@ int main() {
 
 一般用于debug程序的逻辑，不用于release版本
  * assert宏
-   * `assert(x >0)`
+   * `assert(x>0)`
+
+```c++
+#include <iostream>
+
+int main() {
+  int x = 10;
+  int y = 5;
+
+  // Assert that x is greater than y
+  assert(x > y);
+
+  // Calculate the sum of x and y
+  int sum = x + y;
+
+  // Assert that sum is equal to 15
+  assert(sum == 15);
+
+  std::cout << "Assertions passed successfully!" << std::endl;
+
+  return 0;
+}
+```
+
  * #error方法
 
 ```c++
@@ -234,82 +257,31 @@ struct Check {
 
 
 
-## this指针使用
 
- **作用**
-  * 指向非静态成员函数所作用的对象
+## 非静态this指针的处理
 
- **什么时候创建**
-  * 调用非静态函数时才会使用的
-
- **delete this**
-  * 为将被释放的内存调用一个或多个析构函数（因此不能在析构中调用delete this），类对象的内存空间被释放，之后不能涉及this指针，如操作数据成员，调用虚函数等
+见编译中的静态thie指针的处理
 
 
 
-
-
-
-## lambda 表达式
- lambda表达式是一种匿名函数对象，可以捕获所在作用域中的变量，并在需要时执行特定的操作。
-提供了一种**匿名函数**的特性，可以编写内嵌的匿名函数，用于替换独立函数，而且更可读
-本质上来讲， lambda 表达式只是**一种语法糖**，因为所有其能完成的⼯作都可以⽤其它稍微复杂的代码来实现。
-
- ****
-
-从[]开始，结束于{}，{}内定义的是lambda表达式体
-
-```c++
-auto basicLambda = [] { cout << "Hello, world!" << endl; };
-basicLambda(); 
-```
-
-带返回值类型的
-```c++
-auto add[](int a, int b) -> int{return a+b;};
-
-auto multiply = [](int a, int b)-> {return a*b;};
-
-int sum = add(2,3);
-int product = multiply(2, 5);
-```
-[]闭包：
-实现原理是每次定义lambda表达式后，都会自动生成匿名类，称为**闭包类型**。运行时候，lambda表达式会返回一个匿名闭包实例，实际是右值。其可以通过**传值或引用**的方式捕捉封装作用域的变量
-
-
-```c++
-int main() {
- int x = 10;
- 
- auto add_x = [x](int a) { return a + x; }; 
- auto multiply_x = [&x](int a) { return a * x; }; 
- 
- cout << add_x(10) << " " << multiply_x(10) << endl;
- // 输出：20 100
- return 0;
-}
-```
-[]：默认不捕获任何变量
-[=]：默认以值捕获所有变量；
-[&]：默认以引⽤捕获所有变量；
-[x]：仅以值捕获x，其它变量不捕获；
-[&x]：仅以引⽤捕获x，其它变量不捕获；
-[=, &x]：默认以值捕获所有变量，但是x是例外，通过引⽤捕获；
-[&, x]：默认以引⽤捕获所有变量，但是x是例外，通过值捕获；
-[this]：通过引⽤捕获当前对象（其实是复制指针）；
-[*this]：通过传值⽅式捕获当前对象
-
-应用于函数的参数，实现回调
-
-```c++
-int val = 3;
-vector<int> v{1,8,3,4,7,3};
-int count = std::count_if(v.begin(), v.end(), [val](int x) {return x >3;});
-```
 
 
 ## 类型转换
+
+**隐式类型转换**
+
+  * 发生在编译期间，根据上下文自动进行
+
+**显式类型转换**
+
+  * 取决于转换的类型与上下文
+    * 基本数据类型之间的转换 -> 编译期
+    * 涉及到指针或引用，且转换的结果依赖于运行时的实际类型，如void*到具体类型的指针的转换，需要在运行时进行
+
+### C++风格类型转换
+
  **static_cast**
+
  派生->基类安全，反向不安全
   * 基本数据类型之间的转换
     * void*和其他类型指针之间的转换
@@ -383,10 +355,6 @@ if (typeid(n) == typeid(int)) {
   * `char* p = (char*) malloc(10);`
   * `free(p);`
   * `p = NULL;`
-
-## 非静态this指针的处理
-
-见编译中的静态thie指针的处理
 
 
 ## fork、wait和exec函数

@@ -942,6 +942,7 @@ decltype(std::move(rvalueRef)) e = int(); // e的类型是int&&，因为std::mov
 
 ### extern定义
 
+
  **extern处理逻辑**
   * 声明全局变量或函数在其他文件中定义。它在编译阶段和连接阶段各自扮演着重要的角色
     * 编译阶段让编译器知道某个变量或函数是在其他文件中定义的，并在当前文件中只作为引用存在。
@@ -985,3 +986,152 @@ void functionInFile2() {
  * 然后，在链接阶段，链接器将所有目标文件合并成一个可执行文件。在这个过程中，链接器会解析所有 extern 变量的引用，并查找这些变量在何处定义。在这种情况下，链接器会在 state.o（由 state.c 编译生成的目标文件）中找到 programState 的定义，并将其与 file1.o 和 file2.o 中的引用进行匹配。
  * 最终生成的可执行文件将包含 programState 变量的一个实例，这个实例在 state.c 中被初始化为0，并可以在 file1.c 和 file2.c 中通过 extern 声明来访问和修改。
  * 其中要求extern的变量声明和定义在同一名下的.c和.h
+
+
+
+
+## lambda 表达式
+
+lambda表达式创建函数对象的过程都是在编译期间进行的，而lambda表达式的计算过程则是在运行期间进行的
+
+定义
+
+* lambda表达式是一种匿名函数对象，捕获所在作用域中的变量，并执行特定操作。
+* 提供了一种匿名函数的特性，可以编写内嵌的匿名函数，用于替换独立函数，而且更可读
+* 本质上来讲， lambda 表达式只是一种语法糖，因为所有其能完成的工作都可以⽤其它稍微复杂的代码来实现。
+
+lambda表达式
+
+ * 从闭包[]开始，结束于{}，{}内定义的是lambda表达式体
+
+```c++
+auto basicLambda = [] { cout << "Hello, world!" << endl; };
+basicLambda();
+```
+
+ * 带返回值类型的lambda表达式
+
+```c++
+auto add[](int a, int b) -> int{return a+b;};
+
+auto multiply = [](int a, int b)-> {return a*b;};
+
+int sum = add(2,3);
+int product = multiply(2, 5);
+```
+
+ * []闭包
+
+[]：默认不捕获任何变量
+[=]：默认以值捕获所有变量；
+[&]：默认以引用捕获所有变量；
+[x]：仅以值捕获x，其它变量不捕获；
+[&x]：仅以引用捕获x，其它变量不捕获；
+[=, &x]：默认以值捕获所有变量，但是x是例外，通过引用捕获；
+[&, x]：默认以引用捕获所有变量，但是x是例外，通过值捕获；
+[this]：通过引用捕获当前对象（其实是复制指针）；
+[*this]：通过传值方式捕获当前对象
+
+
+
+```c++
+int main() {
+ int x = 10;
+ 
+ auto add_x = [x](int a) { return a + x; }; 
+ auto multiply_x = [&x](int a) { return a * x; }; 
+ 
+ cout << add_x(10) << " " << multiply_x(10) << endl;
+ // 输出：20 100
+ return 0;
+}
+```
+
+ * 声明为mutable，让lambda表达式表示为可以更改参数值
+
+```c++
+#include <iostream>
+#include <functional> // 包含 std::function 的头文件
+
+class MyClass {
+public:
+    int x = 10;
+
+    // 使用 std::function 来定义返回一个可调用的对象
+    std::function<int(int)> add() mutable  {
+        return [this](int y) {
+            x += y;
+            return x + y; };
+    }
+};
+
+int main() {
+    MyClass obj;
+
+    // 获取 add 方法返回的 lambda 表达式（现在被封装在 std::function 中）
+    std::function<int(int)> adder = obj.add();
+
+    // 使用这个 lambda 表达式（现在通过 adder 变量）来计算结果
+    int result = adder(20);
+
+    std::cout << "result: " << result << std::endl; // 50
+    std::cout << "obj.x: " << obj.x << std::endl;  // 30
+
+    return 0;
+}
+```
+
+```c++
+
+// 利用多态调用
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <numeric>
+class Base {
+public:
+    virtual int add(int y) = 0;
+    virtual ~Base() {} // 通常，当类中有虚函数时，建议添加虚析构函数
+};
+
+class Derived1 : public Base {
+public:
+    int add(int y) override {
+        return y + 1;
+    }
+};
+
+class Derived2 : public Base {
+public:
+    int add(int y) override {
+        return y + 2;
+    }
+};
+
+int main() {
+    std::vector<Base*> v = { new Derived1(), new Derived2() };
+
+    // 注意 lambda 表达式的参数顺序和用法  
+    int result = std::accumulate(v.begin(), v.end(), 0, [](int sum, Base* obj) {
+        return sum + obj->add(10); // 通过多态调用add函数
+        });
+
+    std::cout << "result: " << result << std::endl; // 输出应该是 23 而不是 33
+
+    // 清理动态分配的内存
+    for (auto ptr : v) {
+        delete ptr;
+    }
+
+    return 0;
+}
+```
+
+应用于函数的参数，实现回调
+
+```c++
+int val = 3;
+vector<int> v{1,8,3,4,7,3};
+int count = std::count_if(v.begin(), v.end(), [val](int x) {return x >3;});
+```
+
